@@ -20,10 +20,8 @@ pub mod prelude {
     pub use crate::camera::*;
     pub use crate::consts::{app_consts::*, debug_consts::*, game_consts::*};
     pub use crate::debug::{
-        debug_print::*,
-        enums::debug_print_type::*,
         errors::{mismatch_error::*, system_access_error::*},
-        logs::{game_session_log::*, os_access_log::*},
+        logs::{game_session_log::*, os_access_log::*, print_log::*},
     };
     pub use crate::event_channels::{game_event_channels::*, EventChannelPlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, CostumeInputPlugin};
