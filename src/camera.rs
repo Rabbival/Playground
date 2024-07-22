@@ -1,9 +1,6 @@
 use crate::prelude::*;
 use bevy::render::view::RenderLayers;
 
-#[derive(Component)]
-pub struct MainCamera;
-
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {

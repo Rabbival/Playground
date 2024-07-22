@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.13.2"
+bevy = "0.14.0"
 enum-iterator = "2.1.0"
 rand = "0.8.5"
 serde = { version = "1.0.197", features = ["derive"] }
@@ -12,7 +12,7 @@ serde = { version = "1.0.197", features = ["derive"] }
 # Enable a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1
-debug = 1 # less precise locations
+debug = 1     # less precise locations
 
 # Enable high optimizations for dependencies, but not for our code:
 [profile.dev.package."*"]

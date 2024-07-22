@@ -2,8 +2,6 @@ use bevy::window::WindowResolution;
 
 use crate::prelude::*;
 
-pub const WINDOW_RESOLUTION: f32 = 600.0;
-
 pub struct ScreenSetupPlugin;
 
 impl Plugin for ScreenSetupPlugin {
@@ -13,7 +11,10 @@ impl Plugin for ScreenSetupPlugin {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: WindowResolution::new(WINDOW_RESOLUTION, WINDOW_RESOLUTION),
+                        resolution: WindowResolution::new(
+                            WINDOW_SIZE_IN_PIXELS,
+                            WINDOW_SIZE_IN_PIXELS,
+                        ),
                         resizable: false,
                         ..default()
                     }),
@@ -21,7 +22,7 @@ impl Plugin for ScreenSetupPlugin {
                 })
                 .build(),
         )
-        .insert_resource(ClearColor(Color::rgb(0.1, 0.1, 0.1)))
+        .insert_resource(SCREEN_COLOR_BACKGROUND)
         .insert_resource(AmbientLight {
             color: Color::default(),
             brightness: 0.9,

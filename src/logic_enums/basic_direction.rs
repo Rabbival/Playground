@@ -2,8 +2,6 @@ use crate::collect_all;
 use crate::prelude::*;
 use enum_iterator::{all, Sequence};
 
-pub const BASIC_DIRECTION_COUNT: u8 = 4;
-
 #[derive(Debug, Sequence, PartialEq, Eq, Hash, PartialOrd, Clone, Copy)]
 pub enum BasicDirection {
     Up,
@@ -19,7 +17,7 @@ impl BasicDirection {
 
     pub fn opposite_direction_index(&self) -> u8 {
         let index = *self as u8;
-        (index + 2) % BASIC_DIRECTION_COUNT
+        (index + 2) % 4
     }
 
     pub fn opposite_direction(&self) -> Option<Self> {
@@ -40,7 +38,6 @@ impl BasicDirection {
     }
 }
 
-//static functions
 impl BasicDirection {
     pub fn index_to_dir(index: u8) -> Option<Self> {
         match index {
@@ -52,7 +49,6 @@ impl BasicDirection {
         }
     }
 
-    /// seems to be more intuitive
     pub fn from_keycode(keycode: &KeyCode) -> Option<BasicDirection> {
         match keycode {
             KeyCode::KeyW | KeyCode::ArrowUp => Some(BasicDirection::Up),
