@@ -16,5 +16,9 @@ pub fn main() {
             EventChannelPlugin,
         ));
 
+    if APPEND_DEBUG_MESSAGES_TO_LOG_FILE {
+        app.add_plugins(GameSessionLogPlugin);
+    }
+
     app.run();
 }
