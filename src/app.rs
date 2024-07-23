@@ -16,7 +16,7 @@ pub fn main() {
             EventChannelPlugin,
         ));
 
-    if APPEND_DEBUG_MESSAGES_TO_LOG_FILE {
+    if !LOG_CATEGORYS_TO_APPEND_TO_SESSION_LOG.is_empty() {
         app.add_plugins(GameSessionLogPlugin);
     }
 

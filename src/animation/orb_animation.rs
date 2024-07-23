@@ -22,7 +22,7 @@ fn spawn_orb(
         commands.spawn((
             MaterialMesh2dBundle {
                 mesh: Mesh2dHandle(meshes.add(Circle::new(ORB_MAX_RADIUS))),
-                material: materials.add(Color::srgb(0.4, 0.4, 0.0)),
+                material: materials.add(Color::srgb(0.6, 0.1, 0.0)),
                 transform: Transform::from_xyz(
                     requested_spawn_location.x,
                     requested_spawn_location.y,

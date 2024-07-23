@@ -14,6 +14,9 @@ mod tags;
 #[macro_use]
 mod my_macros;
 
+#[macro_use]
+extern crate lazy_static;
+
 pub mod prelude {
     pub use crate::animation::{orb_animation::*, CustomeAnimationPlugin};
     pub use crate::app::*;
@@ -21,7 +24,12 @@ pub mod prelude {
     pub use crate::consts::{app_consts::*, debug_consts::*, game_consts::*};
     pub use crate::debug::{
         errors::{mismatch_error::*, system_access_error::*},
-        logs::{game_session_log::*, os_access_log::*, print_log::*},
+        logs::{
+            enums::{bevy_log_level::*, log_category::*},
+            game_session_log::*,
+            os_access_log::*,
+            print_log::*,
+        },
     };
     pub use crate::event_channels::{game_event_channels::*, EventChannelPlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, CostumeInputPlugin};
