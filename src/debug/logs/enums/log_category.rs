@@ -2,5 +2,4 @@
 pub enum LogCategory {
     Crucial,
     OsAccess,
-    Temp,
 }
