@@ -25,9 +25,8 @@ pub mod prelude {
     pub use crate::debug::{
         errors::{mismatch_error::*, system_access_error::*},
         logs::{
-            enums::{bevy_log_level::*, log_category::*},
+            enums::{bevy_log_level::*, log_category::*, os_access_log::*},
             game_session_log::*,
-            os_access_log::*,
             print_log::*,
         },
     };

@@ -11,7 +11,7 @@ pub fn create_file(folder_to_create_in: FolderToAccess, file_name: String) -> st
     File::create(file_path)?;
     print_info(
         OsAccessLog::FileCreated(full_file_name.name_with_postfix),
-        LogCategory::OsAccess,
+        vec![LogCategory::OsAccess],
     );
     Ok(())
 }
@@ -28,7 +28,7 @@ pub fn write_to_file(
     fs::write(file_path, file_content)?;
     print_info(
         OsAccessLog::WroteToFile(full_file_name.name_with_postfix),
-        LogCategory::OsAccess,
+        vec![LogCategory::OsAccess],
     );
     Ok(())
 }
@@ -46,7 +46,7 @@ pub fn append_to_file(
     data_file.write_all(string_to_append.as_bytes())?;
     print_info(
         OsAccessLog::AppendedToFile(full_file_name.name_with_postfix),
-        LogCategory::OsAccess,
+        vec![LogCategory::OsAccess],
     );
     Ok(())
 }
@@ -61,7 +61,7 @@ pub fn delete_text_file(
     fs::remove_file(file_path)?;
     print_info(
         OsAccessLog::FileDeleted(full_file_name.name_with_postfix),
-        LogCategory::OsAccess,
+        vec![LogCategory::OsAccess],
     );
     Ok(())
 }
