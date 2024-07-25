@@ -24,7 +24,7 @@ pub mod prelude {
     pub use crate::app::*;
     pub use crate::bundles::*;
     pub use crate::camera::*;
-    pub use crate::consts::{app_consts::*, debug_consts::*, game_consts::*};
+    pub use crate::consts::{app_consts::*, debug_consts::*, game_consts::*, time_consts::*};
     pub use crate::debug::{
         errors::{mismatch_error::*, system_access_error::*},
         logs::{
@@ -46,6 +46,6 @@ pub mod prelude {
     };
     pub use crate::screen_setup::*;
     pub use crate::tags::game_tags::*;
-    pub use crate::time::{costume_timer::*, timer_manager::*};
+    pub use crate::time::{costume_timer::*, ticks_since_last_update::*, timer_manager::*};
     pub use bevy::{prelude::*, utils::HashMap};
 }
