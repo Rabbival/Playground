@@ -10,7 +10,9 @@ impl Plugin for MouseInputHandlerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<CursorWorldPosition>().add_systems(
             Update,
-            (update_cursor_in_game_world, listen_for_mouse_clicks).chain(),
+            (update_cursor_in_game_world, listen_for_mouse_clicks)
+                .chain()
+                .in_set(InputSystemSet::Listening),
         );
     }
 }

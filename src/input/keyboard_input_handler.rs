@@ -4,7 +4,10 @@ pub struct KeyboardInputHandlerPlugin;
 
 impl Plugin for KeyboardInputHandlerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_for_move_requests);
+        app.add_systems(
+            Update,
+            (listen_for_move_requests).in_set(InputSystemSet::Listening),
+        );
     }
 }
 

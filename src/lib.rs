@@ -32,7 +32,7 @@ pub mod prelude {
     };
     pub use crate::event_channels::{game_event_channels::*, EventChannelPlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, CostumeInputPlugin};
-    pub use crate::logic_enums::basic_direction::*;
+    pub use crate::logic_enums::{basic_direction::*, system_sets::*};
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
         folder_access::*,

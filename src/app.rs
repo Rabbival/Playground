@@ -10,6 +10,7 @@ pub fn main() {
         .add_plugins(ScreenSetupPlugin)
         //costume
         .add_plugins((
+            SystemSetsPlugin,
             CostumeInputPlugin,
             CameraPlugin,
             CustomeAnimationPlugin,
