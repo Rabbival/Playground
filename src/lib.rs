@@ -46,6 +46,6 @@ pub mod prelude {
     };
     pub use crate::screen_setup::*;
     pub use crate::tags::game_tags::*;
-    pub use crate::time::{costume_timer::*, ticks_since_last_update::*, timer_manager::*};
+    pub use crate::time::{custom_timer::*, ticks_since_last_update::*, timer_manager::*};
     pub use bevy::{prelude::*, utils::HashMap};
 }

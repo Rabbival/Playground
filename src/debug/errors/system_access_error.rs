@@ -30,3 +30,9 @@ impl Display for SystemAccessError {
         }
     }
 }
+
+impl From<MismatchError> for SystemAccessError {
+    fn from(mismatch_error: MismatchError) -> Self {
+        SystemAccessError::MismatchingPostfix(mismatch_error)
+    }
+}

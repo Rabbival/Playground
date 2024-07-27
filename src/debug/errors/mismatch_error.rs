@@ -13,9 +13,3 @@ impl Display for MismatchError {
         write!(f, "expected {} but found {}", self.expected, self.found)
     }
 }
-
-impl From<MismatchError> for SystemAccessError {
-    fn from(mismatch_error: MismatchError) -> Self {
-        SystemAccessError::MismatchingPostfix(mismatch_error)
-    }
-}

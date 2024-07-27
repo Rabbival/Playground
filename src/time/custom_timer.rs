@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Debug, Component, Default)]
-pub struct CostumeTimer {
+pub struct CustomTimer {
     send_as_going: Option<TimerEvent>,
     send_once_done: Option<TimerEvent>,
     full_duration: f32,
@@ -11,7 +11,7 @@ pub struct CostumeTimer {
     tick_duration_change_ignorant: bool,
 }
 
-impl CostumeTimer {
+impl CustomTimer {
     pub fn new(full_duration: f32, tick_duration: f32) -> Self {
         let clamped_full_duration = full_duration.clamp(0.0, AN_HOUR_IN_SECONDS as f32);
         let clamped_tick_duration = tick_duration.clamp(0.0, MILLIS_IN_SECONDS);
