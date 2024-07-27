@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Default)]
 pub struct CustomTimer {
-    send_as_going: Option<TimerEvent>,
-    send_once_done: Option<TimerEvent>,
+    pub send_as_going: Option<TimerEvent>,
+    pub send_once_done: Option<TimerEvent>,
     full_duration: f32,
     tick_duration: f32,
     elapsed_ticks: u128,
@@ -12,22 +12,21 @@ pub struct CustomTimer {
 }
 
 impl CustomTimer {
-    pub fn new(full_duration: f32, tick_duration: f32) -> Self {
-        let clamped_full_duration = full_duration.clamp(0.0, AN_HOUR_IN_SECONDS as f32);
-        let clamped_tick_duration = tick_duration.clamp(0.0, MILLIS_IN_SECONDS);
+    pub fn new(
+        full_duration: f32,
+        tick_duration: f32,
+        tick_duration_change_ignorant: bool,
+    ) -> Self {
+        let clamped_full_duration =
+            clamp_and_notify(full_duration, MILLIS_IN_SECONDS, AN_HOUR_IN_SECONDS as f32);
+        let clamped_tick_duration =
+            clamp_and_notify(tick_duration, MILLIS_IN_SECONDS, clamped_full_duration);
         Self {
             full_duration: clamped_full_duration,
             tick_duration: clamped_tick_duration,
+            tick_duration_change_ignorant,
             ..Default::default()
         }
-    }
-
-    pub fn set_send_as_going(&mut self, event: TimerEvent) {
-        self.send_as_going = Some(event);
-    }
-
-    pub fn set_send_once_done(&mut self, event: TimerEvent) {
-        self.send_once_done = Some(event);
     }
 
     pub fn set_tick_duration(&mut self, tick_duration: f32) {

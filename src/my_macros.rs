@@ -33,7 +33,10 @@ macro_rules! single_else_return {
         match $query.get_single() {
             Ok(item) => item,
             Err(error) => {
-                eprintln!("error getting single {:?}: {:?}", $query, error);
+                print_error(
+                    format!("error getting single {:?}: {}", $query, error),
+                    vec![LogCategory::Crucial],
+                );
                 return;
             }
         }
@@ -46,7 +49,10 @@ macro_rules! single_mut_else_return {
         match $query.get_single_mut() {
             Ok(item) => item,
             Err(error) => {
-                eprintln!("error getting single mut {:?}: {:?}", $query, error);
+                print_error(
+                    format!("error getting single mut {:?}: {}", $query, error),
+                    vec![LogCategory::Crucial],
+                );
                 return;
             }
         }

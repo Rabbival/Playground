@@ -2,4 +2,5 @@
 pub enum LogCategory {
     Crucial,
     OsAccess,
+    ValueChanges,
 }
