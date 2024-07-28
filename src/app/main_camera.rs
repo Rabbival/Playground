@@ -1,9 +1,9 @@
 use crate::prelude::*;
 use bevy::render::view::RenderLayers;
 
-pub struct CameraPlugin;
+pub struct MainCameraPlugin;
 
-impl Plugin for CameraPlugin {
+impl Plugin for MainCameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PostStartup, spawn_camera);
     }

@@ -2,8 +2,11 @@
 
 use crate::prelude::*;
 
+pub mod consts;
+pub mod main_camera;
 pub mod screen_setup;
 pub mod system_sets;
+pub mod tags;
 
 #[bevy_main]
 pub fn main() {
@@ -15,7 +18,7 @@ pub fn main() {
         .add_plugins((
             SystemSetsPlugin,
             CostumeInputPlugin,
-            CameraPlugin,
+            MainCameraPlugin,
             CustomeAnimationPlugin,
             EventChannelPlugin,
         ));
