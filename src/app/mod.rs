@@ -17,10 +17,11 @@ pub fn main() {
         //costume
         .add_plugins((
             SystemSetsPlugin,
-            CostumeInputPlugin,
+            InputPlugin,
             MainCameraPlugin,
-            CustomeAnimationPlugin,
+            CustomAnimationPlugin,
             EventChannelPlugin,
+            TimePlugin,
         ));
 
     if !LOG_CATEGORYS_TO_APPEND_TO_SESSION_LOG.is_empty() {

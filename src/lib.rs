@@ -16,7 +16,7 @@ mod macros;
 extern crate lazy_static;
 
 pub mod prelude {
-    pub use crate::animation::{orb_animation::*, CustomeAnimationPlugin};
+    pub use crate::animation::{orb_animation::*, CustomAnimationPlugin};
     pub use crate::app::{
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
@@ -34,7 +34,7 @@ pub mod prelude {
         game_event_channels::*, timer_event_channels::*, EventChannelPlugin,
     };
     pub use crate::game::{consts::*, tags::*};
-    pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, CostumeInputPlugin};
+    pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
         folder_access::*,
@@ -42,8 +42,8 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        consts::*, enums::ticker_id::*, ticker::*, ticker_timer::*, ticks_since_last_update::*,
-        timer_manager::*,
+        consts::*, custom_timer::*, enums::time_processor_id::*, time_processor::*,
+        time_processors::*, timer_manager::*, TimePlugin,
     };
     pub use bevy::{prelude::*, utils::HashMap};
 }
