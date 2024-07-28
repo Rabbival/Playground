@@ -39,6 +39,10 @@ impl CustomTimer {
         Self::new(None, duration, None, None)
     }
 
+    pub fn is_finished(&self) -> bool {
+        self.finished
+    }
+
     pub fn normalized_progress(&mut self) -> f32 {
         let normalized_progress = self.elapsed_time / self.duration;
         if normalized_progress >= 1.0 {
@@ -49,7 +53,7 @@ impl CustomTimer {
         }
     }
 
-    pub fn tick(&mut self, processed_time: f32) -> Option<TimerEvent> {
+    pub fn tick_and_get_event(&mut self, processed_time: f32) -> Option<TimerEvent> {
         if processed_time > 0.0 && !self.finished {
             self.elapsed_time += processed_time;
             self.get_event_to_send()
