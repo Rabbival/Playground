@@ -12,7 +12,7 @@ pub fn clamp_and_notify<T: PartialOrd + Debug + 'static>(value: T, min: T, max: 
                 value,
                 min
             ),
-            vec![LogCategory::ValueChanges],
+            vec![LogCategory::ValueValidation],
         );
         min
     } else if value > max {
@@ -24,7 +24,7 @@ pub fn clamp_and_notify<T: PartialOrd + Debug + 'static>(value: T, min: T, max: 
                 value,
                 max
             ),
-            vec![LogCategory::ValueChanges],
+            vec![LogCategory::ValueValidation],
         );
         max
     } else {

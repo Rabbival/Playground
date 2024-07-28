@@ -1,27 +1,11 @@
 #[macro_export]
-macro_rules! collect_all {
-    () => {
-        all::<Self>().collect::<Vec<_>>()
-    };
-}
-
-#[macro_export]
-macro_rules! read_variant {
-    ($reader:expr, $variant:path) => {
-        $reader.read().filter_map(|event| {
-            if let $variant(value) = event {
-                Some(value)
-            } else {
-                None
-            }
-        })
-    };
-}
-
-#[macro_export]
 macro_rules! return_if_at_limit {
     ($iterable:expr, $max_count:expr) => {
         if $iterable.into_iter().count() >= $max_count {
+            print_warning(
+                format!("{:?} reached max count {}", $iterable, $max_count),
+                vec![LogCategory::ValueValidation],
+            );
             return;
         }
     };

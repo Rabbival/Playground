@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
-pub trait StoreElapsedPercentage {
-    fn set_elapsed_percentage(&mut self, elapsed_percentage: f32);
+pub trait StoreElapsedNormalized {
+    fn set_elapsed_normalized(&mut self, elapsed_normalized: f32);
 }
 
 #[derive(Debug, Event, Clone, Copy)]
@@ -10,11 +10,11 @@ pub enum TimerEvent {
     TickChangeEvent(f32),
 }
 
-impl StoreElapsedPercentage for TimerEvent {
-    fn set_elapsed_percentage(&mut self, elapsed_percentage: f32) {
+impl StoreElapsedNormalized for TimerEvent {
+    fn set_elapsed_normalized(&mut self, elapsed_normalized: f32) {
         match self {
-            Self::AnimationTimerEvent(percentage) => *percentage = elapsed_percentage,
-            Self::TickChangeEvent(percentage) => *percentage = elapsed_percentage,
+            Self::AnimationTimerEvent(percentage) => *percentage = elapsed_normalized,
+            Self::TickChangeEvent(percentage) => *percentage = elapsed_normalized,
         }
     }
 }

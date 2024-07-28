@@ -13,7 +13,7 @@ mod tags;
 mod time;
 
 #[macro_use]
-mod my_macros;
+mod macros;
 
 #[macro_use]
 extern crate lazy_static;
@@ -45,6 +45,9 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::tags::game_tags::*;
-    pub use crate::time::{custom_timer::*, ticks_since_last_update::*, timer_manager::*};
+    pub use crate::time::{
+        enums::ticker_id::*, ticker::*, ticker_timer::*, ticks_since_last_update::*,
+        timer_manager::*,
+    };
     pub use bevy::{prelude::*, utils::HashMap};
 }

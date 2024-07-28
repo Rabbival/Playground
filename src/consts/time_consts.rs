@@ -1,2 +1,3 @@
-pub const AN_HOUR_IN_SECONDS: u32 = 3600;
-pub const MILLIS_IN_SECONDS: f32 = 0.001;
+pub const AN_HOUR_IN_SECONDS: f32 = 3600.0;
+pub const A_MILLISECOND_IN_SECONDS: f32 = 0.001;
+pub const A_MINUTE_IN_SECONDS: f32 = 60.0;

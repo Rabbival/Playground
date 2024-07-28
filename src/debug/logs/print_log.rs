@@ -2,6 +2,9 @@ use crate::prelude::*;
 use std::fmt::Display;
 
 fn print_log<T: Display>(message: T, categories: Vec<LogCategory>, level: BevyLogLevel) {
+    if !LOG_LEVELS_TO_PRINT.contains(&level) {
+        return;
+    }
     let log_message = format!("{}", message);
     let mut print_message = false;
     let mut append_message_to_session_log = false;

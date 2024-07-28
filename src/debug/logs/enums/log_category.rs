@@ -2,5 +2,6 @@
 pub enum LogCategory {
     Crucial,
     OsAccess,
-    ValueChanges,
+    ValueValidation,
+    RequestNotFulfilled,
 }

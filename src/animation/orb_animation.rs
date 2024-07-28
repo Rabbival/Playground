@@ -1,5 +1,4 @@
-use crate::prelude::*;
-use crate::{read_variant, return_if_at_limit};
+use crate::{prelude::*, read_single_field_variant, return_if_at_limit};
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 
 pub struct OrbAnimationPlugin;
@@ -18,7 +17,9 @@ fn spawn_orb(
     mut commands: Commands,
 ) {
     return_if_at_limit!(orb_query, ORB_MAX_COUNT);
-    for requested_spawn_location in read_variant!(spawn_request_reader, SpawnRequest::SpawnOrb) {
+    for requested_spawn_location in
+        read_single_field_variant!(spawn_request_reader, SpawnRequest::SpawnOrb)
+    {
         commands.spawn((
             MaterialMesh2dBundle {
                 mesh: Mesh2dHandle(meshes.add(Circle::new(ORB_MAX_RADIUS))),
