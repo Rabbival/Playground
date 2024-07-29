@@ -44,13 +44,15 @@ fn get_time_multiplier<T: Numeric>(
     time_processors: &Res<TimeProcessors>,
     timer: &CustomTimer<T>,
 ) -> f32 {
-    if let Some(timer_processor_id) = timer.time_processor {
-        for (processor_id, time_processor) in time_processors.0.iter() {
-            if timer_processor_id == *processor_id {
-                return time_processor.get_time_multiplier();
-            }
+    for (processor_id, time_processor) in time_processors.iter() {
+        if timer.time_processor == *processor_id {
+            return time_processor.get_time_multiplier();
         }
     }
+    print_warning(
+        format!("No time processor found for timer: {:?}", timer),
+        vec![LogCategory::RequestNotFulfilled],
+    );
     1.0
 }
 

@@ -2,9 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub struct TimerEvent<T: Numeric> {
-    pub progress_normalized: f32,
-    original_value: T,
-    goal_value: T,
+    pub value: T,
     pub event_type: TimerEventType,
 }
 
@@ -12,15 +10,6 @@ pub struct TimerEvent<T: Numeric> {
 pub enum TimerEventType {
     ChangeTimeProcessorSpeed(TimeProcessorId),
     Dummy,
-}
-
-impl<T: Numeric> TimerEvent<T> {
-    pub fn is_finished(&self) -> bool {
-        self.progress_normalized >= 1.0
-    }
-    pub fn current_value(&self) -> T {
-        self.original_value + self.goal_value - self.original_value * self.progress_normalized
-    }
 }
 
 pub struct TimerEventPlugin;

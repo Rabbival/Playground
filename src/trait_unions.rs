@@ -1,4 +1,7 @@
-use std::ops::{Add, Mul, Sub};
+use std::{
+    fmt::Debug,
+    ops::{Add, Mul, Sub},
+};
 
 use crate::trait_union;
 
@@ -11,4 +14,5 @@ trait_union!(
         + Send
         + Sync
         + 'static
+        + Debug
 );
