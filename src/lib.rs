@@ -30,9 +30,7 @@ pub mod prelude {
             print_log::*,
         },
     };
-    pub use crate::event_channels::{
-        game_event_channels::*, timer_event_channels::*, EventChannelPlugin,
-    };
+    pub use crate::event_channels::{game_event_channels::*, timer_event::*, EventChannelPlugin};
     pub use crate::game::{consts::*, tags::*};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
