@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use std::ops::{Add, Mul, Sub};
 
 pub struct TimerManagerPlugin;
 
@@ -21,9 +20,7 @@ impl Plugin for TimerManagerPlugin {
     }
 }
 
-fn tick_timers<
-    T: Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Copy + Send + Sync + 'static,
->(
+fn tick_timers<T: Numeric>(
     mut timer_event_writer: EventWriter<TimerEvent<T>>,
     mut timers: Query<(&mut CustomTimer<T>, Entity)>,
     time_processors: Res<TimeProcessors>,
@@ -43,9 +40,7 @@ fn tick_timers<
     }
 }
 
-fn get_time_multiplier<
-    T: Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Copy + Send + Sync + 'static,
->(
+fn get_time_multiplier<T: Numeric>(
     time_processors: &Res<TimeProcessors>,
     timer: &CustomTimer<T>,
 ) -> f32 {
@@ -59,9 +54,7 @@ fn get_time_multiplier<
     1.0
 }
 
-fn tick_and_send_timer_event<
-    T: Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Copy + Send + Sync + 'static,
->(
+fn tick_and_send_timer_event<T: Numeric>(
     time_to_tick: f32,
     timer: &mut CustomTimer<T>,
     timer_entity: Entity,

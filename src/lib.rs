@@ -8,6 +8,7 @@ mod game;
 mod input;
 mod os_access;
 mod time;
+mod trait_unions;
 
 #[macro_use]
 mod macros;
@@ -43,5 +44,6 @@ pub mod prelude {
         consts::*, custom_timer::*, enums::time_processor_id::*, time_processor::*,
         time_processors::*, timer_manager::*, TimePlugin,
     };
+    pub use crate::trait_unions::*;
     pub use bevy::{prelude::*, utils::HashMap};
 }

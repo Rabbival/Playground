@@ -1,11 +1,7 @@
 use crate::prelude::*;
-use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Event, Clone, Copy)]
-pub struct TimerEvent<T>
-where
-    T: Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Copy + Send + Sync + 'static,
-{
+pub struct TimerEvent<T: Numeric> {
     pub progress_normalized: f32,
     original_value: T,
     goal_value: T,
@@ -18,10 +14,7 @@ pub enum TimerEventType {
     Dummy,
 }
 
-impl<T> TimerEvent<T>
-where
-    T: Add<Output = T> + Sub<Output = T> + Mul<f32, Output = T> + Copy + Send + Sync + 'static,
-{
+impl<T: Numeric> TimerEvent<T> {
     pub fn is_finished(&self) -> bool {
         self.progress_normalized >= 1.0
     }
