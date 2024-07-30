@@ -15,14 +15,14 @@ impl Plugin for TimeProcessorsPlugin {
 fn add_default_time_processor(mut time_processors: ResMut<TimeProcessors>) {
     *time_processors = TimeProcessors(HashMap::from([(
         TimeProcessorId::default(),
-        TimeProcessor::new(1.0, false),
+        TimeProcessor::new(TimeProcessorId::default(), 1.0, false),
     )]));
 }
 
 impl TimeProcessors {
-    pub fn add(&mut self, id: TimeProcessorId, processor: TimeProcessor) {
-        if id != TimeProcessorId::default() {
-            self.0.insert(id, processor);
+    pub fn add(&mut self, processor: TimeProcessor) {
+        if processor.id() != TimeProcessorId::default() {
+            self.0.insert(processor.id(), processor);
         } else {
             print_warning(
                 "Tried to set value for default time processor",

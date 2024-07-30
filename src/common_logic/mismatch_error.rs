@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MismatchError {
     pub expected: String,
     pub found: String,

@@ -2,21 +2,27 @@ use crate::prelude::*;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct TimeProcessor {
+    id: TimeProcessorId,
     time_multiplier: f32,
     changable_time_multiplier: bool,
 }
 
 impl TimeProcessor {
-    pub fn new(time_multiplier: f32, changable_time_multiplier: bool) -> Self {
+    pub fn new(id: TimeProcessorId, time_multiplier: f32, changable_time_multiplier: bool) -> Self {
         let clamped_time_multiplier =
             clamp_and_notify(time_multiplier, MIN_TIME_MULTIPLIER, MAX_TIME_MULTIPLIER);
         Self {
+            id,
             time_multiplier: clamped_time_multiplier,
             changable_time_multiplier,
         }
     }
 
-    pub fn get_time_multiplier(&self) -> f32 {
+    pub fn id(&self) -> TimeProcessorId {
+        self.id
+    }
+
+    pub fn time_multiplier(&self) -> f32 {
         self.time_multiplier
     }
 
@@ -29,7 +35,7 @@ impl TimeProcessor {
             self.time_multiplier = time_multiplier;
         } else {
             print_warning(
-                "attempted to change the multiplier of a fixed-multiplier time processor",
+                NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(self.id),
                 vec![LogCategory::RequestNotFulfilled],
             )
         }

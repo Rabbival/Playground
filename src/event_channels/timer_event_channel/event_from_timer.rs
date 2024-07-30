@@ -20,7 +20,7 @@ impl<T: Numeric> EventFromTimer<T> {
         }
     }
 
-    pub fn get_current_value(&self) -> T {
+    pub fn current_value(&self) -> T {
         self.value
     }
 

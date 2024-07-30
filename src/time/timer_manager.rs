@@ -51,11 +51,11 @@ fn get_time_multiplier<T: Numeric>(
 ) -> f32 {
     for (processor_id, time_processor) in time_processors.iter() {
         if timer.time_processor == *processor_id {
-            return time_processor.get_time_multiplier();
+            return time_processor.time_multiplier();
         }
     }
     print_warning(
-        format!("No time processor found for timer: {:?}", timer),
+        GenericTimeRelatedError::NoTimeProcessorAssignedToTimer(*timer),
         vec![LogCategory::RequestNotFulfilled],
     );
     1.0
@@ -93,20 +93,15 @@ fn listen_for_time_multiplier_requests<T: Numeric>(
                     commands.spawn(*timer_to_fire);
                 } else {
                     print_warning(
-                        format!(
-                            "Tried to create a timer that changes the multiplier of time processor: {:?},\n
-                            but it's a const multiplier processor.",
-                            timer_to_fire.time_processor
+                        NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
+                            time_processor_id,
                         ),
                         vec![LogCategory::RequestNotFulfilled],
                     );
                 }
             } else {
                 print_warning(
-                    format!(
-                        "No time processor found for time processor id: {:?}",
-                        timer_to_fire.time_processor
-                    ),
+                    NonGenericTimeRelatedError::TimeProcessorNotFound(time_processor_id),
                     vec![LogCategory::RequestNotFulfilled],
                 );
             }

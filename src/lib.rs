@@ -50,6 +50,7 @@ pub mod prelude {
         enums::{event_from_timer_type::*, time_processor_id::*},
         time_processor::*,
         time_processors::*,
+        time_related_error::*,
         timer_manager::*,
         TimePlugin,
     };

@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::prelude::*;
 
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum OsAccessError {
     CouldntFindFile(SystemFileName),
     BadFolderPath(FolderToAccess),

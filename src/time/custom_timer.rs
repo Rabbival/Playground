@@ -55,7 +55,7 @@ impl<T: Numeric> CustomTimer<T> {
 
     fn get_event_to_send(&self) -> EventFromTimer<T> {
         EventFromTimer::<T>::new(
-            self.get_current_value(),
+            self.calculate_current_value(),
             self.send_as_going,
             if self.finished() {
                 self.send_once_done
@@ -65,7 +65,7 @@ impl<T: Numeric> CustomTimer<T> {
         )
     }
 
-    fn get_current_value(&self) -> T {
+    fn calculate_current_value(&self) -> T {
         self.original_value + (self.goal_value - self.original_value) * self.normalized_progress
     }
 }
