@@ -51,8 +51,9 @@ pub mod prelude {
         consts::*,
         custom_timer::*,
         enums::{event_from_timer_type::*, time_processor_id::*},
-        time_processor::*,
-        time_processors::*,
+        time_processing::{
+            time_processor::*, time_processors::*, time_processors_update::*, TimeProcessingPlugin,
+        },
         time_related_error::*,
         timer_manager::*,
         TimePlugin,

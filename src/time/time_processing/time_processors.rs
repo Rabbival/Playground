@@ -3,9 +3,9 @@ use crate::prelude::*;
 #[derive(Debug, Resource, Default)]
 pub struct TimeProcessors(HashMap<TimeProcessorId, TimeProcessor>);
 
-pub struct TimeProcessorsPlugin;
+pub struct TimeProcessorsInitPlugin;
 
-impl Plugin for TimeProcessorsPlugin {
+impl Plugin for TimeProcessorsInitPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TimeProcessors>()
             .add_systems(PreStartup, add_default_time_processor);

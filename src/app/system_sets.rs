@@ -14,6 +14,12 @@ pub enum AnimationSystemSet {
     Handling,
 }
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum TimerSystemSet {
+    TimerTicking,
+    TimeProcessorsUpdating,
+}
+
 pub struct SystemSetsPlugin;
 
 impl Plugin for SystemSetsPlugin {
@@ -28,6 +34,8 @@ impl Plugin for SystemSetsPlugin {
                 )
                     .chain(),
                 (
+                    TimerSystemSet::TimerTicking,
+                    TimerSystemSet::TimeProcessorsUpdating,
                     AnimationSystemSet::ListeningPreperations,
                     AnimationSystemSet::Listening,
                     AnimationSystemSet::Handling,
