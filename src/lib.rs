@@ -41,8 +41,13 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        consts::*, custom_timer::*, enums::time_processor_id::*, time_processor::*,
-        time_processors::*, timer_manager::*, TimePlugin,
+        consts::*,
+        custom_timer::*,
+        enums::{time_processor_id::*, timer_event_type::*},
+        time_processor::*,
+        time_processors::*,
+        timer_manager::*,
+        TimePlugin,
     };
     pub use crate::trait_unions::*;
     pub use bevy::{prelude::*, utils::HashMap};

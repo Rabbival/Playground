@@ -66,7 +66,7 @@ fn tick_and_send_timer_event<T: Numeric>(
     if let Some(timer_event) = timer.tick_and_get_event(time_to_tick) {
         timer_event_writer.send(timer_event);
     }
-    if timer.is_finished() {
+    if timer.finished() {
         commands.entity(timer_entity).despawn();
     }
 }
