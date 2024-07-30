@@ -16,7 +16,7 @@ fn create_new_log_file() {
     .is_err()
     {
         print_error(
-            SystemAccessError::BadFolderPath(FolderToAccess::GameLogs),
+            OsAccessError::BadFolderPath(FolderToAccess::GameLogs),
             vec![LogCategory::Crucial],
         );
     }
@@ -32,7 +32,7 @@ pub fn append_to_game_session_log_file(string_to_append: String) {
     .is_err()
     {
         print_error(
-            SystemAccessError::CouldntFindFile(SystemFileName::from_name(
+            OsAccessError::CouldntFindFile(SystemFileName::from_name(
                 String::from(GAME_SESSION_LOG_FILE_NAME),
                 SystemFileType::TextFile,
             )),

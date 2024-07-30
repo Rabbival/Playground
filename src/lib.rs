@@ -21,15 +21,14 @@ pub mod prelude {
     pub use crate::app::{
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
-    pub use crate::common_logic::{argument_validation::*, enums::basic_direction::*};
+    pub use crate::common_logic::{
+        argument_validation::*, enums::basic_direction::*, mismatch_error::*,
+    };
     pub use crate::debug::{
         consts::*,
-        errors::{mismatch_error::*, system_access_error::*},
-        logs::{
-            enums::{bevy_log_level::*, log_category::*, os_access_log::*},
-            game_session_log::*,
-            print_log::*,
-        },
+        enums::{bevy_log_level::*, log_category::*, os_access_log::*},
+        game_session_log::*,
+        print_log::*,
     };
     pub use crate::event_channels::{
         game_event_channels::*,
@@ -41,6 +40,7 @@ pub mod prelude {
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
         folder_access::*,
+        os_access_error::*,
         system_file_name::*,
         text_file_access::*,
     };
