@@ -32,7 +32,10 @@ pub mod prelude {
     };
     pub use crate::event_channels::{
         game_event_channels::*,
-        timer_event_channel::{event_from_timer::*, TimerEventChannel, TimerEventChannelPlugin},
+        timer_event_channel::{
+            event_from_timer::*, time_processors_request::*, TimerEventChannel,
+            TimerEventChannelPlugin,
+        },
         EventChannelPlugin,
     };
     pub use crate::game::{consts::*, tags::*};

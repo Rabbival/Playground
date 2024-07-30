@@ -1,11 +1,12 @@
 use crate::prelude::*;
 
 pub mod event_from_timer;
+pub mod time_processors_request;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub enum TimerEventChannel<T: Numeric> {
     EventFromTimer(EventFromTimer<T>),
-    FireTimer(CustomTimer<T>),
+    ProcessorsRequest(TimeProcessorsRequest),
 }
 
 pub struct TimerEventChannelPlugin;

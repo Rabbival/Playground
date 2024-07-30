@@ -13,7 +13,7 @@ pub struct CustomTimer<T: Numeric> {
 }
 
 impl<T: Numeric> CustomTimer<T> {
-    fn new(
+    pub fn new(
         time_processor: TimeProcessorId,
         duration: f32,
         original_value: T,

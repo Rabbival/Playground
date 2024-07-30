@@ -14,10 +14,10 @@ impl Plugin for TimerManagerPlugin {
                     tick_timers::<Quat>,
                 ),
                 (
-                    listen_for_time_multiplier_requests::<f32>,
-                    listen_for_time_multiplier_requests::<Vec2>,
-                    listen_for_time_multiplier_requests::<Vec3>,
-                    listen_for_time_multiplier_requests::<Quat>,
+                    listen_for_time_processors_requests::<f32>,
+                    listen_for_time_processors_requests::<Vec2>,
+                    listen_for_time_processors_requests::<Vec3>,
+                    listen_for_time_processors_requests::<Quat>,
                 ),
             )
                 .chain(),
@@ -76,34 +76,49 @@ fn tick_and_send_timer_event<T: Numeric>(
     }
 }
 
-fn listen_for_time_multiplier_requests<T: Numeric>(
+// TODO: Assign this and previous functions to chained system sets then move it to time processors
+fn listen_for_time_processors_requests<T: Numeric>(
     mut timer_event_reader: EventReader<TimerEventChannel<T>>,
     mut time_processors: ResMut<TimeProcessors>,
     mut commands: Commands,
 ) {
-    for timer_to_fire in
-        read_single_field_variant!(timer_event_reader, TimerEventChannel::FireTimer)
+    for time_processors_request in
+        read_single_field_variant!(timer_event_reader, TimerEventChannel::ProcessorsRequest)
     {
-        if let Some(EventFromTimerType::ChangeTimeProcessorSpeed(time_processor_id)) =
-            timer_to_fire.send_as_going
-        {
-            let maybe_time_processor = time_processors.get_mut(time_processor_id);
-            if let Some(time_processor) = maybe_time_processor {
-                if time_processor.changeable_time_multiplier() {
-                    commands.spawn(*timer_to_fire);
+        match time_processors_request {
+            TimeProcessorsRequest::SetTimeMultiplier {
+                processor_id,
+                new_multiplier,
+                duration,
+            } => {
+                let maybe_time_processor = time_processors.get_mut(*processor_id);
+                if let Some(time_processor) = maybe_time_processor {
+                    if time_processor.changeable_time_multiplier() {
+                        commands.spawn(CustomTimer::<f32>::new(
+                            TimeProcessorId::default(),
+                            *duration,
+                            time_processor.time_multiplier(),
+                            *new_multiplier,
+                            Some(EventFromTimerType::ChangeTimeProcessorSpeed(*processor_id)),
+                            None,
+                        ));
+                    } else {
+                        print_warning(
+                            NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
+                                *processor_id,
+                            ),
+                            vec![LogCategory::RequestNotFulfilled],
+                        );
+                    }
                 } else {
                     print_warning(
-                        NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
-                            time_processor_id,
-                        ),
+                        NonGenericTimeRelatedError::TimeProcessorNotFound(*processor_id),
                         vec![LogCategory::RequestNotFulfilled],
                     );
                 }
-            } else {
-                print_warning(
-                    NonGenericTimeRelatedError::TimeProcessorNotFound(time_processor_id),
-                    vec![LogCategory::RequestNotFulfilled],
-                );
+            }
+            TimeProcessorsRequest::AddProcessor(time_processor) => {
+                time_processors.add(*time_processor);
             }
         }
     }
