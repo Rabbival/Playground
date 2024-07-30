@@ -15,7 +15,7 @@ impl Plugin for TimeProcessorsPlugin {
 fn add_default_time_processor(mut time_processors: ResMut<TimeProcessors>) {
     *time_processors = TimeProcessors(HashMap::from([(
         TimeProcessorId::default(),
-        TimeProcessor::default(),
+        TimeProcessor::new(1.0, false),
     )]));
 }
 
