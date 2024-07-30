@@ -90,7 +90,7 @@ fn listen_for_time_multiplier_requests<T: Numeric>(
             let maybe_time_processor = time_processors.get_mut(time_processor_id);
             if let Some(time_processor) = maybe_time_processor {
                 if time_processor.changeable_time_multiplier() {
-                    time_processor.set_multiplier(timer_to_fire.time_multiplier);
+                    commands.spawn(*timer_to_fire);
                 } else {
                     print_warning(
                         format!(
@@ -101,7 +101,6 @@ fn listen_for_time_multiplier_requests<T: Numeric>(
                         vec![LogCategory::RequestNotFulfilled],
                     );
                 }
-                commands.spawn({ timer_to_fire });
             } else {
                 print_warning(
                     format!(
