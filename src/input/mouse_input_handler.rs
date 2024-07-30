@@ -36,11 +36,11 @@ fn update_cursor_in_game_world(
 }
 
 fn listen_for_mouse_clicks(
-    mut spawn_request_writer: EventWriter<SpawnRequest>,
+    mut spawn_request_writer: EventWriter<GameSpawnRequest>,
     mouse: Res<ButtonInput<MouseButton>>,
     cursor_position: Res<CursorWorldPosition>,
 ) {
     if mouse.just_pressed(MouseButton::Left) {
-        spawn_request_writer.send(SpawnRequest::SpawnOrb(cursor_position.0));
+        spawn_request_writer.send(GameSpawnRequest::SpawnOrb(cursor_position.0));
     }
 }

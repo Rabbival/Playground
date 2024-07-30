@@ -10,7 +10,7 @@ impl Plugin for OrbAnimationPlugin {
 }
 
 fn spawn_orb(
-    mut spawn_request_reader: EventReader<SpawnRequest>,
+    mut spawn_request_reader: EventReader<GameSpawnRequest>,
     orb_query: Query<&Orb>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -18,7 +18,7 @@ fn spawn_orb(
 ) {
     return_if_at_limit!(orb_query, ORB_MAX_COUNT);
     for requested_spawn_location in
-        read_single_field_variant!(spawn_request_reader, SpawnRequest::SpawnOrb)
+        read_single_field_variant!(spawn_request_reader, GameSpawnRequest::SpawnOrb)
     {
         commands.spawn((
             MaterialMesh2dBundle {

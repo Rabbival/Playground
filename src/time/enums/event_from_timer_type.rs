@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Copy)]
-pub enum TimerEventType {
+pub enum EventFromTimerType {
     ChangeTimeProcessorSpeed(TimeProcessorId),
     Dummy,
 }

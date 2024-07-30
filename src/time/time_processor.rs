@@ -20,6 +20,10 @@ impl TimeProcessor {
         self.time_multiplier
     }
 
+    pub fn changeable_time_multiplier(&self) -> bool {
+        self.changable_time_multiplier
+    }
+
     pub fn set_multiplier(&mut self, time_multiplier: f32) {
         if self.changable_time_multiplier {
             self.time_multiplier = time_multiplier;
