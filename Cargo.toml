@@ -5,7 +5,8 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.14.0"
-enum-iterator = "2.1.0"
+strum = "0.26.3"
+strum_macros = "0.26.4"
 rand = "0.8.5"
 lazy_static = "1.4.0"
 serde = { version = "1.0.197", features = ["derive"] }

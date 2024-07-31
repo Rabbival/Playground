@@ -1,8 +1,7 @@
-use crate::collect_all;
 use crate::prelude::*;
-use enum_iterator::{all, Sequence};
+use strum_macros::EnumIter;
 
-#[derive(Debug, Sequence, PartialEq, Eq, Hash, PartialOrd, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Clone, Copy, EnumIter)]
 pub enum BasicDirection {
     Up,
     Right,
@@ -11,10 +10,6 @@ pub enum BasicDirection {
 }
 
 impl BasicDirection {
-    pub fn collect_all() -> Vec<Self> {
-        collect_all!()
-    }
-
     pub fn opposite_direction_index(&self) -> u8 {
         let index = *self as u8;
         (index + 2) % 4

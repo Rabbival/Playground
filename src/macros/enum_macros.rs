@@ -1,11 +1,4 @@
 #[macro_export]
-macro_rules! collect_all {
-    () => {
-        all::<Self>().collect::<Vec<_>>()
-    };
-}
-
-#[macro_export]
 macro_rules! all_no_field_variant {
     ($iterable:expr, $variant:path) => {
         $iterable
