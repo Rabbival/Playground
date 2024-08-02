@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 pub mod event_from_timer;
 pub mod time_processors_request;
+pub mod event_from_timer_type;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub enum TimerEventChannel<T: Numeric> {

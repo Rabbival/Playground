@@ -20,7 +20,7 @@ pub fn main() {
             InputPlugin,
             MainCameraPlugin,
             CustomAnimationPlugin,
-            EventChannelPlugin,
+            GamePlugin,
             TimePlugin,
         ));
 

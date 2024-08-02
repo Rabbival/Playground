@@ -12,9 +12,9 @@ pub enum TranslationEventChannel {
     }
 }
 
-pub struct TransformEventChannelsPlugin;
+pub struct AnimationEventChannelsPlugin;
 
-impl Plugin for TransformEventChannelsPlugin {
+impl Plugin for AnimationEventChannelsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<TranslationEventChannel>();
     }

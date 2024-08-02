@@ -3,7 +3,6 @@ mod animation;
 mod app;
 mod common_logic;
 mod debug;
-mod event_channels;
 mod game;
 mod input;
 mod os_access;
@@ -17,7 +16,7 @@ mod macros;
 extern crate lazy_static;
 
 pub mod prelude {
-    pub use crate::animation::{orb_animation::*, CustomAnimationPlugin, translation_change::*};
+    pub use crate::animation::{CustomAnimationPlugin, translation_change::*, event_channels::*};
     pub use crate::app::{
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
@@ -30,16 +29,7 @@ pub mod prelude {
         game_session_log::*,
         print_log::*,
     };
-    pub use crate::event_channels::{
-        game_event_channels::*,
-        timer_event_channel::{
-            event_from_timer::*, time_processors_request::*, TimerEventChannel,
-            TimerEventChannelPlugin,
-        },
-        transform_event_channels::*,
-        EventChannelPlugin,
-    };
-    pub use crate::game::{consts::*, tags::*};
+    pub use crate::game::{consts::*, tags::*, GamePlugin, orb::*, event_channels::*};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
@@ -49,11 +39,14 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
+        event_channel::{
+            event_from_timer::*, time_processors_request::*, TimerEventChannel,
+            TimerEventChannelPlugin, event_from_timer_type::*,
+        },
         consts::*,
         custom_timer::*,
-        enums::{event_from_timer_type::*, time_processor_id::*},
         time_processing::{
-            time_processor::*, time_processors::*, time_processors_update::*, TimeProcessingPlugin,
+            time_processor::*, time_processors::*, time_processors_update::*, TimeProcessingPlugin, time_processor_id::*
         },
         time_related_error::*,
         timer_manager::*,
