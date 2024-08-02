@@ -1,7 +1,9 @@
 use crate::prelude::*;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum EventFromTimerType {
+    #[default]
+    Nothing,
     ChangeTimeProcessorSpeed(TimeProcessorId),
     MoveInDirectLine,
     RotateAround{

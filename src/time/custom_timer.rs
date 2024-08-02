@@ -4,7 +4,7 @@ use crate::prelude::*;
 pub struct CustomTimer<T: Numeric> {
     pub time_processor: TimeProcessorId,
     pub send_as_going: Option<EventFromTimerType>,
-    pub send_once_done: Option<EventFromTimerType>,
+    pub send_once_done: EventFromTimerType,
     pub relevant_entity: Option<Entity>,
     duration: f32,
     original_value: T,
@@ -25,6 +25,7 @@ impl<T: Numeric> CustomTimer<T> {
     ) -> Self {
         let clamped_duration =
             clamp_and_notify(duration, A_MILLISECOND_IN_SECONDS, AN_HOUR_IN_SECONDS);
+        let send_once_done = send_once_done.unwrap_or_default();
         Self {
             time_processor,
             send_as_going,
@@ -61,7 +62,7 @@ impl<T: Numeric> CustomTimer<T> {
             self.calculate_current_value(),
             self.send_as_going,
             if self.finished() {
-                self.send_once_done
+                Some(self.send_once_done)
             } else {
                 None
             },
