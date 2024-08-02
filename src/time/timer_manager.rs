@@ -47,7 +47,7 @@ fn get_time_multiplier<T: Numeric>(
         }
     }
     print_warning(
-        GenericTimeRelatedError::NoTimeProcessorAssignedToTimer(*timer),
+        TimeRelatedError::TimeProcessorNotFound(timer.time_processor),
         vec![LogCategory::RequestNotFulfilled],
     );
     1.0

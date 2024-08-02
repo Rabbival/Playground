@@ -9,9 +9,9 @@ pub enum InputSystemSet {
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum AnimationSystemSet {
-    ListeningPreperations,
-    Listening,
-    Handling,
+    PreTickingPreperations,
+    PreTicking,
+    PostTicking,
 }
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
@@ -34,14 +34,18 @@ impl Plugin for SystemSetsPlugin {
                 )
                     .chain(),
                 (
+                    AnimationSystemSet::PreTickingPreperations,
+                    AnimationSystemSet::PreTicking,
                     TimerSystemSet::TimerTicking,
-                    TimerSystemSet::TimeProcessorsUpdating,
-                    AnimationSystemSet::ListeningPreperations,
-                    AnimationSystemSet::Listening,
-                    AnimationSystemSet::Handling,
+                    
                 )
                     .chain()
                     .after(InputSystemSet::Handling),
+                (
+                    TimerSystemSet::TimeProcessorsUpdating,
+                    AnimationSystemSet::PostTicking,
+                )
+                    .after(TimerSystemSet::TimerTicking)
             ),
         );
     }

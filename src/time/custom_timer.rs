@@ -5,6 +5,7 @@ pub struct CustomTimer<T: Numeric> {
     pub time_processor: TimeProcessorId,
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: Option<EventFromTimerType>,
+    pub relevant_entity: Option<Entity>,
     duration: f32,
     original_value: T,
     goal_value: T,
@@ -16,6 +17,7 @@ impl<T: Numeric> CustomTimer<T> {
     pub fn new(
         time_processor: TimeProcessorId,
         duration: f32,
+        relevant_entity: Option<Entity>,
         original_value: T,
         goal_value: T,
         send_as_going: Option<EventFromTimerType>,
@@ -27,6 +29,7 @@ impl<T: Numeric> CustomTimer<T> {
             time_processor,
             send_as_going,
             send_once_done,
+            relevant_entity,
             duration: clamped_duration,
             original_value,
             goal_value,
@@ -62,6 +65,7 @@ impl<T: Numeric> CustomTimer<T> {
             } else {
                 None
             },
+            self.relevant_entity,
         )
     }
 

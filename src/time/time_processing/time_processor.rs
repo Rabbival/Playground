@@ -35,7 +35,7 @@ impl TimeProcessor {
             self.time_multiplier = time_multiplier;
         } else {
             print_warning(
-                NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(self.id),
+                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(self.id),
                 vec![LogCategory::RequestNotFulfilled],
             )
         }

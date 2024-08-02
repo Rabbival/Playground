@@ -5,7 +5,7 @@ pub struct OrbAnimationPlugin;
 
 impl Plugin for OrbAnimationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (spawn_orb).in_set(InputSystemSet::Listening));
+        app.add_systems(Update, (spawn_orb).in_set(InputSystemSet::Handling));
     }
 }
 

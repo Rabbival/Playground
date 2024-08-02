@@ -61,6 +61,7 @@ fn set_time_multiplier(
             commands.spawn(CustomTimer::<f32>::new(
                 TimeProcessorId::default(),
                 duration,
+                None,
                 time_processor.time_multiplier(),
                 new_multiplier,
                 Some(EventFromTimerType::ChangeTimeProcessorSpeed(processor_id)),
@@ -68,7 +69,7 @@ fn set_time_multiplier(
             ));
         } else {
             print_warning(
-                NonGenericTimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
+                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
                     processor_id,
                 ),
                 vec![LogCategory::RequestNotFulfilled],
@@ -76,7 +77,7 @@ fn set_time_multiplier(
         }
     } else {
         print_warning(
-            NonGenericTimeRelatedError::TimeProcessorNotFound(processor_id),
+            TimeRelatedError::TimeProcessorNotFound(processor_id),
             vec![LogCategory::RequestNotFulfilled],
         );
     }

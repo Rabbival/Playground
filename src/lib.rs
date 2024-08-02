@@ -17,7 +17,7 @@ mod macros;
 extern crate lazy_static;
 
 pub mod prelude {
-    pub use crate::animation::{orb_animation::*, CustomAnimationPlugin};
+    pub use crate::animation::{orb_animation::*, CustomAnimationPlugin, translation_change::*};
     pub use crate::app::{
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
@@ -36,6 +36,7 @@ pub mod prelude {
             event_from_timer::*, time_processors_request::*, TimerEventChannel,
             TimerEventChannelPlugin,
         },
+        transform_event_channels::*,
         EventChannelPlugin,
     };
     pub use crate::game::{consts::*, tags::*};

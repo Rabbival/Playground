@@ -1,3 +1,5 @@
+use strum::IntoEnumIterator;
+
 use crate::prelude::*;
 
 #[derive(Debug, Resource, Default)]
@@ -8,15 +10,18 @@ pub struct TimeProcessorsInitPlugin;
 impl Plugin for TimeProcessorsInitPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TimeProcessors>()
-            .add_systems(PreStartup, add_default_time_processor);
+            .add_systems(PreStartup, initialize_time_processors);
     }
 }
 
-fn add_default_time_processor(mut time_processors: ResMut<TimeProcessors>) {
+fn initialize_time_processors(mut time_processors: ResMut<TimeProcessors>) {
     *time_processors = TimeProcessors(HashMap::from([(
         TimeProcessorId::default(),
         TimeProcessor::new(TimeProcessorId::default(), 1.0, false),
     )]));
+    for time_processor_id in TimeProcessorId::iter() {
+        time_processors.add(time_processor_id.to_initial_properties());
+    }
 }
 
 impl TimeProcessors {

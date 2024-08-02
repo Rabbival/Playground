@@ -42,3 +42,36 @@ macro_rules! single_mut_else_return {
         }
     };
 }
+
+#[macro_export]
+macro_rules! get_entity_else_return {
+    ($query:expr, $entity:expr) => {
+        match $query.get($entity) {
+            Ok(item) => item,
+            Err(error) => {
+                print_error(
+                    format!("error getting entity {:?}: {}", $entity, error),
+                    vec![LogCategory::Crucial],
+                );
+                return;
+            }
+        }
+    };
+}
+
+
+#[macro_export]
+macro_rules! get_mut_entity_else_return {
+    ($query:expr, $entity:expr) => {
+        match $query.get_mut($entity) {
+            Ok(item) => item,
+            Err(error) => {
+                print_error(
+                    format!("error getting entity {:?}: {}", $entity, error),
+                    vec![LogCategory::Crucial],
+                );
+                return;
+            }
+        }
+    };
+}
