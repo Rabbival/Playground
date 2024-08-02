@@ -19,6 +19,7 @@ impl Plugin for TimeProcessorsUpdatePlugin {
 
 fn listen_for_time_processors_requests<T: Numeric>(
     mut timer_event_reader: EventReader<TimerEventChannel<T>>,
+    running_timers: Query<(&CustomTimer<T>, Entity)>,
     mut time_processors: ResMut<TimeProcessors>,
     mut commands: Commands,
 ) {
@@ -30,13 +31,16 @@ fn listen_for_time_processors_requests<T: Numeric>(
                 processor_id,
                 new_multiplier,
                 duration,
-            } => set_time_multiplier(
-                &mut time_processors,
-                &mut commands,
-                *processor_id,
-                *new_multiplier,
-                *duration,
-            ),
+            } => {
+                destroy_ongoing_multiplier_changers(*processor_id, &running_timers, &mut commands);
+                set_time_multiplier(
+                    &mut time_processors,
+                    &mut commands,
+                    *processor_id,
+                    *new_multiplier,
+                    *duration,
+                )
+            }
             TimeProcessorsRequest::AddProcessor(time_processor) => {
                 time_processors.add(*time_processor);
             }
@@ -75,5 +79,17 @@ fn set_time_multiplier(
             NonGenericTimeRelatedError::TimeProcessorNotFound(processor_id),
             vec![LogCategory::RequestNotFulfilled],
         );
+    }
+}
+
+fn destroy_ongoing_multiplier_changers<T: Numeric>(
+    processor_id: TimeProcessorId,
+    running_timers: &Query<(&CustomTimer<T>, Entity)>,
+    commands: &mut Commands,
+) {
+    for (timer, timer_entity) in running_timers {
+        if timer.send_as_going == Some(EventFromTimerType::ChangeTimeProcessorSpeed(processor_id)) {
+            commands.entity(timer_entity).despawn();
+        }
     }
 }
