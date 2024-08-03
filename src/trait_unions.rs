@@ -15,4 +15,5 @@ trait_union!(
         + Sync
         + 'static
         + Debug
+        + Default
 );

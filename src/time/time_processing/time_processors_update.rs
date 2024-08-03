@@ -62,16 +62,17 @@ fn set_time_multiplier(
                 TimeProcessorId::default(),
                 duration,
                 None,
-                time_processor.time_multiplier(),
-                new_multiplier,
+                TimerValueCalculator::new(
+                    time_processor.time_multiplier(),
+                    new_multiplier,
+                    MathFunction::default(),
+                ),
                 Some(EventFromTimerType::ChangeTimeProcessorSpeed(processor_id)),
                 None,
             ));
         } else {
             print_warning(
-                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(
-                    processor_id,
-                ),
+                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeProcessor(processor_id),
                 vec![LogCategory::RequestNotFulfilled],
             );
         }

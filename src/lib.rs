@@ -16,12 +16,12 @@ mod macros;
 extern crate lazy_static;
 
 pub mod prelude {
-    pub use crate::animation::{CustomAnimationPlugin, translation_change::*, event_channels::*};
+    pub use crate::animation::{event_channels::*, translation_change::*, CustomAnimationPlugin};
     pub use crate::app::{
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
     pub use crate::common_logic::{
-        argument_validation::*, enums::basic_direction::*, mismatch_error::*,
+        argument_validation::*, enums::basic_direction::*, math_function::*, mismatch_error::*,
     };
     pub use crate::debug::{
         consts::*,
@@ -29,7 +29,7 @@ pub mod prelude {
         game_session_log::*,
         print_log::*,
     };
-    pub use crate::game::{consts::*, tags::*, GamePlugin, orb::*, event_channels::*};
+    pub use crate::game::{consts::*, event_channels::*, orb::*, tags::*, GamePlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
@@ -39,17 +39,19 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        event_channel::{
-            event_from_timer::*, time_processors_request::*, TimerEventChannel,
-            TimerEventChannelPlugin, event_from_timer_type::*,
-        },
         consts::*,
         custom_timer::*,
+        event_channel::{
+            event_from_timer::*, event_from_timer_type::*, time_processors_request::*,
+            TimerEventChannel, TimerEventChannelPlugin,
+        },
         time_processing::{
-            time_processor::*, time_processors::*, time_processors_update::*, TimeProcessingPlugin, time_processor_id::*
+            time_processor::*, time_processor_id::*, time_processors::*, time_processors_update::*,
+            TimeProcessingPlugin,
         },
         time_related_error::*,
         timer_manager::*,
+        timer_value_calculator::*,
         TimePlugin,
     };
     pub use crate::trait_unions::*;

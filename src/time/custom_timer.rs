@@ -6,9 +6,8 @@ pub struct CustomTimer<T: Numeric> {
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: EventFromTimerType,
     pub relevant_entity: Option<Entity>,
+    value_calculator: TimerValueCalculator<T>,
     duration: f32,
-    original_value: T,
-    goal_value: T,
     elapsed_time: f32,
     normalized_progress: f32,
 }
@@ -18,8 +17,7 @@ impl<T: Numeric> CustomTimer<T> {
         time_processor: TimeProcessorId,
         duration: f32,
         relevant_entity: Option<Entity>,
-        original_value: T,
-        goal_value: T,
+        value_calculator: TimerValueCalculator<T>,
         send_as_going: Option<EventFromTimerType>,
         send_once_done: Option<EventFromTimerType>,
     ) -> Self {
@@ -32,8 +30,7 @@ impl<T: Numeric> CustomTimer<T> {
             send_once_done,
             relevant_entity,
             duration: clamped_duration,
-            original_value,
-            goal_value,
+            value_calculator,
             elapsed_time: 0.0,
             normalized_progress: 0.0,
         }
@@ -59,7 +56,8 @@ impl<T: Numeric> CustomTimer<T> {
 
     fn get_event_to_send(&self) -> EventFromTimer<T> {
         EventFromTimer::<T>::new(
-            self.calculate_current_value(),
+            self.value_calculator
+                .calculate_current_value(self.normalized_progress),
             self.send_as_going,
             if self.finished() {
                 Some(self.send_once_done)
@@ -68,9 +66,5 @@ impl<T: Numeric> CustomTimer<T> {
             },
             self.relevant_entity,
         )
-    }
-
-    fn calculate_current_value(&self) -> T {
-        self.original_value + (self.goal_value - self.original_value) * self.normalized_progress
     }
 }
