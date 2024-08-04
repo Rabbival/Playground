@@ -35,7 +35,7 @@ fn listen_for_init_translation_change_request(
                         TimerValueCalculator::new(
                             *origin,
                             *target,
-                            MathFunction::Parabolic {
+                            PolynomialSlopeValue {
                                 power: ORB_COLLECTION_POWER,
                             },
                         ),

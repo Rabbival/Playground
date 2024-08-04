@@ -1,14 +1,18 @@
-use super::{MathFunction, Numeric};
+use crate::prelude::*;
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct TimerValueCalculator<T: Numeric> {
     original_value: T,
     goal_value: T,
-    current_value_calculation: MathFunction,
+    current_value_calculation: PolynomialSlopeValue,
 }
 
 impl<T: Numeric> TimerValueCalculator<T> {
-    pub fn new(original_value: T, goal_value: T, current_value_calculation: MathFunction) -> Self {
+    pub fn new(
+        original_value: T,
+        goal_value: T,
+        current_value_calculation: PolynomialSlopeValue,
+    ) -> Self {
         Self {
             original_value,
             goal_value,
