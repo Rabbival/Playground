@@ -80,7 +80,7 @@ fn fire_time_multiplier_changers(
             } else {
                 print_warning(
                     TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(id),
-                    vec![LogCategory::RequestNotFulfilled],
+                    vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
                 );
             }
             return;
@@ -88,6 +88,6 @@ fn fire_time_multiplier_changers(
     }
     print_warning(
         TimeRelatedError::TimeMultiplierNotFound(id),
-        vec![LogCategory::RequestNotFulfilled],
+        vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
     );
 }

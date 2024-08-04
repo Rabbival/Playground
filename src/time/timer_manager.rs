@@ -48,7 +48,7 @@ fn get_time_multiplier<T: Numeric>(
     }
     print_warning(
         TimeRelatedError::TimeMultiplierNotFound(timer.time_multiplier),
-        vec![LogCategory::RequestNotFulfilled],
+        vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
     );
     DEFAULT_TIME_MULTIPLIER
 }

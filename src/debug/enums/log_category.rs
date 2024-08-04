@@ -4,4 +4,5 @@ pub enum LogCategory {
     OsAccess,
     ValueValidation,
     RequestNotFulfilled,
+    Time,
 }

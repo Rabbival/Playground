@@ -7,7 +7,14 @@ pub struct TimeMultipliersMap(HashMap<TimeMultiplierId, f32>);
 
 impl TimeMultipliersMap {
     pub fn insert(&mut self, id: TimeMultiplierId, value: f32) {
-        self.0.insert(id, value);
+        if id != TimeMultiplierId::default() {
+            self.0.insert(id, value);
+        } else {
+            print_warning(
+                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(id),
+                vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
+            )
+        }
     }
 
     pub fn get(&self, id: &TimeMultiplierId) -> Option<&f32> {

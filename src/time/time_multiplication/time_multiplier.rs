@@ -35,7 +35,7 @@ impl TimeMultiplier {
         } else {
             print_warning(
                 TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(self.id),
-                vec![LogCategory::RequestNotFulfilled],
+                vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
             )
         }
     }
