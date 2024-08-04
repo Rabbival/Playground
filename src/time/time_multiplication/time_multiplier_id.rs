@@ -15,7 +15,7 @@ impl TimeMultiplierId {
         TimeMultiplier::new(
             *self,
             DEFAULT_TIME_MULTIPLIER,
-            *self == TimeMultiplierId::GameTimeMultiplier,
+            *self != TimeMultiplierId::default(),
         )
     }
 }

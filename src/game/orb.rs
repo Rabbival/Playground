@@ -5,7 +5,10 @@ pub struct OrbPlugin;
 
 impl Plugin for OrbPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (spawn_orb, collect_and_despawn_all_orbs).in_set(InputSystemSet::Handling));
+        app.add_systems(
+            Update,
+            (spawn_orb, collect_all_orbs).in_set(InputSystemSet::Handling),
+        );
     }
 }
 
@@ -36,19 +39,20 @@ fn spawn_orb(
     }
 }
 
-fn collect_and_despawn_all_orbs(
+fn collect_all_orbs(
     mut event_reader: EventReader<OrbEvent>,
     mut event_writer: EventWriter<TranslationEventChannel>,
     orb_query: Query<(&Transform, Entity), With<Orb>>,
-){
-    for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs){
-        for (orb_transform, orb_entity) in &orb_query{
-            event_writer.send(TranslationEventChannel::MoveInDirectLine{
+) {
+    for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs)
+    {
+        for (orb_transform, orb_entity) in &orb_query {
+            event_writer.send(TranslationEventChannel::MoveInDirectLine {
                 entity: orb_entity,
                 origin: orb_transform.translation,
                 target: Vec3::from((*orb_collection_target, 0.0)),
                 duration: ORB_COLLECTION_TIME,
-                once_done: None,
+                once_done: Some(EventFromTimerType::DespawnEntity),
             });
         }
     }

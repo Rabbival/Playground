@@ -18,36 +18,36 @@ impl Plugin for TimerManagerPlugin {
 }
 
 fn tick_timers<T: Numeric>(
-    mut timer_event_writer: EventWriter<TimerEventChannel<T>>,
+    mut time_event_writer: EventWriter<TimeEventChannel<T>>,
     mut timers: Query<(&mut CustomTimer<T>, Entity)>,
-    time_processors: Res<TimeMultipliers>,
+    time_multipliers_map: Res<TimeMultipliersMap>,
     time: Res<Time>,
     mut commands: Commands,
 ) {
     let time_delta = time.delta_seconds();
     for (mut timer, timer_entity) in &mut timers {
-        let time_multiplier = get_time_multiplier(&time_processors, &timer);
+        let time_multiplier = get_time_multiplier(&time_multipliers_map, &timer);
         tick_and_send_timer_event(
             time_delta * time_multiplier,
             &mut timer,
             timer_entity,
-            &mut timer_event_writer,
+            &mut time_event_writer,
             &mut commands,
         );
     }
 }
 
 fn get_time_multiplier<T: Numeric>(
-    time_processors: &Res<TimeMultipliers>,
+    time_multipliers_map: &Res<TimeMultipliersMap>,
     timer: &CustomTimer<T>,
 ) -> f32 {
-    for (processor_id, time_processor) in time_processors.iter() {
-        if timer.time_processor == *processor_id {
-            return time_processor.value();
+    for (&multiplier_id, &multiplier) in time_multipliers_map.iter() {
+        if timer.time_multiplier == multiplier_id {
+            return multiplier;
         }
     }
     print_warning(
-        TimeRelatedError::TimeMultiplierNotFound(timer.time_processor),
+        TimeRelatedError::TimeMultiplierNotFound(timer.time_multiplier),
         vec![LogCategory::RequestNotFulfilled],
     );
     DEFAULT_TIME_MULTIPLIER
@@ -57,13 +57,13 @@ fn tick_and_send_timer_event<T: Numeric>(
     time_to_tick: f32,
     timer: &mut CustomTimer<T>,
     timer_entity: Entity,
-    timer_event_writer: &mut EventWriter<TimerEventChannel<T>>,
+    time_event_writer: &mut EventWriter<TimeEventChannel<T>>,
     commands: &mut Commands,
 ) {
     if let Some(timer_event) = timer.tick_and_get_event(time_to_tick) {
-        timer_event_writer.send(TimerEventChannel::EventFromTimer(timer_event));
+        time_event_writer.send(TimeEventChannel::EventFromTimer(timer_entity, timer_event));
     }
     if timer.finished() {
-        commands.entity(timer_entity).despawn();
+        commands.entity(timer_entity).remove::<CustomTimer<T>>();
     }
 }

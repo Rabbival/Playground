@@ -2,10 +2,9 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct CustomTimer<T: Numeric> {
-    pub time_processor: TimeMultiplierId,
+    pub time_multiplier: TimeMultiplierId,
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: EventFromTimerType,
-    pub relevant_entity: Option<Entity>,
     value_calculator: TimerValueCalculator<T>,
     duration: f32,
     elapsed_time: f32,
@@ -14,9 +13,8 @@ pub struct CustomTimer<T: Numeric> {
 
 impl<T: Numeric> CustomTimer<T> {
     pub fn new(
-        time_processor: TimeMultiplierId,
+        time_multiplier: TimeMultiplierId,
         duration: f32,
-        relevant_entity: Option<Entity>,
         value_calculator: TimerValueCalculator<T>,
         send_as_going: Option<EventFromTimerType>,
         send_once_done: Option<EventFromTimerType>,
@@ -25,10 +23,9 @@ impl<T: Numeric> CustomTimer<T> {
             clamp_and_notify(duration, A_MILLISECOND_IN_SECONDS, AN_HOUR_IN_SECONDS);
         let send_once_done = send_once_done.unwrap_or_default();
         Self {
-            time_processor,
+            time_multiplier,
             send_as_going,
             send_once_done,
-            relevant_entity,
             duration: clamped_duration,
             value_calculator,
             elapsed_time: 0.0,
@@ -64,7 +61,6 @@ impl<T: Numeric> CustomTimer<T> {
             } else {
                 None
             },
-            self.relevant_entity,
         )
     }
 }

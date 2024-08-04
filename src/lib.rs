@@ -42,12 +42,11 @@ pub mod prelude {
         consts::*,
         custom_timer::*,
         event_channel::{
-            event_from_timer::*, event_from_timer_type::*, time_processors_request::*,
-            TimerEventChannel, TimerEventChannelPlugin,
+            event_from_timer::*, event_from_timer_type::*, TimeEventChannel, TimeEventChannelPlugin,
         },
-        time_processing::{
-            time_multiplier::*, time_multiplier_id::*, time_processors::*,
-            time_processors_update::*, TimeProcessingPlugin,
+        time_multiplication::{
+            time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,
+            time_multipliers_map::*, TimeMutiplicationPlugin,
         },
         time_related_error::*,
         timer_manager::*,

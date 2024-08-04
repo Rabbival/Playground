@@ -4,7 +4,8 @@ use crate::prelude::*;
 pub enum EventFromTimerType {
     #[default]
     Nothing,
-    ChangeTimeMultiplierSpeed(TimeMultiplierId),
+    DespawnEntity,
+    ChangeTimeMultiplierSpeed,
     MoveInDirectLine,
     RotateAround {
         center: Vec3,

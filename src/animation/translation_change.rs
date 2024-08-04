@@ -1,4 +1,4 @@
-use crate::{get_mut_entity_else_return, prelude::*, read_single_field_variant};
+use crate::{get_mut_entity_else_return, prelude::*, read_two_field_variant};
 
 pub struct TranslationChangePlugin;
 
@@ -16,7 +16,7 @@ impl Plugin for TranslationChangePlugin {
 
 fn listen_for_init_translation_change_request(
     mut event_reader: EventReader<TranslationEventChannel>,
-    mut commands: Commands,
+    mut time_event_writer: EventWriter<TimeEventChannel<Vec3>>,
 ) {
     for translation_event in event_reader.read() {
         match translation_event {
@@ -27,19 +27,21 @@ fn listen_for_init_translation_change_request(
                 duration,
                 once_done,
             } => {
-                commands.spawn(CustomTimer::<Vec3>::new(
-                    TimeMultiplierId::GameTimeMultiplier,
-                    *duration,
-                    Some(*entity),
-                    TimerValueCalculator::new(
-                        *origin,
-                        *target,
-                        MathFunction::Parabolic {
-                            power: ORB_COLLECTION_POWER,
-                        },
+                time_event_writer.send(TimeEventChannel::AddTimerToEntity(
+                    *entity,
+                    CustomTimer::<Vec3>::new(
+                        TimeMultiplierId::GameTimeMultiplier,
+                        *duration,
+                        TimerValueCalculator::new(
+                            *origin,
+                            *target,
+                            MathFunction::Parabolic {
+                                power: ORB_COLLECTION_POWER,
+                            },
+                        ),
+                        Some(EventFromTimerType::MoveInDirectLine),
+                        *once_done,
                     ),
-                    Some(EventFromTimerType::MoveInDirectLine),
-                    *once_done,
                 ));
             }
         }
@@ -47,25 +49,23 @@ fn listen_for_init_translation_change_request(
 }
 
 fn listen_for_translation_update_requests(
-    mut event_reader: EventReader<TimerEventChannel<Vec3>>,
+    mut event_reader: EventReader<TimeEventChannel<Vec3>>,
     mut transforms: Query<&mut Transform>,
     mut commands: Commands,
 ) {
-    for event_from_timer in
-        read_single_field_variant!(event_reader, TimerEventChannel::EventFromTimer)
+    for (&entity, event_from_timer) in
+        read_two_field_variant!(event_reader, TimeEventChannel::EventFromTimer)
     {
-        if let Some(entity) = event_from_timer.try_get_relevant_entity() {
-            if let Some(as_going_event) = event_from_timer.try_get_as_going_event() {
-                if as_going_event == EventFromTimerType::MoveInDirectLine {
-                    update_entity_translation(
-                        entity,
-                        &mut transforms,
-                        event_from_timer.current_value(),
-                    );
-                }
-                if let Some(_done_event) = event_from_timer.try_get_done_event() {
-                    commands.entity(entity).despawn();
-                }
+        if let Some(EventFromTimerType::MoveInDirectLine) =
+            event_from_timer.try_get_as_going_event()
+        {
+            update_entity_translation(entity, &mut transforms, event_from_timer.current_value());
+        }
+        if let Some(done_event) = event_from_timer.try_get_done_event() {
+            if let EventFromTimerType::DespawnEntity = done_event {
+                commands.entity(entity).despawn();
+            } else {
+                commands.entity(entity).remove::<CustomTimer<Vec3>>();
             }
         }
     }
