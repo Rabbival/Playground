@@ -21,8 +21,7 @@ pub mod prelude {
         consts::*, main, main_camera::*, screen_setup::*, system_sets::*, tags::*,
     };
     pub use crate::common_logic::{
-        argument_validation::*, enums::basic_direction::*, mismatch_error::*,
-        polynomial_slope_value::*,
+        argument_validation::*, enums::basic_direction::*, interpolator::*, mismatch_error::*,
     };
     pub use crate::debug::{
         consts::*,

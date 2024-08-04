@@ -71,7 +71,7 @@ fn fire_time_multiplier_changers(
                         TimerValueCalculator::new(
                             multiplier.value(),
                             new_multiplier,
-                            PolynomialSlopeValue::default(),
+                            Interpolator::default(),
                         ),
                         Some(EventFromTimerType::ChangeTimeMultiplierSpeed),
                         None,

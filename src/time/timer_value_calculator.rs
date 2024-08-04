@@ -4,15 +4,11 @@ use crate::prelude::*;
 pub struct TimerValueCalculator<T: Numeric> {
     original_value: T,
     goal_value: T,
-    current_value_calculation: PolynomialSlopeValue,
+    current_value_calculation: Interpolator,
 }
 
 impl<T: Numeric> TimerValueCalculator<T> {
-    pub fn new(
-        original_value: T,
-        goal_value: T,
-        current_value_calculation: PolynomialSlopeValue,
-    ) -> Self {
+    pub fn new(original_value: T, goal_value: T, current_value_calculation: Interpolator) -> Self {
         Self {
             original_value,
             goal_value,
