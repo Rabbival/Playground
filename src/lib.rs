@@ -46,8 +46,8 @@ pub mod prelude {
             TimerEventChannel, TimerEventChannelPlugin,
         },
         time_processing::{
-            time_processor::*, time_processor_id::*, time_processors::*, time_processors_update::*,
-            TimeProcessingPlugin,
+            time_multiplier::*, time_multiplier_id::*, time_processors::*,
+            time_processors_update::*, TimeProcessingPlugin,
         },
         time_related_error::*,
         timer_manager::*,

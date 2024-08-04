@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct CustomTimer<T: Numeric> {
-    pub time_processor: TimeProcessorId,
+    pub time_processor: TimeMultiplierId,
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: EventFromTimerType,
     pub relevant_entity: Option<Entity>,
@@ -14,7 +14,7 @@ pub struct CustomTimer<T: Numeric> {
 
 impl<T: Numeric> CustomTimer<T> {
     pub fn new(
-        time_processor: TimeProcessorId,
+        time_processor: TimeMultiplierId,
         duration: f32,
         relevant_entity: Option<Entity>,
         value_calculator: TimerValueCalculator<T>,

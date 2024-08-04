@@ -28,7 +28,7 @@ fn listen_for_init_translation_change_request(
                 once_done,
             } => {
                 commands.spawn(CustomTimer::<Vec3>::new(
-                    TimeProcessorId::GameTimeProcessor,
+                    TimeMultiplierId::GameTimeMultiplier,
                     *duration,
                     Some(*entity),
                     TimerValueCalculator::new(

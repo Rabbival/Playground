@@ -4,10 +4,10 @@ use crate::prelude::*;
 pub enum EventFromTimerType {
     #[default]
     Nothing,
-    ChangeTimeProcessorSpeed(TimeProcessorId),
+    ChangeTimeMultiplierSpeed(TimeMultiplierId),
     MoveInDirectLine,
-    RotateAround{
+    RotateAround {
         center: Vec3,
         radius: f32,
-    }
+    },
 }

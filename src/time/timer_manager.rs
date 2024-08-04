@@ -20,7 +20,7 @@ impl Plugin for TimerManagerPlugin {
 fn tick_timers<T: Numeric>(
     mut timer_event_writer: EventWriter<TimerEventChannel<T>>,
     mut timers: Query<(&mut CustomTimer<T>, Entity)>,
-    time_processors: Res<TimeProcessors>,
+    time_processors: Res<TimeMultipliers>,
     time: Res<Time>,
     mut commands: Commands,
 ) {
@@ -38,19 +38,19 @@ fn tick_timers<T: Numeric>(
 }
 
 fn get_time_multiplier<T: Numeric>(
-    time_processors: &Res<TimeProcessors>,
+    time_processors: &Res<TimeMultipliers>,
     timer: &CustomTimer<T>,
 ) -> f32 {
     for (processor_id, time_processor) in time_processors.iter() {
         if timer.time_processor == *processor_id {
-            return time_processor.time_multiplier();
+            return time_processor.value();
         }
     }
     print_warning(
-        TimeRelatedError::TimeProcessorNotFound(timer.time_processor),
+        TimeRelatedError::TimeMultiplierNotFound(timer.time_processor),
         vec![LogCategory::RequestNotFulfilled],
     );
-    1.0
+    DEFAULT_TIME_MULTIPLIER
 }
 
 fn tick_and_send_timer_event<T: Numeric>(
