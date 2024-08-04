@@ -46,7 +46,7 @@ pub mod prelude {
         },
         time_multiplication::{
             time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,
-            time_multipliers_map::*, TimeMutiplicationPlugin,
+            TimeMutiplicationPlugin,
         },
         time_related_error::*,
         timer_manager::*,

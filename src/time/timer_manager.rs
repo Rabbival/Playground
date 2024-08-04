@@ -19,16 +19,28 @@ impl Plugin for TimerManagerPlugin {
 
 fn tick_timers<T: Numeric>(
     mut time_event_writer: EventWriter<TimeEventChannel<T>>,
-    mut timers: Query<(&mut CustomTimer<T>, Entity)>,
-    time_multipliers_map: Res<TimeMultipliersMap>,
+    mut timers_not_on_multiplers: Query<(&mut CustomTimer<T>, Entity), Without<TimeMultiplier>>,
+    mut time_multipliers_query: Query<(&TimeMultiplier, &mut CustomTimer<T>, Entity)>,
     time: Res<Time>,
     mut commands: Commands,
 ) {
     let time_delta = time.delta_seconds();
-    for (mut timer, timer_entity) in &mut timers {
-        let time_multiplier = get_time_multiplier(&time_multipliers_map, &timer);
+    let time_multipliers: Vec<TimeMultiplier> = time_multipliers_query
+        .iter()
+        .map(|(&multiplier, _, _)| multiplier)
+        .collect();
+    for (mut timer, timer_entity) in &mut timers_not_on_multiplers {
         tick_and_send_timer_event(
-            time_delta * time_multiplier,
+            time_delta * get_time_multiplier(&time_multipliers, &timer),
+            &mut timer,
+            timer_entity,
+            &mut time_event_writer,
+            &mut commands,
+        );
+    }
+    for (_, mut timer, timer_entity) in &mut time_multipliers_query {
+        tick_and_send_timer_event(
+            time_delta * get_time_multiplier(&time_multipliers, &timer),
             &mut timer,
             timer_entity,
             &mut time_event_writer,
@@ -38,12 +50,12 @@ fn tick_timers<T: Numeric>(
 }
 
 fn get_time_multiplier<T: Numeric>(
-    time_multipliers_map: &Res<TimeMultipliersMap>,
+    time_multipliers: &Vec<TimeMultiplier>,
     timer: &CustomTimer<T>,
 ) -> f32 {
-    for (&multiplier_id, &multiplier) in time_multipliers_map.iter() {
-        if timer.time_multiplier == multiplier_id {
-            return multiplier;
+    for multiplier in time_multipliers {
+        if timer.time_multiplier == multiplier.id() {
+            return multiplier.value();
         }
     }
     print_warning(
