@@ -51,7 +51,6 @@ fn listen_for_init_translation_change_request(
 fn listen_for_translation_update_requests(
     mut event_reader: EventReader<TimeEventChannel<Vec3>>,
     mut transforms: Query<&mut Transform>,
-    mut commands: Commands,
 ) {
     for (&entity, event_from_timer) in
         read_two_field_variant!(event_reader, TimeEventChannel::EventFromTimer)
@@ -60,13 +59,6 @@ fn listen_for_translation_update_requests(
             event_from_timer.try_get_as_going_event()
         {
             update_entity_translation(entity, &mut transforms, event_from_timer.current_value());
-        }
-        if let Some(done_event) = event_from_timer.try_get_done_event() {
-            if let EventFromTimerType::DespawnEntity = done_event {
-                commands.entity(entity).despawn();
-            } else {
-                commands.entity(entity).remove::<CustomTimer<Vec3>>();
-            }
         }
     }
 }

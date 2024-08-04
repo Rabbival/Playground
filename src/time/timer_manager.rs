@@ -62,8 +62,12 @@ fn tick_and_send_timer_event<T: Numeric>(
 ) {
     if let Some(timer_event) = timer.tick_and_get_event(time_to_tick) {
         time_event_writer.send(TimeEventChannel::EventFromTimer(timer_entity, timer_event));
-    }
-    if timer.finished() {
-        commands.entity(timer_entity).remove::<CustomTimer<T>>();
+        if let Some(done_event) = timer_event.try_get_done_event() {
+            if let EventFromTimerType::DespawnSelf = done_event {
+                commands.entity(timer_entity).despawn();
+            } else {
+                commands.entity(timer_entity).remove::<CustomTimer<Vec3>>();
+            }
+        }
     }
 }

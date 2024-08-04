@@ -52,7 +52,7 @@ fn collect_all_orbs(
                 origin: orb_transform.translation,
                 target: Vec3::from((*orb_collection_target, 0.0)),
                 duration: ORB_COLLECTION_TIME,
-                once_done: Some(EventFromTimerType::DespawnEntity),
+                once_done: Some(EventFromTimerType::DespawnSelf),
             });
         }
     }

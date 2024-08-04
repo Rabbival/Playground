@@ -24,7 +24,6 @@ fn listen_for_time_multiplier_requests(
     mut time_event_reader: EventReader<TimeEventChannel<f32>>,
     mut time_event_writer: EventWriter<TimeEventChannel<f32>>,
     mut time_multipliers: Query<(&mut TimeMultiplier, Entity)>,
-    mut commands: Commands,
 ) {
     for (id, new_multiplier, duration) in read_struct_variant!(
         time_event_reader,
@@ -50,9 +49,6 @@ fn listen_for_time_multiplier_requests(
             if let Ok((mut multiplier, _)) = time_multipliers.get_mut(entity) {
                 multiplier.set_value(event_from_timer.current_value());
             }
-        }
-        if let Some(_done_event) = event_from_timer.try_get_done_event() {
-            commands.entity(entity).despawn();
         }
     }
 }
