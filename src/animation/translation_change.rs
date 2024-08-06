@@ -41,7 +41,7 @@ fn listen_for_init_translation_change_request(
                         Some(EventFromTimerType::MoveInDirectLine),
                         *once_done,
                     ),
-                    attach_to: *entity,
+                    entity: *entity,
                 });
             }
         }

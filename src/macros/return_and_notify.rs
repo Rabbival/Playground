@@ -59,7 +59,6 @@ macro_rules! get_entity_else_return {
     };
 }
 
-
 #[macro_export]
 macro_rules! get_mut_entity_else_return {
     ($query:expr, $entity:expr) => {
@@ -67,7 +66,7 @@ macro_rules! get_mut_entity_else_return {
             Ok(item) => item,
             Err(error) => {
                 print_error(
-                    format!("error getting entity {:?}: {}", $entity, error),
+                    format!("error getting mut entity {:?}: {}", $entity, error),
                     vec![LogCategory::Crucial],
                 );
                 return;

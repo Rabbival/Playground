@@ -7,12 +7,21 @@ impl Plugin for TimerManagerPlugin {
         app.add_systems(
             Update,
             (
-                tick_timers::<f32>,
-                tick_timers::<Vec2>,
-                tick_timers::<Vec3>,
-                tick_timers::<Quat>,
-            )
-                .in_set(TimerSystemSet::TimerTicking),
+                (
+                    tick_timers::<f32>,
+                    tick_timers::<Vec2>,
+                    tick_timers::<Vec3>,
+                    tick_timers::<Quat>,
+                )
+                    .in_set(TimerSystemSet::TimerTicking),
+                (
+                    add_timers_to_entities::<f32>,
+                    add_timers_to_entities::<Vec2>,
+                    add_timers_to_entities::<Vec3>,
+                    add_timers_to_entities::<Quat>,
+                )
+                    .in_set(TimerSystemSet::TimerAttachment),
+            ),
         );
     }
 }
@@ -60,16 +69,28 @@ fn tick_and_send_timer_event<T: Numeric>(
     commands: &mut Commands,
 ) {
     if let Some(partial_timer_event) = timer.tick_and_get_event(time_to_tick) {
-        event_from_timer_writer.send(EventFromTimer::<T>::from_partial(
-            timer_entity,
-            partial_timer_event,
-        ));
         if let Some(done_event) = partial_timer_event.try_get_done_event() {
             if let EventFromTimerType::DespawnSelf = done_event {
                 commands.entity(timer_entity).despawn();
+                return;
             } else {
                 commands.entity(timer_entity).remove::<CustomTimer<Vec3>>();
             }
         }
+        event_from_timer_writer.send(EventFromTimer::<T>::from_partial(
+            timer_entity,
+            partial_timer_event,
+        ));
+    }
+}
+
+fn add_timers_to_entities<T: Numeric>(
+    mut event_reader: EventReader<AddTimerToEntity<T>>,
+    mut commands: Commands,
+) {
+    for timer_attachment_request in event_reader.read() {
+        commands
+            .entity(timer_attachment_request.entity)
+            .insert(timer_attachment_request.timer);
     }
 }

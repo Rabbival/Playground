@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[derive(Debug, Event, Clone, Copy)]
 pub struct AddTimerToEntity<T: Numeric> {
     pub timer: CustomTimer<T>,
-    pub attach_to: Entity,
+    pub entity: Entity,
 }
 
 pub struct AddTimerToEntityPlugin;

@@ -68,7 +68,7 @@ fn fire_time_multiplier_changers(
                         Some(EventFromTimerType::ChangeTimeMultiplierSpeed),
                         None,
                     ),
-                    attach_to: multiplier_entity,
+                    entity: multiplier_entity,
                 });
             } else {
                 print_warning(

@@ -17,6 +17,7 @@ pub enum AnimationSystemSet {
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum TimerSystemSet {
     TimerTicking,
+    TimerAttachment,
     TimeMultipliersUpdating,
 }
 
@@ -42,6 +43,7 @@ impl Plugin for SystemSetsPlugin {
                     .after(InputSystemSet::Handling),
                 (
                     TimerSystemSet::TimeMultipliersUpdating,
+                    TimerSystemSet::TimerAttachment,
                     AnimationSystemSet::PostTicking,
                 )
                     .after(TimerSystemSet::TimerTicking),
