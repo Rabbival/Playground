@@ -1,17 +1,16 @@
 use strum::IntoEnumIterator;
 
-use crate::{prelude::*, read_struct_variant, read_two_field_variant};
+use crate::prelude::*;
 
 pub struct TimeMultiplierPlugin;
 
 impl Plugin for TimeMultiplierPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreStartup, initialize_time_multipliers)
-            // .add_systems(
-            //     Update,
-            //     listen_for_time_multiplier_requests.in_set(TimerSystemSet::TimeMultipliersUpdating),
-            // );
-            ;
+            .add_systems(
+                Update,
+                listen_for_time_multiplier_requests.in_set(TimerSystemSet::TimeMultipliersUpdating),
+            );
     }
 }
 
@@ -22,32 +21,25 @@ fn initialize_time_multipliers(mut commands: Commands) {
 }
 
 fn listen_for_time_multiplier_requests(
-    mut time_event_reader: EventReader<TimeEventChannel<f32>>,
-    mut time_event_writer: EventWriter<TimeEventChannel<f32>>,
+    mut time_multiplier_set_request_reader: EventReader<SetTimeMultiplier>,
+    mut event_from_timer_reader: EventReader<EventFromTimer<f32>>,
+    mut add_timer_event_writer: EventWriter<AddTimerToEntity<f32>>,
     mut time_multipliers: Query<(&mut TimeMultiplier, Entity)>,
 ) {
-    for (id, new_multiplier, duration) in read_struct_variant!(
-        time_event_reader,
-        TimeEventChannel::SetTimeMultiplier,
-        id,
-        new_multiplier,
-        duration
-    ) {
+    for time_multiplier_set_request in time_multiplier_set_request_reader.read() {
         fire_time_multiplier_changers(
-            &mut time_event_writer,
+            &mut add_timer_event_writer,
             &time_multipliers,
-            *id,
-            *new_multiplier,
-            *duration,
+            time_multiplier_set_request.id,
+            time_multiplier_set_request.new_multiplier,
+            time_multiplier_set_request.duration,
         );
     }
-    for (&entity, event_from_timer) in
-        read_two_field_variant!(time_event_reader, TimeEventChannel::EventFromTimer)
-    {
+    for event_from_timer in event_from_timer_reader.read() {
         if let Some(EventFromTimerType::ChangeTimeMultiplierSpeed) =
             event_from_timer.try_get_as_going_event()
         {
-            if let Ok((mut multiplier, _)) = time_multipliers.get_mut(entity) {
+            if let Ok((mut multiplier, _)) = time_multipliers.get_mut(event_from_timer.entity()) {
                 multiplier.set_value(event_from_timer.current_value());
             }
         }
@@ -55,7 +47,7 @@ fn listen_for_time_multiplier_requests(
 }
 
 fn fire_time_multiplier_changers(
-    time_event_writer: &mut EventWriter<TimeEventChannel<f32>>,
+    add_timer_event_writer: &mut EventWriter<AddTimerToEntity<f32>>,
     time_multipliers: &Query<(&mut TimeMultiplier, Entity)>,
     id: TimeMultiplierId,
     new_multiplier: f32,
@@ -64,9 +56,8 @@ fn fire_time_multiplier_changers(
     for (multiplier, multiplier_entity) in time_multipliers {
         if multiplier.id() == id {
             if multiplier.changeable() {
-                time_event_writer.send(TimeEventChannel::AddTimerToEntity(
-                    multiplier_entity,
-                    CustomTimer::<f32>::new(
+                add_timer_event_writer.send(AddTimerToEntity {
+                    timer: CustomTimer::<f32>::new(
                         TimeMultiplierId::default(),
                         duration,
                         TimerValueCalculator::new(
@@ -77,7 +68,8 @@ fn fire_time_multiplier_changers(
                         Some(EventFromTimerType::ChangeTimeMultiplierSpeed),
                         None,
                     ),
-                ));
+                    attach_to: multiplier_entity,
+                });
             } else {
                 print_warning(
                     TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(id),

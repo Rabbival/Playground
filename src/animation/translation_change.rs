@@ -1,4 +1,4 @@
-use crate::{get_mut_entity_else_return, prelude::*, read_two_field_variant};
+use crate::{get_mut_entity_else_return, prelude::*};
 
 pub struct TranslationChangePlugin;
 
@@ -16,7 +16,7 @@ impl Plugin for TranslationChangePlugin {
 
 fn listen_for_init_translation_change_request(
     mut event_reader: EventReader<TranslationEventChannel>,
-    mut time_event_writer: EventWriter<TimeEventChannel<Vec3>>,
+    mut add_timer_event_writer: EventWriter<AddTimerToEntity<Vec3>>,
 ) {
     for translation_event in event_reader.read() {
         match translation_event {
@@ -27,9 +27,8 @@ fn listen_for_init_translation_change_request(
                 duration,
                 once_done,
             } => {
-                time_event_writer.send(TimeEventChannel::AddTimerToEntity(
-                    *entity,
-                    CustomTimer::<Vec3>::new(
+                add_timer_event_writer.send(AddTimerToEntity {
+                    timer: CustomTimer::<Vec3>::new(
                         TimeMultiplierId::GameTimeMultiplier,
                         *duration,
                         TimerValueCalculator::new(
@@ -42,23 +41,26 @@ fn listen_for_init_translation_change_request(
                         Some(EventFromTimerType::MoveInDirectLine),
                         *once_done,
                     ),
-                ));
+                    attach_to: *entity,
+                });
             }
         }
     }
 }
 
 fn listen_for_translation_update_requests(
-    mut event_reader: EventReader<TimeEventChannel<Vec3>>,
+    mut event_reader: EventReader<EventFromTimer<Vec3>>,
     mut transforms: Query<&mut Transform>,
 ) {
-    for (&entity, event_from_timer) in
-        read_two_field_variant!(event_reader, TimeEventChannel::EventFromTimer)
-    {
+    for event_from_timer in event_reader.read() {
         if let Some(EventFromTimerType::MoveInDirectLine) =
             event_from_timer.try_get_as_going_event()
         {
-            update_entity_translation(entity, &mut transforms, event_from_timer.current_value());
+            update_entity_translation(
+                event_from_timer.entity(),
+                &mut transforms,
+                event_from_timer.current_value(),
+            );
         }
     }
 }

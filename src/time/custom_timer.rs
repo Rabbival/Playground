@@ -41,7 +41,7 @@ impl<T: Numeric> CustomTimer<T> {
         self.normalized_progress = (self.elapsed_time / self.duration).min(1.0);
     }
 
-    pub fn tick_and_get_event(&mut self, processed_time: f32) -> Option<EventFromTimer<T>> {
+    pub fn tick_and_get_event(&mut self, processed_time: f32) -> Option<EventFromTimerNoEntity<T>> {
         if processed_time > 0.0 && !self.finished() {
             self.elapsed_time += processed_time;
             self.update_normalized_progress();
@@ -51,8 +51,8 @@ impl<T: Numeric> CustomTimer<T> {
         }
     }
 
-    fn get_event_to_send(&self) -> EventFromTimer<T> {
-        EventFromTimer::<T>::new(
+    fn get_event_to_send(&self) -> EventFromTimerNoEntity<T> {
+        EventFromTimerNoEntity::<T>::new(
             self.value_calculator
                 .calculate_current_value(self.normalized_progress),
             self.send_as_going,

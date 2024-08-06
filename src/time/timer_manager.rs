@@ -18,7 +18,7 @@ impl Plugin for TimerManagerPlugin {
 }
 
 fn tick_timers<T: Numeric>(
-    mut time_event_writer: EventWriter<TimeEventChannel<T>>,
+    mut event_from_timer_writer: EventWriter<EventFromTimer<T>>,
     mut timers_not_on_multiplers: Query<(&mut CustomTimer<T>, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
@@ -30,7 +30,7 @@ fn tick_timers<T: Numeric>(
             time_delta * get_time_multiplier(&time_multipliers, &timer),
             &mut timer,
             timer_entity,
-            &mut time_event_writer,
+            &mut event_from_timer_writer,
             &mut commands,
         );
     }
@@ -56,12 +56,15 @@ fn tick_and_send_timer_event<T: Numeric>(
     time_to_tick: f32,
     timer: &mut CustomTimer<T>,
     timer_entity: Entity,
-    time_event_writer: &mut EventWriter<TimeEventChannel<T>>,
+    event_from_timer_writer: &mut EventWriter<EventFromTimer<T>>,
     commands: &mut Commands,
 ) {
-    if let Some(timer_event) = timer.tick_and_get_event(time_to_tick) {
-        time_event_writer.send(TimeEventChannel::EventFromTimer(timer_entity, timer_event));
-        if let Some(done_event) = timer_event.try_get_done_event() {
+    if let Some(partial_timer_event) = timer.tick_and_get_event(time_to_tick) {
+        event_from_timer_writer.send(EventFromTimer::<T>::from_partial(
+            timer_entity,
+            partial_timer_event,
+        ));
+        if let Some(done_event) = partial_timer_event.try_get_done_event() {
             if let EventFromTimerType::DespawnSelf = done_event {
                 commands.entity(timer_entity).despawn();
             } else {

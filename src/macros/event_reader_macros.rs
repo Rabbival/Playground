@@ -24,16 +24,3 @@ macro_rules! read_two_field_variant {
         })
     };
 }
-
-#[macro_export]
-macro_rules! read_struct_variant {
-    ($reader:expr, $variant:path, $($field:ident),*) => {
-        $reader.read().filter_map(|event| {
-            if let $variant { $($field),* } = event {
-                Some(($($field),*))
-            } else {
-                None
-            }
-        })
-    };
-}
