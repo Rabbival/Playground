@@ -7,10 +7,11 @@ pub struct TimeMultiplierPlugin;
 impl Plugin for TimeMultiplierPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreStartup, initialize_time_multipliers)
-            .add_systems(
-                Update,
-                listen_for_time_multiplier_requests.in_set(TimerSystemSet::TimeMultipliersUpdating),
-            );
+            // .add_systems(
+            //     Update,
+            //     listen_for_time_multiplier_requests.in_set(TimerSystemSet::TimeMultipliersUpdating),
+            // );
+            ;
     }
 }
 

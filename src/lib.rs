@@ -41,7 +41,7 @@ pub mod prelude {
     pub use crate::time::{
         consts::*,
         custom_timer::*,
-        event_channel::{
+        event_channels::{
             event_from_timer::*, event_from_timer_type::*, TimeEventChannel, TimeEventChannelPlugin,
         },
         time_multiplication::{
