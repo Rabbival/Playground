@@ -23,12 +23,6 @@ impl<T: Numeric> CustomTimer<T> {
             clamp_and_notify(duration, A_MILLISECOND_IN_SECONDS, AN_HOUR_IN_SECONDS);
         let send_once_done = send_once_done.unwrap_or_default();
         let time_multipliers_array = array_from_vec(time_multipliers_vec);
-
-        println!(
-            "temp debug: array length is {}",
-            time_multipliers_array.len()
-        );
-
         Self {
             time_multipliers: time_multipliers_array,
             send_as_going,
