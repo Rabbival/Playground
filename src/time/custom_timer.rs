@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct CustomTimer<T: Numeric> {
-    pub time_multiplier: TimeMultiplierId,
+    pub time_multipliers: [Option<TimeMultiplierId>; MAX_ASSIGNED_MULTIPLIERS],
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: EventFromTimerType,
     value_calculator: TimerValueCalculator<T>,
@@ -13,7 +13,7 @@ pub struct CustomTimer<T: Numeric> {
 
 impl<T: Numeric> CustomTimer<T> {
     pub fn new(
-        time_multiplier: TimeMultiplierId,
+        time_multipliers_vec: Vec<TimeMultiplierId>,
         duration: f32,
         value_calculator: TimerValueCalculator<T>,
         send_as_going: Option<EventFromTimerType>,
@@ -22,8 +22,15 @@ impl<T: Numeric> CustomTimer<T> {
         let clamped_duration =
             clamp_and_notify(duration, A_MILLISECOND_IN_SECONDS, AN_HOUR_IN_SECONDS);
         let send_once_done = send_once_done.unwrap_or_default();
+        let time_multipliers_array = array_from_vec(time_multipliers_vec);
+
+        println!(
+            "temp debug: array length is {}",
+            time_multipliers_array.len()
+        );
+
         Self {
-            time_multiplier,
+            time_multipliers: time_multipliers_array,
             send_as_going,
             send_once_done,
             duration: clamped_duration,

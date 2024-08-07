@@ -4,7 +4,10 @@ macro_rules! return_if_at_limit {
         if $iterable.into_iter().count() >= $max_count {
             print_warning(
                 format!("{:?} reached max count {}", $iterable, $max_count),
-                vec![LogCategory::ValueValidation],
+                vec![
+                    LogCategory::ValueValidation,
+                    LogCategory::RequestNotFulfilled,
+                ],
             );
             return;
         }
@@ -19,7 +22,7 @@ macro_rules! single_else_return {
             Err(error) => {
                 print_error(
                     format!("error getting single {:?}: {}", $query, error),
-                    vec![LogCategory::Crucial],
+                    vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }
@@ -35,7 +38,7 @@ macro_rules! single_mut_else_return {
             Err(error) => {
                 print_error(
                     format!("error getting single mut {:?}: {}", $query, error),
-                    vec![LogCategory::Crucial],
+                    vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }
@@ -51,7 +54,7 @@ macro_rules! get_entity_else_return {
             Err(error) => {
                 print_error(
                     format!("error getting entity {:?}: {}", $entity, error),
-                    vec![LogCategory::Crucial],
+                    vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }
@@ -67,7 +70,7 @@ macro_rules! get_mut_entity_else_return {
             Err(error) => {
                 print_error(
                     format!("error getting mut entity {:?}: {}", $entity, error),
-                    vec![LogCategory::Crucial],
+                    vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }

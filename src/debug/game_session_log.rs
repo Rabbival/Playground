@@ -17,7 +17,7 @@ fn create_new_log_file() {
     {
         print_error(
             OsAccessError::BadFolderPath(FolderToAccess::GameLogs),
-            vec![LogCategory::Crucial],
+            vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
         );
     }
 }
@@ -36,7 +36,7 @@ pub fn append_to_game_session_log_file(string_to_append: String) {
                 String::from(GAME_SESSION_LOG_FILE_NAME),
                 SystemFileType::TextFile,
             )),
-            vec![LogCategory::Crucial],
+            vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
         );
     }
 }

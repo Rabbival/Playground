@@ -42,7 +42,7 @@ fn tick_timers<T: Numeric>(
     let time_delta = time.delta_seconds();
     for (mut timer, timer_entity) in &mut timers_not_on_multiplers {
         tick_and_send_timer_event(
-            time_delta * get_time_multiplier(&time_multipliers, &timer),
+            time_delta * calculate_time_multiplier(&time_multipliers, &timer),
             &mut timer,
             timer_entity,
             &mut event_from_timer_writer,
@@ -50,20 +50,24 @@ fn tick_timers<T: Numeric>(
     }
 }
 
-fn get_time_multiplier<T: Numeric>(
+fn calculate_time_multiplier<T: Numeric>(
     time_multipliers: &Query<&TimeMultiplier>,
     timer: &CustomTimer<T>,
 ) -> f32 {
-    for multiplier in time_multipliers {
-        if timer.time_multiplier == multiplier.id() {
-            return multiplier.value();
+    let mut calculated_multiplier = DEFAULT_TIME_MULTIPLIER;
+    for maybe_multiplier_id in timer.time_multipliers {
+        match maybe_multiplier_id {
+            Some(multiplier_id_from_timer) => {
+                for time_multiplier in time_multipliers {
+                    if time_multiplier.id() == multiplier_id_from_timer {
+                        calculated_multiplier *= time_multiplier.value();
+                    }
+                }
+            }
+            None => break,
         }
     }
-    print_warning(
-        TimeRelatedError::TimeMultiplierNotFound(timer.time_multiplier),
-        vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
-    );
-    DEFAULT_TIME_MULTIPLIER
+    calculated_multiplier
 }
 
 fn tick_and_send_timer_event<T: Numeric>(
