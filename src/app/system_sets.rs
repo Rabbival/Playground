@@ -21,6 +21,11 @@ pub enum TimerSystemSet {
     TimeMultipliersUpdating,
 }
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum EndOfFrameSystemSet {
+    TimerClearing,
+}
+
 pub struct SystemSetsPlugin;
 
 impl Plugin for SystemSetsPlugin {
@@ -47,6 +52,7 @@ impl Plugin for SystemSetsPlugin {
                     AnimationSystemSet::PostTicking,
                 )
                     .after(TimerSystemSet::TimerTicking),
+                EndOfFrameSystemSet::TimerClearing.after(AnimationSystemSet::PostTicking),
             ),
         );
     }
