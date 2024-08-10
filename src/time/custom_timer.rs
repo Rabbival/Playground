@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
-pub struct CalculatingMultipliedTimer<T: Numeric> {
+pub struct CustomTimer<T: Numeric> {
     pub time_multipliers: [Option<TimeMultiplierId>; MAX_ASSIGNED_MULTIPLIERS],
     pub send_as_going: Option<EventFromTimerType>,
     pub send_once_done: EventFromTimerType,
@@ -11,7 +11,7 @@ pub struct CalculatingMultipliedTimer<T: Numeric> {
     normalized_progress: f32,
 }
 
-impl<T: Numeric> CalculatingMultipliedTimer<T> {
+impl<T: Numeric> CustomTimer<T> {
     pub fn new(
         time_multipliers_vec: Vec<TimeMultiplierId>,
         duration: f32,

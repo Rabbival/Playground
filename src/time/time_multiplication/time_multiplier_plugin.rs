@@ -57,7 +57,7 @@ fn fire_time_multiplier_changers(
         if multiplier.id() == id {
             if multiplier.changeable() {
                 add_timer_event_writer.send(AddTimerToEntity {
-                    timer: CalculatingMultipliedTimer::<f32>::new(
+                    timer: CustomTimer::<f32>::new(
                         vec![TimeMultiplierId::default()],
                         duration,
                         TimerValueCalculator::new(

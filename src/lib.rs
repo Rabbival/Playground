@@ -40,10 +40,7 @@ pub mod prelude {
     };
     pub use crate::time::{
         consts::*,
-        custom_timer::{
-            calculating_multiplied_timer::*, simple_multiplied_timer::*, timer_manager::*,
-            timer_value_calculator::*,
-        },
+        custom_timer::*,
         events::{
             add_timer_to_entity::*, event_from_timer::*, event_from_timer_type::*,
             set_time_multiplier::*, TimeEventChannelPlugin,
@@ -53,6 +50,8 @@ pub mod prelude {
             TimeMutiplicationPlugin,
         },
         time_related_error::*,
+        timer_manager::*,
+        timer_value_calculator::*,
         TimePlugin,
     };
     pub use crate::trait_unions::*;
