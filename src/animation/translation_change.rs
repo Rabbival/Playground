@@ -38,7 +38,7 @@ fn listen_for_init_translation_change_request(
                                 power: ORB_COLLECTION_POWER,
                             },
                         ),
-                        Some(EventFromTimerType::MoveInDirectLine),
+                        Some(EventFromTimerType::Move(MoveEventFromTimer::InDirectLine)),
                         *once_done,
                     ),
                     entity: *entity,
@@ -53,7 +53,7 @@ fn listen_for_translation_update_requests(
     mut transforms: Query<&mut Transform>,
 ) {
     for event_from_timer in event_reader.read() {
-        if let Some(EventFromTimerType::MoveInDirectLine) =
+        if let Some(EventFromTimerType::Move(MoveEventFromTimer::InDirectLine)) =
             event_from_timer.try_get_as_going_event()
         {
             update_entity_translation(

@@ -6,8 +6,14 @@ pub enum EventFromTimerType {
     Nothing,
     DespawnSelf,
     ChangeTimeMultiplierSpeed,
-    MoveInDirectLine,
-    RotateAround {
+    Move(MoveEventFromTimer),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub enum MoveEventFromTimer {
+    #[default]
+    InDirectLine,
+    InCircleAround {
         center: Vec3,
         radius: f32,
     },
