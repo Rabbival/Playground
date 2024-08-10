@@ -28,7 +28,7 @@ fn listen_for_init_translation_change_request(
                 once_done,
             } => {
                 add_timer_event_writer.send(AddTimerToEntity {
-                    timer: CustomTimer::<Vec3>::new(
+                    timer: CalculatingMultipliedTimer::<Vec3>::new(
                         vec![TimeMultiplierId::GameTimeMultiplier],
                         *duration,
                         TimerValueCalculator::new(

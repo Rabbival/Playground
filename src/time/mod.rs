@@ -3,8 +3,6 @@ pub mod custom_timer;
 pub mod events;
 pub mod time_multiplication;
 pub mod time_related_error;
-pub mod timer_manager;
-pub mod timer_value_calculator;
 
 use crate::prelude::*;
 

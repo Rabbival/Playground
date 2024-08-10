@@ -35,7 +35,7 @@ impl Plugin for TimerManagerPlugin {
 
 fn tick_timers<T: Numeric>(
     mut event_from_timer_writer: EventWriter<EventFromTimer<T>>,
-    mut timers_not_on_multiplers: Query<(&mut CustomTimer<T>, Entity)>,
+    mut timers_not_on_multiplers: Query<(&mut CalculatingMultipliedTimer<T>, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
 ) {
@@ -52,7 +52,7 @@ fn tick_timers<T: Numeric>(
 
 fn calculate_time_multiplier<T: Numeric>(
     time_multipliers: &Query<&TimeMultiplier>,
-    timer: &CustomTimer<T>,
+    timer: &CalculatingMultipliedTimer<T>,
 ) -> f32 {
     let mut calculated_multiplier = DEFAULT_TIME_MULTIPLIER;
     for maybe_multiplier_id in timer.time_multipliers {
@@ -72,7 +72,7 @@ fn calculate_time_multiplier<T: Numeric>(
 
 fn tick_and_send_timer_event<T: Numeric>(
     time_to_tick: f32,
-    timer: &mut CustomTimer<T>,
+    timer: &mut CalculatingMultipliedTimer<T>,
     timer_entity: Entity,
     event_from_timer_writer: &mut EventWriter<EventFromTimer<T>>,
 ) {
@@ -106,7 +106,7 @@ fn clear_timers<T: Numeric>(
             } else {
                 commands
                     .entity(event_from_timer.entity())
-                    .remove::<CustomTimer<Vec3>>();
+                    .remove::<CalculatingMultipliedTimer<Vec3>>();
             }
         }
     }
