@@ -1,3 +1,4 @@
+pub mod bundles;
 pub mod consts;
 pub mod custom_timer;
 pub mod events;

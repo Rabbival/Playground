@@ -8,10 +8,11 @@ impl Plugin for TimerManagerPlugin {
             Update,
             (
                 (
-                    tick_timers::<f32>,
-                    tick_timers::<Vec2>,
-                    tick_timers::<Vec3>,
-                    tick_timers::<Quat>,
+                    tick_once_done_timers,
+                    tick_full_timers::<f32>,
+                    tick_full_timers::<Vec2>,
+                    tick_full_timers::<Vec3>,
+                    tick_full_timers::<Quat>,
                 )
                     .in_set(TimerSystemSet::TimerTicking),
                 (
@@ -33,14 +34,25 @@ impl Plugin for TimerManagerPlugin {
     }
 }
 
-fn tick_timers<T: Numeric>(
-    mut event_from_timer_writer: EventWriter<EventFromTimer<T>>,
-    mut timers_not_on_multiplers: Query<(&mut CalculatingMultipliedTimer<T>, Entity)>,
+fn tick_once_done_timers(
+    mut timer_done_event_writer: EventWriter<TimerDoneEvent>,
+    mut timers: Query<(&mut OnceDoneTimer, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
 ) {
     let time_delta = time.delta_seconds();
-    for (mut timer, timer_entity) in &mut timers_not_on_multiplers {
+    for (mut timer, timer_entity) in &mut timers {}
+}
+
+fn tick_full_timers<T: Numeric>(
+    mut timer_going_event_writer: EventWriter<TimerGoingEvent<T>>,
+    mut timer_done_event_writer: EventWriter<TimerDoneEvent>,
+    mut timers: Query<(&mut FullTimer, &ValueByInterpolation<T>, Entity)>,
+    time_multipliers: Query<&TimeMultiplier>,
+    time: Res<Time>,
+) {
+    let time_delta = time.delta_seconds();
+    for (mut timer, value_by_interpolation, timer_entity) in &mut timers {
         tick_and_send_timer_event(
             time_delta * calculate_time_multiplier(&time_multipliers, &timer),
             &mut timer,
@@ -50,21 +62,13 @@ fn tick_timers<T: Numeric>(
     }
 }
 
-fn calculate_time_multiplier<T: Numeric>(
-    time_multipliers: &Query<&TimeMultiplier>,
-    timer: &CalculatingMultipliedTimer<T>,
-) -> f32 {
+fn calculate_time_multiplier(time_multipliers: &Query<&TimeMultiplier>, timer: &FullTimer) -> f32 {
     let mut calculated_multiplier = DEFAULT_TIME_MULTIPLIER;
-    for maybe_multiplier_id in timer.time_multipliers {
-        match maybe_multiplier_id {
-            Some(multiplier_id_from_timer) => {
-                for time_multiplier in time_multipliers {
-                    if time_multiplier.id() == multiplier_id_from_timer {
-                        calculated_multiplier *= time_multiplier.value();
-                    }
-                }
+    for multiplier_id_from_timer in timer.time_multipliers.iter() {
+        for time_multiplier in time_multipliers {
+            if time_multiplier.id() == multiplier_id_from_timer {
+                calculated_multiplier *= time_multiplier.value();
             }
-            None => break,
         }
     }
     calculated_multiplier
@@ -72,7 +76,7 @@ fn calculate_time_multiplier<T: Numeric>(
 
 fn tick_and_send_timer_event<T: Numeric>(
     time_to_tick: f32,
-    timer: &mut CalculatingMultipliedTimer<T>,
+    timer: &mut FullTimer<T>,
     timer_entity: Entity,
     event_from_timer_writer: &mut EventWriter<EventFromTimer<T>>,
 ) {
@@ -96,18 +100,12 @@ fn add_timers_to_entities<T: Numeric>(
 }
 
 fn clear_timers<T: Numeric>(
-    mut event_from_timer_reader: EventReader<EventFromTimer<T>>,
+    mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     mut commands: Commands,
 ) {
-    for event_from_timer in event_from_timer_reader.read() {
-        if let Some(done_event) = event_from_timer.try_get_done_event() {
-            if let EventFromTimerType::DespawnSelf = done_event {
-                commands.entity(event_from_timer.entity()).despawn();
-            } else {
-                commands
-                    .entity(event_from_timer.entity())
-                    .remove::<CalculatingMultipliedTimer<Vec3>>();
-            }
-        }
+    for timer_done_event in timer_done_event_reader.read() {
+        let mut timer_entity_commands = commands.entity(timer_done_event.timer_entity);
+        timer_entity_commands.remove::<CalculatingTimer<T>>();
+        timer_entity_commands.remove::<OnceDoneTimer>();
     }
 }

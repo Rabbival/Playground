@@ -1,13 +1,13 @@
 use crate::prelude::*;
 
-#[derive(Default, Debug, Clone, Copy)]
-pub struct TimerValueCalculator<T: Numeric> {
+#[derive(Default, Debug, Clone, Copy, Component)]
+pub struct ValueByInterpolation<T: Numeric> {
     original_value: T,
     goal_value: T,
     current_value_calculation: Interpolator,
 }
 
-impl<T: Numeric> TimerValueCalculator<T> {
+impl<T: Numeric> ValueByInterpolation<T> {
     pub fn new(original_value: T, goal_value: T, current_value_calculation: Interpolator) -> Self {
         Self {
             original_value,

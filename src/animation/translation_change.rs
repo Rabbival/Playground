@@ -16,32 +16,32 @@ impl Plugin for TranslationChangePlugin {
 
 fn listen_for_init_translation_change_request(
     mut event_reader: EventReader<TranslationEventChannel>,
-    mut add_timer_event_writer: EventWriter<AddTimerToEntity<Vec3>>,
+    mut commands: Commands,
 ) {
     for translation_event in event_reader.read() {
         match translation_event {
-            TranslationEventChannel::MoveInDirectLine {
+            TranslationEventChannel::InitiateMoveInDirectLine {
                 entity,
                 origin,
                 target,
                 duration,
                 once_done,
             } => {
-                add_timer_event_writer.send(AddTimerToEntity {
-                    timer: CalculatingMultipliedTimer::<Vec3>::new(
+                commands.spawn(CalculatingTimer {
+                    timer: FullTimer::new(
+                        vec![*entity],
                         vec![TimeMultiplierId::GameTimeMultiplier],
                         *duration,
-                        TimerValueCalculator::new(
-                            *origin,
-                            *target,
-                            Interpolator {
-                                power: ORB_COLLECTION_POWER,
-                            },
-                        ),
-                        Some(EventFromTimerType::Move(MoveEventFromTimer::InDirectLine)),
+                        TimerGoingEventType::Move(MoveEventFromTimer::InDirectLine),
                         *once_done,
                     ),
-                    entity: *entity,
+                    calculator: ValueByInterpolation::<Vec3>::new(
+                        *origin,
+                        *target,
+                        Interpolator {
+                            power: ORB_COLLECTION_POWER,
+                        },
+                    ),
                 });
             }
         }
@@ -49,18 +49,16 @@ fn listen_for_init_translation_change_request(
 }
 
 fn listen_for_translation_update_requests(
-    mut event_reader: EventReader<EventFromTimer<Vec3>>,
+    mut event_reader: EventReader<TimerGoingEvent<Vec3>>,
     mut transforms: Query<&mut Transform>,
 ) {
     for event_from_timer in event_reader.read() {
-        if let Some(EventFromTimerType::Move(MoveEventFromTimer::InDirectLine)) =
-            event_from_timer.try_get_as_going_event()
+        if let TimerGoingEventType::Move(MoveEventFromTimer::InDirectLine) =
+            event_from_timer.event_type
         {
-            update_entity_translation(
-                event_from_timer.entity(),
-                &mut transforms,
-                event_from_timer.current_value(),
-            );
+            for entity in event_from_timer.entities.iter() {
+                update_entity_translation(entity, &mut transforms, event_from_timer.value);
+            }
         }
     }
 }

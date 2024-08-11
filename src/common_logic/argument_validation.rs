@@ -38,15 +38,6 @@ pub fn clamp_and_notify<T: PartialOrd + Debug + 'static>(value: T, min: T, max: 
     }
 }
 
-pub fn array_from_vec<T: Debug + Copy, const N: usize>(vec: Vec<T>) -> [Option<T>; N] {
-    let mut array = [None; N];
-    let shortened_vec = truncated_if_at_limit(vec, N);
-    for (i, elem) in shortened_vec.into_iter().enumerate() {
-        array[i] = Some(elem);
-    }
-    array
-}
-
 pub fn truncated_if_at_limit<T: Debug>(vec: Vec<T>, max_count: usize) -> Vec<T> {
     if vec.len() > max_count {
         print_warning(

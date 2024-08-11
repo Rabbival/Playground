@@ -22,6 +22,7 @@ pub mod prelude {
     };
     pub use crate::common_logic::{
         argument_validation::*, enums::basic_direction::*, interpolator::*, mismatch_error::*,
+        value_by_interpolation::*, vec_based_array::*,
     };
     pub use crate::debug::{
         consts::*,
@@ -39,14 +40,12 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
+        bundles::calculating_timer::*,
         consts::*,
-        custom_timer::{
-            calculating_multiplied_timer::*, simple_multiplied_timer::*, timer_manager::*,
-            timer_value_calculator::*,
-        },
+        custom_timer::{full_timer::*, once_done_timer::*, timer_manager::*},
         events::{
-            add_timer_to_entity::*, event_from_timer::*, event_from_timer_type::*,
-            set_time_multiplier::*, TimeEventChannelPlugin,
+            set_time_multiplier::*, timer_done_event::*, timer_going_event::*,
+            TimeEventChannelPlugin,
         },
         time_multiplication::{
             time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,

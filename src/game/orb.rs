@@ -47,12 +47,12 @@ fn collect_all_orbs(
     for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs)
     {
         for (orb_transform, orb_entity) in &orb_query {
-            event_writer.send(TranslationEventChannel::MoveInDirectLine {
+            event_writer.send(TranslationEventChannel::InitiateMoveInDirectLine {
                 entity: orb_entity,
                 origin: orb_transform.translation,
                 target: Vec3::from((*orb_collection_target, 0.0)),
                 duration: ORB_COLLECTION_TIME,
-                once_done: Some(EventFromTimerType::DespawnSelf),
+                once_done: TimerDoneEventType::DespawnEntity(orb_entity),
             });
         }
     }

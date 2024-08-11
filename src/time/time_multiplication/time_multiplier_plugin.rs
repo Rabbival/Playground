@@ -22,53 +22,53 @@ fn initialize_time_multipliers(mut commands: Commands) {
 
 fn listen_for_time_multiplier_requests(
     mut time_multiplier_set_request_reader: EventReader<SetTimeMultiplier>,
-    mut event_from_timer_reader: EventReader<EventFromTimer<f32>>,
-    mut add_timer_event_writer: EventWriter<AddTimerToEntity<f32>>,
+    mut event_from_timer_reader: EventReader<TimerGoingEvent<f32>>,
     mut time_multipliers: Query<(&mut TimeMultiplier, Entity)>,
+    mut commands: Commands,
 ) {
     for time_multiplier_set_request in time_multiplier_set_request_reader.read() {
         fire_time_multiplier_changers(
-            &mut add_timer_event_writer,
             &time_multipliers,
             time_multiplier_set_request.id,
             time_multiplier_set_request.new_multiplier,
             time_multiplier_set_request.duration,
+            &mut commands,
         );
     }
     for event_from_timer in event_from_timer_reader.read() {
-        if let Some(EventFromTimerType::ChangeTimeMultiplierSpeed) =
-            event_from_timer.try_get_as_going_event()
-        {
-            if let Ok((mut multiplier, _)) = time_multipliers.get_mut(event_from_timer.entity()) {
-                multiplier.set_value(event_from_timer.current_value());
+        if let TimerGoingEventType::ChangeTimeMultiplierSpeed = event_from_timer.event_type {
+            if let Ok([(mut multiplier, _)]) =
+                time_multipliers.get_many_mut(event_from_timer.entities.get_initialized_subarray())
+            {
+                multiplier.set_value(event_from_timer.value);
             }
         }
     }
 }
 
 fn fire_time_multiplier_changers(
-    add_timer_event_writer: &mut EventWriter<AddTimerToEntity<f32>>,
     time_multipliers: &Query<(&mut TimeMultiplier, Entity)>,
     id: TimeMultiplierId,
     new_multiplier: f32,
     duration: f32,
+    commands: &mut Commands,
 ) {
     for (multiplier, multiplier_entity) in time_multipliers {
         if multiplier.id() == id {
             if multiplier.changeable() {
-                add_timer_event_writer.send(AddTimerToEntity {
-                    timer: CalculatingMultipliedTimer::<f32>::new(
+                commands.spawn(CalculatingTimer {
+                    timer: FullTimer::new(
+                        vec![multiplier_entity],
                         vec![TimeMultiplierId::default()],
                         duration,
-                        TimerValueCalculator::new(
-                            multiplier.value(),
-                            new_multiplier,
-                            Interpolator::default(),
-                        ),
-                        Some(EventFromTimerType::ChangeTimeMultiplierSpeed),
-                        None,
+                        TimerGoingEventType::ChangeTimeMultiplierSpeed,
+                        TimerDoneEvent::default(),
                     ),
-                    entity: multiplier_entity,
+                    calculator: ValueByInterpolation::<f32>::new(
+                        multiplier.value(),
+                        new_multiplier,
+                        Interpolator::default(),
+                    ),
                 });
             } else {
                 print_warning(
