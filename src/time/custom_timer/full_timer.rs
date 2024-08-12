@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct FullTimer {
-    pub entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    pub affected_entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
     pub time_multipliers: VecBasedArray<TimeMultiplierId, TIMER_MAX_ASSIGNED_MULTIPLIERS>,
     pub send_as_going: TimerGoingEventType,
     pub send_once_done: TimerDoneEventType,
@@ -13,7 +13,7 @@ pub struct FullTimer {
 
 impl FullTimer {
     pub fn new(
-        entities_vec: Vec<Entity>,
+        affected_entities_vec: Vec<Entity>,
         time_multipliers_vec: Vec<TimeMultiplierId>,
         duration: f32,
         send_as_going: TimerGoingEventType,
@@ -21,10 +21,10 @@ impl FullTimer {
     ) -> Self {
         let clamped_duration =
             clamp_and_notify(duration, A_MILLISECOND_IN_SECONDS, AN_HOUR_IN_SECONDS);
-        let entities_array = VecBasedArray::new(entities_vec);
+        let affected_entities_array = VecBasedArray::new(affected_entities_vec);
         let time_multipliers_array = VecBasedArray::new(time_multipliers_vec);
         Self {
-            entities: entities_array,
+            affected_entities: affected_entities_array,
             time_multipliers: time_multipliers_array,
             send_as_going,
             send_once_done,

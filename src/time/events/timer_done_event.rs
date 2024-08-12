@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Copy, PartialEq, Event)]
 pub struct TimerDoneEvent {
     pub event_type: TimerDoneEventType,
+    pub affected_entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
     pub timer_entity: Entity,
 }
 
@@ -10,7 +11,7 @@ pub struct TimerDoneEvent {
 pub enum TimerDoneEventType {
     #[default]
     Nothing,
-    DespawnEntity(Entity),
+    DespawnAffectedEntities,
 }
 
 pub struct TimerDoneEventPlugin;

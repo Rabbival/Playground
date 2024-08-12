@@ -17,12 +17,4 @@ impl<T: Debug + Copy, const N: usize> VecBasedArray<T, N> {
     pub fn iter(&self) -> impl Iterator<Item = T> + '_ {
         self.0.iter().flatten().copied()
     }
-
-    pub fn get_initialized_subarray<const M: usize>(&self) -> [T; M] {
-        self.0
-            .first_chunk()
-            .copied()
-            .unwrap()
-            .map(|some_t| some_t.unwrap())
-    }
 }

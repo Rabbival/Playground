@@ -7,8 +7,8 @@ impl Plugin for TranslationChangePlugin {
         app.add_systems(
             Update,
             (
-                listen_for_init_translation_change_request.in_set(AnimationSystemSet::PreTicking),
-                listen_for_translation_update_requests.in_set(AnimationSystemSet::PostTicking),
+                listen_for_init_translation_change_request.in_set(TimerSystemSet::PreTicking),
+                listen_for_translation_update_requests.in_set(TimerSystemSet::PostTicking),
             ),
         );
     }
