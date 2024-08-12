@@ -2,7 +2,6 @@
 # will have compiled files and executables
 debug/
 target/
-game_logs/
 
 # Allow the debug directory inside the src directory
 !src/debug/
@@ -16,3 +15,6 @@ Cargo.lock
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+
+# No need to change the logs file every time we run the program
+game_logs/

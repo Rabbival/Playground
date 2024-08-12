@@ -3,6 +3,7 @@
 use crate::prelude::*;
 
 pub mod consts;
+pub mod late_despawner;
 pub mod main_camera;
 pub mod screen_setup;
 pub mod system_sets;
@@ -22,6 +23,7 @@ pub fn main() {
             CustomAnimationPlugin,
             GamePlugin,
             TimePlugin,
+            LateDespawnerPlugin,
         ));
 
     if !LOG_CATEGORYS_TO_APPEND_TO_SESSION_LOG.is_empty() {
