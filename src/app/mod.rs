@@ -3,10 +3,8 @@
 use crate::prelude::*;
 
 pub mod consts;
-pub mod late_despawner;
 pub mod main_camera;
 pub mod screen_setup;
-pub mod system_sets;
 pub mod tags;
 
 #[bevy_main]

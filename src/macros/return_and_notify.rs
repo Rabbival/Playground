@@ -37,7 +37,7 @@ macro_rules! single_mut_else_return {
             Ok(item) => item,
             Err(error) => {
                 print_error(
-                    format!("error getting single mut {:?}: {}", $query, error),
+                    EntityError::EntityNotInQuery(error),
                     vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
@@ -53,7 +53,7 @@ macro_rules! get_entity_else_return {
             Ok(item) => item,
             Err(error) => {
                 print_error(
-                    format!("error getting entity {:?}: {}", $entity, error),
+                    EntityError::EntityNotInQuery(error),
                     vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;

@@ -126,7 +126,17 @@ fn clear_full_timers<T: Numeric>(
 ) {
     for timer_done_event in timer_done_event_reader.read() {
         if let Ok(entity) = full_timers.get(timer_done_event.timer_entity) {
-            commands.entity(entity).remove::<CalculatingTimer<T>>();
+            match commands.get_entity(entity) {
+                Some(mut entity_commands) => {
+                    entity_commands.remove::<CalculatingTimer<T>>();
+                }
+                None => {
+                    print_error(
+                        EntityError::CommandsCouldntGetEntity("CalculatingTimer"),
+                        vec![LogCategory::RequestNotFulfilled],
+                    );
+                }
+            }
         }
     }
 }
@@ -138,7 +148,17 @@ fn clear_once_done_timers(
 ) {
     for timer_done_event in timer_done_event_reader.read() {
         if let Ok(entity) = once_done_timers.get(timer_done_event.timer_entity) {
-            commands.entity(entity).remove::<OnceDoneTimer>();
+            match commands.get_entity(entity) {
+                Some(mut entity_commands) => {
+                    entity_commands.remove::<OnceDoneTimer>();
+                }
+                None => {
+                    print_error(
+                        EntityError::CommandsCouldntGetEntity("OnceDoneTimer"),
+                        vec![LogCategory::RequestNotFulfilled],
+                    );
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ mod animation;
 mod app;
 mod common_logic;
 mod debug;
+mod ecs;
 mod game;
 mod input;
 mod os_access;
@@ -17,10 +18,7 @@ extern crate lazy_static;
 
 pub mod prelude {
     pub use crate::animation::{event_channels::*, translation_change::*, CustomAnimationPlugin};
-    pub use crate::app::{
-        consts::*, late_despawner::*, main, main_camera::*, screen_setup::*, system_sets::*,
-        tags::*,
-    };
+    pub use crate::app::{consts::*, main, main_camera::*, screen_setup::*, tags::*};
     pub use crate::common_logic::{
         argument_validation::*, enums::basic_direction::*, interpolator::*, mismatch_error::*,
         value_by_interpolation::*, vec_based_array::*,
@@ -31,6 +29,7 @@ pub mod prelude {
         game_session_log::*,
         print_log::*,
     };
+    pub use crate::ecs::{entity_error::*, late_despawner::*, system_sets::*};
     pub use crate::game::{consts::*, event_channels::*, orb::*, tags::*, GamePlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
