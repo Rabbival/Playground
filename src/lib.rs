@@ -20,8 +20,11 @@ pub mod prelude {
     pub use crate::animation::{event_channels::*, translation_change::*, CustomAnimationPlugin};
     pub use crate::app::{consts::*, main, main_camera::*, screen_setup::*, tags::*};
     pub use crate::common_logic::{
-        argument_validation::*, enums::basic_direction::*, interpolator::*, mismatch_error::*,
-        value_by_interpolation::*, vec_based_array::*,
+        argument_validation::*,
+        enums::basic_direction::*,
+        interpolator::{value_by_interpolation::*, Interpolator},
+        mismatch_error::*,
+        vec_based_array::*,
     };
     pub use crate::debug::{
         consts::*,

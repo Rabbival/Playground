@@ -57,3 +57,29 @@ fn collect_all_orbs(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_max_orb_limitation() {
+        let mut app = App::new();
+        let more_than_max = ORB_MAX_COUNT + 1;
+        app.init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<ColorMaterial>>()
+            .add_event::<OrbEvent>()
+            .add_systems(Update, (send_orb_event, spawn_orb).chain());
+        for _ in 0..more_than_max {
+            app.update();
+        }
+        assert_eq!(
+            app.world_mut().query::<&Orb>().iter(app.world()).len(),
+            ORB_MAX_COUNT
+        );
+    }
+
+    fn send_orb_event(mut event_writer: EventWriter<OrbEvent>) {
+        event_writer.send(OrbEvent::SpawnOrb(Vec2::default()));
+    }
+}
