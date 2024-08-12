@@ -19,10 +19,10 @@ fn spawn_orb(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut commands: Commands,
 ) {
-    return_if_at_limit!(orb_query, ORB_MAX_COUNT);
     for requested_spawn_location in
         read_single_field_variant!(spawn_request_reader, OrbEvent::SpawnOrb)
     {
+        return_if_at_limit!(orb_query, ORB_MAX_COUNT);
         commands.spawn((
             MaterialMesh2dBundle {
                 mesh: Mesh2dHandle(meshes.add(Circle::new(ORB_MAX_RADIUS))),
