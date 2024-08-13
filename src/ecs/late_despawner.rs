@@ -8,7 +8,7 @@ impl Plugin for LateDespawnerPlugin {
     }
 }
 
-fn listen_for_despawn_requests_from_timers(
+pub fn listen_for_despawn_requests_from_timers(
     mut event_reader: EventReader<TimerDoneEvent>,
     mut commands: Commands,
 ) {

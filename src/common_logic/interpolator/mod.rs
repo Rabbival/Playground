@@ -34,30 +34,38 @@ mod tests {
         let interpolator = Interpolator::default();
         let start_value = 1.0;
         let end_value = 42.0;
+
         let endpoint = interpolator.calculate(start_value, end_value, 3.14);
-        assert_eq!(endpoint, end_value);
         let startpoint = interpolator.calculate(start_value, end_value, -3.14);
+
+        assert_eq!(endpoint, end_value);
         assert_eq!(startpoint, start_value);
     }
 
     #[test]
     fn test_linear_interpolator() {
         let linear_interpolator = Interpolator::new(1.0);
+
         let midpoint = linear_interpolator.calculate(0.0, 1.0, 0.5);
+
         assert_eq!(midpoint, 0.5);
     }
 
     #[test]
     fn test_parabolic_interpolator() {
         let parabolic_interpolator = Interpolator::new(2.0);
+
         let midpoint = parabolic_interpolator.calculate(1.0, 2.0, 0.5);
+
         assert_eq!(midpoint, 1.25);
     }
 
     #[test]
     fn test_radical_interpolator() {
         let radical_interpolator = Interpolator::new(0.5);
+
         let quarter_from_start_point = radical_interpolator.calculate(1.0, 2.0, 0.25);
+
         assert_eq!(quarter_from_start_point, 1.5);
     }
 }

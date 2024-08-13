@@ -14,7 +14,7 @@ impl Plugin for TranslationChangePlugin {
     }
 }
 
-fn listen_for_init_translation_change_request(
+pub fn listen_for_init_translation_change_request(
     mut event_reader: EventReader<TranslationEventChannel>,
     mut commands: Commands,
 ) {

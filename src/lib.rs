@@ -1,13 +1,13 @@
 #![allow(clippy::type_complexity)]
-mod animation;
+pub mod animation;
 mod app;
 mod common_logic;
 mod debug;
-mod ecs;
-mod game;
+pub mod ecs;
+pub mod game;
 mod input;
 mod os_access;
-mod time;
+pub mod time;
 mod trait_unions;
 
 #[macro_use]
@@ -45,7 +45,6 @@ pub mod prelude {
     pub use crate::time::{
         bundles::calculating_timer::*,
         consts::*,
-        custom_timer::{full_timer::*, once_done_timer::*, timer_manager::*},
         events::{
             set_time_multiplier::*, timer_done_event::*, timer_going_event::*,
             TimeEventChannelPlugin,
@@ -55,6 +54,7 @@ pub mod prelude {
             TimeMutiplicationPlugin,
         },
         time_related_error::*,
+        timer::{full_timer::*, once_done_timer::*, timer_manager::*},
         TimePlugin,
     };
     pub use crate::trait_unions::*;

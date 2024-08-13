@@ -12,7 +12,7 @@ impl Plugin for OrbPlugin {
     }
 }
 
-fn spawn_orb(
+pub fn spawn_orb(
     mut spawn_request_reader: EventReader<OrbEvent>,
     orb_query: Query<&Orb>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -39,7 +39,7 @@ fn spawn_orb(
     }
 }
 
-fn collect_all_orbs(
+pub fn collect_all_orbs(
     mut event_reader: EventReader<OrbEvent>,
     mut event_writer: EventWriter<TranslationEventChannel>,
     orb_query: Query<(&Transform, Entity), With<Orb>>,
@@ -70,9 +70,11 @@ mod tests {
             .init_resource::<Assets<ColorMaterial>>()
             .add_event::<OrbEvent>()
             .add_systems(Update, (send_orb_event, spawn_orb).chain());
+
         for _ in 0..more_than_max {
             app.update();
         }
+
         assert_eq!(
             app.world_mut().query::<&Orb>().iter(app.world()).len(),
             ORB_MAX_COUNT

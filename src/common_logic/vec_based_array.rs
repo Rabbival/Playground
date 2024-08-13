@@ -26,18 +26,22 @@ mod tests {
     #[test]
     fn test_array_based_vec_creation() {
         let vec = vec![1, 2];
+
         let bigger_vec_based_array: VecBasedArray<usize, 3> = VecBasedArray::new(vec.clone());
-        assert_eq!(bigger_vec_based_array.0, [Some(1), Some(2), None]);
         let smaller_vec_based_array: VecBasedArray<usize, 1> = VecBasedArray::new(vec.clone());
+
+        assert_eq!(bigger_vec_based_array.0, [Some(1), Some(2), None]);
         assert_eq!(smaller_vec_based_array.0, [Some(1)]);
     }
 
     #[test]
     fn test_array_based_vec_iter() {
         let vec = vec![1, 2];
+
         let bigger_vec_based_array: VecBasedArray<usize, 3> = VecBasedArray::new(vec.clone());
-        assert_eq!(bigger_vec_based_array.iter().count(), 2);
         let smaller_vec_based_array: VecBasedArray<usize, 1> = VecBasedArray::new(vec.clone());
+
+        assert_eq!(bigger_vec_based_array.iter().count(), 2);
         assert_eq!(smaller_vec_based_array.iter().count(), 1);
         assert_eq!(bigger_vec_based_array.iter().next(), Some(1));
         assert_eq!(smaller_vec_based_array.iter().next(), Some(1));

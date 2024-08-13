@@ -60,7 +60,7 @@ fn tick_once_done_timer_and_send_event(
     }
 }
 
-fn tick_full_timers<T: Numeric>(
+pub fn tick_full_timers<T: Numeric>(
     mut timer_going_event_writer: EventWriter<TimerGoingEvent<T>>,
     mut timer_done_event_writer: EventWriter<TimerDoneEvent>,
     mut timers: Query<(&mut FullTimer, &ValueByInterpolation<T>, Entity)>,
@@ -119,6 +119,28 @@ fn calculate_time_multiplier<const N: usize>(
     calculated_multiplier
 }
 
+fn clear_once_done_timers(
+    mut timer_done_event_reader: EventReader<TimerDoneEvent>,
+    once_done_timers: Query<Entity, With<OnceDoneTimer>>,
+    mut commands: Commands,
+) {
+    for timer_done_event in timer_done_event_reader.read() {
+        if let Ok(entity) = once_done_timers.get(timer_done_event.timer_entity) {
+            match commands.get_entity(entity) {
+                Some(mut entity_commands) => {
+                    entity_commands.remove::<OnceDoneTimer>();
+                }
+                None => {
+                    print_error(
+                        EntityError::CommandsCouldntGetEntity("OnceDoneTimer"),
+                        vec![LogCategory::RequestNotFulfilled],
+                    );
+                }
+            }
+        }
+    }
+}
+
 fn clear_full_timers<T: Numeric>(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     full_timers: Query<Entity, (With<FullTimer>, With<ValueByInterpolation<T>>)>,
@@ -141,24 +163,44 @@ fn clear_full_timers<T: Numeric>(
     }
 }
 
-fn clear_once_done_timers(
-    mut timer_done_event_reader: EventReader<TimerDoneEvent>,
-    once_done_timers: Query<Entity, With<OnceDoneTimer>>,
-    mut commands: Commands,
-) {
-    for timer_done_event in timer_done_event_reader.read() {
-        if let Ok(entity) = once_done_timers.get(timer_done_event.timer_entity) {
-            match commands.get_entity(entity) {
-                Some(mut entity_commands) => {
-                    entity_commands.remove::<OnceDoneTimer>();
-                }
-                None => {
-                    print_error(
-                        EntityError::CommandsCouldntGetEntity("OnceDoneTimer"),
-                        vec![LogCategory::RequestNotFulfilled],
-                    );
-                }
-            }
-        }
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use super::*;
+
+    #[test]
+    fn test_timer_clearing() {
+        let mut app = App::new();
+        app.init_resource::<Time>()
+            .add_event::<TimerDoneEvent>()
+            .add_systems(
+                Update,
+                (tick_once_done_timers, clear_once_done_timers).chain(),
+            );
+
+        add_timer_and_advance_time(&mut app);
+        app.update();
+
+        assert_eq!(
+            app.world_mut()
+                .query::<&OnceDoneTimer>()
+                .iter(app.world())
+                .len(),
+            0
+        );
+    }
+
+    fn add_timer_and_advance_time(app: &mut App) {
+        app.world_mut().commands().spawn(OnceDoneTimer::new(
+            vec![],
+            vec![],
+            A_MILLISECOND_IN_SECONDS,
+            TimerDoneEventType::default(),
+        ));
+        app.world_mut()
+            .resource_mut::<Time>()
+            .as_mut()
+            .advance_by(Duration::from_secs_f32(A_MILLISECOND_IN_SECONDS));
     }
 }
