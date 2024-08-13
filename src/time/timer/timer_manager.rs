@@ -74,7 +74,7 @@ pub fn tick_full_timers<T: Numeric>(
             &mut timer_done_event_writer,
             time_delta * calculate_time_multiplier(&time_multipliers, timer.time_multipliers),
             &mut timer,
-            &value_calculator,
+            value_calculator,
             timer_entity,
         );
     }
