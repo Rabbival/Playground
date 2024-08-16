@@ -34,19 +34,9 @@ impl TimeMultiplier {
             self.value = value;
         } else {
             print_warning(
-                TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(self.id),
+                TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(self.id),
                 vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
             )
-        }
-    }
-}
-
-impl Default for TimeMultiplier {
-    fn default() -> Self {
-        Self {
-            id: TimeMultiplierId::default(),
-            value: DEFAULT_TIME_MULTIPLIER,
-            changeable: false,
         }
     }
 }

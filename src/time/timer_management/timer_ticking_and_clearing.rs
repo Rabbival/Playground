@@ -1,8 +1,8 @@
 use crate::prelude::*;
 
-pub struct TimerManagerPlugin;
+pub struct TimerTickingAndClearingPlugin;
 
-impl Plugin for TimerManagerPlugin {
+impl Plugin for TimerTickingAndClearingPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,

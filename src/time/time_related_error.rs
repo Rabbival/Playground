@@ -1,11 +1,13 @@
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 use crate::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
 pub enum TimeRelatedError {
     TimeMultiplierNotFound(TimeMultiplierId),
-    AttemptedToChangeFixedMultiplierTimeMultiplier(TimeMultiplierId),
+    AttemptedToChangeFixedTimeMultiplier(TimeMultiplierId),
+    TimerToRemoveFromNotFound(RemoveFromTimerAffectedEntities),
+    TimerAffectedEntitiesError(VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>),
 }
 
 impl Display for TimeRelatedError {
@@ -14,11 +16,31 @@ impl Display for TimeRelatedError {
             Self::TimeMultiplierNotFound(id) => {
                 write!(f, "Time processor with id {:?} not found", id)
             }
-            Self::AttemptedToChangeFixedMultiplierTimeMultiplier(id) => write!(
+            Self::AttemptedToChangeFixedTimeMultiplier(id) => write!(
                 f,
                 "Attempted to change fixed multiplier time processor with id {:?}",
                 id
             ),
+            Self::TimerToRemoveFromNotFound(event) => {
+                write!(
+                    f,
+                    "Couldn't find timer to remove entity from. Event: {:?}",
+                    event
+                )
+            }
+            Self::TimerAffectedEntitiesError(vec_based_array_error) => {
+                write!(
+                    f,
+                    "Error when accessing timer affected entities: {:?}",
+                    vec_based_array_error
+                )
+            }
         }
+    }
+}
+
+impl From<VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>> for TimeRelatedError {
+    fn from(value: VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>) -> Self {
+        TimeRelatedError::TimerAffectedEntitiesError(value)
     }
 }

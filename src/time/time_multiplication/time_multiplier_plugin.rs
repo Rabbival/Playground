@@ -68,7 +68,7 @@ fn fire_time_multiplier_changers(
                 commands.spawn(CalculatingTimer {
                     timer: FullTimer::new(
                         vec![multiplier_entity],
-                        vec![TimeMultiplierId::default()],
+                        vec![],
                         duration,
                         TimerGoingEventType::ChangeTimeMultiplierSpeed,
                         TimerDoneEventType::default(),
@@ -81,7 +81,7 @@ fn fire_time_multiplier_changers(
                 });
             } else {
                 print_warning(
-                    TimeRelatedError::AttemptedToChangeFixedMultiplierTimeMultiplier(id),
+                    TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(id),
                     vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
                 );
             }

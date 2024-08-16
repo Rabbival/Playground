@@ -2,6 +2,7 @@
 pub mod animation;
 mod app;
 mod common_logic;
+mod data_structures;
 mod debug;
 pub mod ecs;
 pub mod game;
@@ -24,8 +25,8 @@ pub mod prelude {
         enums::basic_direction::*,
         interpolator::{value_by_interpolation::*, Interpolator},
         mismatch_error::*,
-        vec_based_array::*,
     };
+    pub use crate::data_structures::vec_based_array::{vec_based_array_error::*, VecBasedArray};
     pub use crate::debug::{
         consts::*,
         enums::{bevy_log_level::*, log_category::*, os_access_log::*},
@@ -46,15 +47,18 @@ pub mod prelude {
         bundles::calculating_timer::*,
         consts::*,
         events::{
-            set_time_multiplier::*, timer_done_event::*, timer_going_event::*,
-            TimeEventChannelPlugin,
+            remove_from_timer_affected_entities::*, set_time_multiplier::*, timer_done_event::*,
+            timer_going_event::*, TimeEventChannelPlugin,
         },
         time_multiplication::{
             time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,
             TimeMutiplicationPlugin,
         },
         time_related_error::*,
-        timer::{full_timer::*, once_done_timer::*, timer_manager::*},
+        timer::{full_timer::*, once_done_timer::*},
+        timer_management::{
+            timer_affected_entities_change::*, timer_ticking_and_clearing::*, TimerManagementPlugin,
+        },
         TimePlugin,
     };
     pub use crate::trait_unions::*;
