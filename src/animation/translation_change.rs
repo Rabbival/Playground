@@ -26,7 +26,7 @@ pub fn listen_for_init_translation_change_request(
             Ok(mut affecting_timers_component) => replace_timer_for_entity(
                 &mut affecting_timers_component.affecting_timers,
                 &mut remove_from_timer_entities_writer,
-                &translation_event,
+                translation_event,
                 &mut commands,
             ),
             Err(_) => print_warning(
