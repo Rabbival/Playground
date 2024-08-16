@@ -7,20 +7,16 @@ pub struct TimerGoingEvent<T: Numeric> {
     pub value: T,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TimerGoingEventType {
     ChangeTimeMultiplierSpeed,
     Move(MoveEventFromTimer),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Eq, Hash)]
 pub enum MoveEventFromTimer {
     #[default]
     InDirectLine,
-    InCircleAround {
-        center: Vec3,
-        radius: f32,
-    },
 }
 
 pub struct TimerGoingEventPlugin;

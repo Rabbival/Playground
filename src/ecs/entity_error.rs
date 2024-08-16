@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub enum EntityError {
-    EntityNotInQuery(String),
+    EntityNotInQuery(&'static str),
     CommandsCouldntGetEntity(&'static str),
 }
 

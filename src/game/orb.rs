@@ -34,6 +34,7 @@ pub fn spawn_orb(
                 ),
                 ..default()
             },
+            FullTimerAffected::default(),
             Orb,
         ));
     }

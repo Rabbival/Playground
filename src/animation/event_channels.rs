@@ -18,3 +18,21 @@ impl Plugin for AnimationEventChannelsPlugin {
         app.add_event::<TranslationEventChannel>();
     }
 }
+
+impl TranslationEventChannel {
+    pub fn timer_going_event_type(&self) -> TimerGoingEventType {
+        match self {
+            Self::InitiateMoveInDirectLine { .. } => {
+                TimerGoingEventType::Move(MoveEventFromTimer::InDirectLine)
+            }
+        }
+    }
+}
+
+impl EntityCarryingEvent for TranslationEventChannel {
+    fn event_entity(&self) -> Entity {
+        match self {
+            Self::InitiateMoveInDirectLine { entity, .. } => *entity,
+        }
+    }
+}
