@@ -18,14 +18,14 @@ fn slow_time_when_pressing_space(
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         event_writer.send(SetTimeMultiplier {
-            id: TimeMultiplierId::GameTimeMultiplier,
+            multiplier_id: TimeMultiplierId::GameTimeMultiplier,
             new_multiplier: MULTIPLIER_WHEN_PICKING_CARDS,
             duration: 0.1,
         });
     }
     if keyboard_input.just_released(KeyCode::Space) {
         event_writer.send(SetTimeMultiplier {
-            id: TimeMultiplierId::GameTimeMultiplier,
+            multiplier_id: TimeMultiplierId::GameTimeMultiplier,
             new_multiplier: 1.0,
             duration: 0.1,
         });

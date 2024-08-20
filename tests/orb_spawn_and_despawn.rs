@@ -12,7 +12,7 @@ fn orb_spawn_and_despawn_test() {
         (
             spawn_orb,
             collect_all_orbs,
-            listen_for_init_translation_change_request,
+            listen_for_full_timer_firing_requests::<MoveTimerFireRequest>,
             tick_full_timers::<Vec3>,
             listen_for_despawn_requests_from_timers,
         )

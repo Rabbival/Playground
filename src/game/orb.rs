@@ -1,4 +1,7 @@
-use crate::{prelude::*, read_single_field_variant, return_if_at_limit};
+use crate::{
+    prelude::*, read_single_field_variant, return_if_at_limit,
+    time::events::full_timer_fire_request::move_timer_fire_request::MoveTimerFireRequest,
+};
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 
 pub struct OrbPlugin;
@@ -42,18 +45,26 @@ pub fn spawn_orb(
 
 pub fn collect_all_orbs(
     mut event_reader: EventReader<OrbEvent>,
-    mut event_writer: EventWriter<TranslationEventChannel>,
+    mut event_writer: EventWriter<FullTimerFireRequest<MoveTimerFireRequest>>,
     orb_query: Query<(&Transform, Entity), With<Orb>>,
 ) {
     for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs)
     {
         for (orb_transform, orb_entity) in &orb_query {
-            event_writer.send(TranslationEventChannel::InitiateMoveInDirectLine {
-                entity: orb_entity,
-                origin: orb_transform.translation,
-                target: Vec3::from((*orb_collection_target, 0.0)),
-                duration: ORB_COLLECTION_TIME,
-                once_done: TimerDoneEventType::DespawnAffectedEntities,
+            event_writer.send(FullTimerFireRequest {
+                affecting_timer_set_policy: AffectingTimerSetPolicy::IgnoreNewIfAssigned,
+                timer_to_fire: MoveTimerFireRequest::new(
+                    MovementType::InDirectLine,
+                    ValueByInterpolation::new(
+                        orb_transform.translation,
+                        Vec3::from((*orb_collection_target, 0.0)),
+                        Interpolator::new(ORB_COLLECTION_POWER),
+                    ),
+                    vec![orb_entity],
+                    vec![TimeMultiplierId::GameTimeMultiplier],
+                    ORB_COLLECTION_TIME,
+                    TimerDoneEventType::DespawnAffectedEntities,
+                ),
             });
         }
     }

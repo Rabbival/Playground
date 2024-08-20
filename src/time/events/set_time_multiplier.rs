@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub struct SetTimeMultiplier {
-    pub id: TimeMultiplierId,
+    pub multiplier_id: TimeMultiplierId,
     pub new_multiplier: f32,
     pub duration: f32,
 }

@@ -3,7 +3,7 @@ use std::{
     ops::{Add, Mul, Sub},
 };
 
-use crate::trait_union;
+use crate::{prelude::*, trait_union};
 
 trait_union!(
     Numeric,
@@ -16,4 +16,9 @@ trait_union!(
         + 'static
         + Debug
         + Default
+);
+
+trait_union!(
+    SendableTimerFireRequestType,
+    FullTimerFireRequestType + Send + Sync + Debug + Clone + Copy + 'static
 );

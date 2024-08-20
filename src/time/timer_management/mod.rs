@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
 pub mod timer_affected_entities_change;
+pub mod timer_firing;
 pub mod timer_ticking_and_clearing;
 
 pub struct TimerManagementPlugin;
@@ -10,6 +11,7 @@ impl Plugin for TimerManagementPlugin {
         app.add_plugins((
             TimerTickingAndClearingPlugin,
             TimerAffectedEntitiesChangePlugin,
+            TimerFiringPlugin,
         ));
     }
 }

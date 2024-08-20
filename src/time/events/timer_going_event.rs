@@ -10,13 +10,7 @@ pub struct TimerGoingEvent<T: Numeric> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TimerGoingEventType {
     ChangeTimeMultiplierSpeed,
-    Move(MoveEventFromTimer),
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Default, Eq, Hash)]
-pub enum MoveEventFromTimer {
-    #[default]
-    InDirectLine,
+    Move(MovementType),
 }
 
 pub struct TimerGoingEventPlugin;

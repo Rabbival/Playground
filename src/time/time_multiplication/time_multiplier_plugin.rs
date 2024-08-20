@@ -20,7 +20,10 @@ impl Plugin for TimeMultiplierPlugin {
 
 fn initialize_time_multipliers(mut commands: Commands) {
     for time_multiplier_id in TimeMultiplierId::iter() {
-        commands.spawn(time_multiplier_id.to_initial_properties());
+        commands.spawn((
+            time_multiplier_id.to_initial_properties(),
+            FullTimerAffected::default(),
+        ));
     }
 }
 
@@ -41,55 +44,56 @@ fn listen_for_time_multiplier_update_requests(
 
 fn listen_for_time_multiplier_set_requests(
     mut time_multiplier_set_request_reader: EventReader<SetTimeMultiplier>,
+    mut timer_fire_event_writer: EventWriter<
+        FullTimerFireRequest<TimeMultiplierChangeTimerFireRequest>,
+    >,
     time_multipliers: Query<(&TimeMultiplier, Entity)>,
-    mut commands: Commands,
 ) {
     for time_multiplier_set_request in time_multiplier_set_request_reader.read() {
-        fire_time_multiplier_changers(
+        if let Err(timer_error) = fire_time_multiplier_changers(
+            &mut timer_fire_event_writer,
             &time_multipliers,
-            time_multiplier_set_request.id,
-            time_multiplier_set_request.new_multiplier,
-            time_multiplier_set_request.duration,
-            &mut commands,
-        );
+            time_multiplier_set_request,
+        ) {
+            print_warning(
+                timer_error,
+                vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
+            );
+        }
     }
 }
 
 fn fire_time_multiplier_changers(
+    timer_fire_event_writer: &mut EventWriter<
+        FullTimerFireRequest<TimeMultiplierChangeTimerFireRequest>,
+    >,
     time_multipliers: &Query<(&TimeMultiplier, Entity)>,
-    id: TimeMultiplierId,
-    new_multiplier: f32,
-    duration: f32,
-    commands: &mut Commands,
-) {
+    multiplier_set_request: &SetTimeMultiplier,
+) -> Result<(), TimeRelatedError> {
     for (multiplier, multiplier_entity) in time_multipliers {
-        if multiplier.id() == id {
+        if multiplier.id() == multiplier_set_request.multiplier_id {
             if multiplier.changeable() {
-                commands.spawn(CalculatingTimer {
-                    timer: FullTimer::new(
-                        vec![multiplier_entity],
-                        vec![],
-                        duration,
-                        TimerGoingEventType::ChangeTimeMultiplierSpeed,
-                        TimerDoneEventType::default(),
-                    ),
-                    calculator: ValueByInterpolation::<f32>::new(
-                        multiplier.value(),
-                        new_multiplier,
-                        Interpolator::default(),
+                timer_fire_event_writer.send(FullTimerFireRequest {
+                    affecting_timer_set_policy: AffectingTimerSetPolicy::AlwaysTakeNew,
+                    timer_to_fire: TimeMultiplierChangeTimerFireRequest::new(
+                        ValueByInterpolation::<f32>::new(
+                            multiplier.value(),
+                            multiplier_set_request.new_multiplier,
+                            Interpolator::default(),
+                        ),
+                        multiplier_entity,
+                        multiplier_set_request.duration,
                     ),
                 });
+                return Ok(());
             } else {
-                print_warning(
-                    TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(id),
-                    vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
-                );
+                return Err(TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(
+                    multiplier_set_request.multiplier_id,
+                ));
             }
-            return;
         }
     }
-    print_warning(
-        TimeRelatedError::TimeMultiplierNotFound(id),
-        vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
-    );
+    Err(TimeRelatedError::TimeMultiplierNotFound(
+        multiplier_set_request.multiplier_id,
+    ))
 }

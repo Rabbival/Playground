@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.14.1"
+# bevy-trait-query = "0.5.1"
 strum = "0.26.3"
 strum_macros = "0.26.4"
 rand = "0.8.5"
