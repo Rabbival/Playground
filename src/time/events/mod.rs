@@ -13,8 +13,6 @@ impl Plugin for TimeEventChannelPlugin {
         app.add_plugins((
             SetTimeMultiplierPlugin,
             TimerDoneEventPlugin,
-            TimerGoingEventPlugin,
-            FullTimerFireRequestPlugin,
             RemoveFromTimerAffectedEntitiesPlugin,
         ));
     }

@@ -19,7 +19,9 @@ extern crate lazy_static;
 
 pub mod prelude {
     pub use crate::animation::{translation_change::*, CustomAnimationPlugin};
-    pub use crate::app::{consts::*, main, main_camera::*, screen_setup::*, tags::*};
+    pub use crate::app::{
+        consts::*, generic_plugins::*, main, main_camera::*, screen_setup::*, tags::*,
+    };
     pub use crate::common_logic::{
         argument_validation::*,
         enums::basic_direction::*,
@@ -76,4 +78,5 @@ pub mod prelude {
     };
     pub use crate::trait_unions::*;
     pub use bevy::{prelude::*, utils::HashMap};
+    pub use std::marker::PhantomData;
 }

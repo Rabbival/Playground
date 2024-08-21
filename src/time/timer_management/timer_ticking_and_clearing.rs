@@ -1,27 +1,14 @@
-use crate::prelude::*;
+use crate::{plugin_for_implementors_of_trait, prelude::*};
 
-pub struct TimerTickingAndClearingPlugin;
+plugin_for_implementors_of_trait!(TimerTickingAndClearingPlugin, Numeric);
 
-impl Plugin for TimerTickingAndClearingPlugin {
+impl<T: Numeric> Plugin for TimerTickingAndClearingPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
             (
-                (
-                    tick_once_done_timers,
-                    tick_full_timers::<f32>,
-                    tick_full_timers::<Vec2>,
-                    tick_full_timers::<Vec3>,
-                    tick_full_timers::<Quat>,
-                )
-                    .in_set(TimerSystemSet::TimerTicking),
-                (
-                    clear_once_done_timers,
-                    clear_full_timers::<f32>,
-                    clear_full_timers::<Vec2>,
-                    clear_full_timers::<Vec3>,
-                    clear_full_timers::<Quat>,
-                )
+                (tick_once_done_timers, tick_full_timers::<T>).in_set(TimerSystemSet::TimerTicking),
+                (clear_once_done_timers, clear_full_timers::<T>)
                     .in_set(EndOfFrameSystemSet::TimerClearing),
             ),
         );

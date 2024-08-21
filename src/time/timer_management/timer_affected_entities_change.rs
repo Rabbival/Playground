@@ -21,6 +21,14 @@ fn listen_for_affected_entity_removal_request(
             remove_affected_entity(removal_request, &mut once_done_timers, &mut full_timers)
         {
             print_error(time_related_error, vec![LogCategory::RequestNotFulfilled])
+        } else {
+            print_info(
+                format!(
+                    "Removed entity {:?} from timer: {:?}",
+                    removal_request.entity_to_remove, removal_request.timer_entity
+                ),
+                vec![LogCategory::Time],
+            )
         }
     }
 }

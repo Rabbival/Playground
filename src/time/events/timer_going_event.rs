@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{plugin_for_implementors_of_trait, prelude::*};
 
 #[derive(Debug, Clone, Copy, PartialEq, Event)]
 pub struct TimerGoingEvent<T: Numeric> {
@@ -13,13 +13,10 @@ pub enum TimerGoingEventType {
     Move(MovementType),
 }
 
-pub struct TimerGoingEventPlugin;
+plugin_for_implementors_of_trait!(TimerGoingEventPlugin, Numeric);
 
-impl Plugin for TimerGoingEventPlugin {
+impl<T: Numeric> Plugin for TimerGoingEventPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_event::<TimerGoingEvent<f32>>()
-            .add_event::<TimerGoingEvent<Vec2>>()
-            .add_event::<TimerGoingEvent<Vec3>>()
-            .add_event::<TimerGoingEvent<Quat>>();
+        app.add_event::<TimerGoingEvent<T>>();
     }
 }

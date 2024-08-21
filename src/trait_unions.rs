@@ -7,18 +7,12 @@ use crate::{prelude::*, trait_union};
 
 trait_union!(
     Numeric,
-    Add<Output = Self>
-        + Sub<Output = Self>
-        + Mul<f32, Output = Self>
-        + Copy
-        + Send
-        + Sync
-        + 'static
-        + Debug
-        + Default
+    Add<Output = Self> + Sub<Output = Self> + Mul<f32, Output = Self> + Sendable + Default
 );
 
 trait_union!(
     SendableTimerFireRequestType,
-    FullTimerFireRequestType + Send + Sync + Debug + Clone + Copy + 'static
+    FullTimerFireRequestType + Sendable
 );
+
+trait_union!(Sendable, Clone + Copy + Send + Sync + 'static + Debug);

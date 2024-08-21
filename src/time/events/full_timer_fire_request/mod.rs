@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{plugin_for_implementors_of_trait, prelude::*};
 
 pub mod full_timer_fire_request_type;
 pub mod move_timer_fire_request;
@@ -10,11 +10,10 @@ pub struct FullTimerFireRequest<T: SendableTimerFireRequestType> {
     pub timer_to_fire: T,
 }
 
-pub struct FullTimerFireRequestPlugin;
+plugin_for_implementors_of_trait!(FullTimerFireRequestPlugin, SendableTimerFireRequestType);
 
-impl Plugin for FullTimerFireRequestPlugin {
+impl<T: SendableTimerFireRequestType> Plugin for FullTimerFireRequestPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_event::<FullTimerFireRequest<MoveTimerFireRequest>>()
-            .add_event::<FullTimerFireRequest<TimeMultiplierChangeTimerFireRequest>>();
+        app.add_event::<FullTimerFireRequest<T>>();
     }
 }

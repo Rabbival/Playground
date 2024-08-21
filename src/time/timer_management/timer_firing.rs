@@ -1,16 +1,12 @@
-use crate::prelude::*;
+use crate::{plugin_for_implementors_of_trait, prelude::*};
 
-pub struct TimerFiringPlugin;
+plugin_for_implementors_of_trait!(TimerFiringPlugin, SendableTimerFireRequestType);
 
-impl Plugin for TimerFiringPlugin {
+impl<T: SendableTimerFireRequestType> Plugin for TimerFiringPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (
-                listen_for_full_timer_firing_requests::<MoveTimerFireRequest>,
-                listen_for_full_timer_firing_requests::<TimeMultiplierChangeTimerFireRequest>,
-            )
-                .in_set(TimerSystemSet::PreTicking),
+            listen_for_full_timer_firing_requests::<T>.in_set(TimerSystemSet::PreTicking),
         );
     }
 }

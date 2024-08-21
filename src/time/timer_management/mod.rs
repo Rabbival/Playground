@@ -8,10 +8,6 @@ pub struct TimerManagementPlugin;
 
 impl Plugin for TimerManagementPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((
-            TimerTickingAndClearingPlugin,
-            TimerAffectedEntitiesChangePlugin,
-            TimerFiringPlugin,
-        ));
+        app.add_plugins(TimerAffectedEntitiesChangePlugin);
     }
 }

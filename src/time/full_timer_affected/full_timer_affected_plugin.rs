@@ -6,7 +6,7 @@ impl Plugin for FullTimerAffectedPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            clear_done_timers_from_affecting_timers.in_set(TimerSystemSet::PostTickingInstant),
+            clear_done_timers_from_affecting_timers.in_set(TimerSystemSet::PostTickingImmidiate),
         );
     }
 }

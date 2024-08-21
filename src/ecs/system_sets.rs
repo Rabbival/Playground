@@ -12,7 +12,7 @@ pub enum TimerSystemSet {
     PreTickingPreperations,
     PreTicking,
     TimerTicking,
-    PostTickingInstant,
+    PostTickingImmidiate,
     PostTicking,
 }
 
@@ -39,7 +39,7 @@ impl Plugin for SystemSetsPlugin {
                     TimerSystemSet::PreTickingPreperations,
                     TimerSystemSet::PreTicking,
                     TimerSystemSet::TimerTicking,
-                    TimerSystemSet::PostTickingInstant,
+                    TimerSystemSet::PostTickingImmidiate,
                     TimerSystemSet::PostTicking,
                 )
                     .chain()
