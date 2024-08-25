@@ -11,7 +11,7 @@ impl Plugin for TimerAffectedEntitiesChangePlugin {
     }
 }
 
-fn listen_for_affected_entity_removal_request(
+pub fn listen_for_affected_entity_removal_request(
     mut event_reader: EventReader<RemoveFromTimerAffectedEntities>,
     mut once_done_timers: Query<&mut OnceDoneTimer>,
     mut full_timers: Query<&mut FullTimer>,
@@ -28,7 +28,7 @@ fn listen_for_affected_entity_removal_request(
                     removal_request.entity_to_remove, removal_request.timer_entity
                 ),
                 vec![LogCategory::Time],
-            )
+            );
         }
     }
 }

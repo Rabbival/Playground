@@ -7,7 +7,7 @@ pub mod time_multiplier_change_timer_fire_request;
 #[derive(Event, Debug, Clone, Copy)]
 pub struct FullTimerFireRequest<T: SendableTimerFireRequestType> {
     pub affecting_timer_set_policy: AffectingTimerSetPolicy,
-    pub timer_to_fire: T,
+    pub timer_firing_request: T,
 }
 
 plugin_for_implementors_of_trait!(FullTimerFireRequestPlugin, SendableTimerFireRequestType);

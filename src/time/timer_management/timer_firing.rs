@@ -6,7 +6,8 @@ impl<T: SendableTimerFireRequestType> Plugin for TimerFiringPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_for_full_timer_firing_requests::<T>.in_set(TimerSystemSet::PreTicking),
+            listen_for_full_timer_firing_requests::<T>
+                .in_set(TimerSystemSet::PreTickingPreperations),
         );
     }
 }
@@ -19,7 +20,7 @@ pub fn listen_for_full_timer_firing_requests<T: SendableTimerFireRequestType>(
 ) {
     for timer_fire_request in event_reader.read() {
         //TODO: fix the following line once all there are multiple calculators per timer
-        let event_entity = timer_fire_request.timer_to_fire.entities().array[0].unwrap();
+        let event_entity = timer_fire_request.timer_firing_request.entities().array[0].unwrap();
         match full_timer_affected_entities.get_mut(event_entity) {
             Ok(mut affecting_timers_component) => replace_timer_for_entity(
                 &mut remove_from_timer_entities_writer,
@@ -43,9 +44,13 @@ fn replace_timer_for_entity<T: SendableTimerFireRequestType>(
     affecting_timers: &mut FullTimerAffected,
     commands: &mut Commands,
 ) {
-    let new_timer_entity = timer_fire_request.timer_to_fire.spawn_timer(commands);
+    let new_timer_entity = timer_fire_request
+        .timer_firing_request
+        .spawn_timer(commands);
     let maybe_existing_timer_for_movement_type = affecting_timers.insert(
-        timer_fire_request.timer_to_fire.timer_going_event_type(),
+        timer_fire_request
+            .timer_firing_request
+            .timer_going_event_type(),
         new_timer_entity,
         timer_fire_request.affecting_timer_set_policy,
     );
@@ -73,7 +78,7 @@ fn remove_timer_by_policy<T: SendableTimerFireRequestType>(
         remove_from_timer_entities_writer.send(RemoveFromTimerAffectedEntities {
             timer_entity: timer_to_remove_from,
             //TODO: fix the following line once all there are multiple calculators per timer
-            entity_to_remove: timer_fire_request.timer_to_fire.entities().array[0].unwrap(),
+            entity_to_remove: timer_fire_request.timer_firing_request.entities().array[0].unwrap(),
         });
     }
 }

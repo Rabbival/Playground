@@ -75,7 +75,7 @@ fn fire_time_multiplier_changers(
             if multiplier.changeable() {
                 timer_fire_event_writer.send(FullTimerFireRequest {
                     affecting_timer_set_policy: AffectingTimerSetPolicy::AlwaysTakeNew,
-                    timer_to_fire: TimeMultiplierChangeTimerFireRequest::new(
+                    timer_firing_request: TimeMultiplierChangeTimerFireRequest::new(
                         ValueByInterpolation::<f32>::new(
                             multiplier.value(),
                             multiplier_set_request.new_multiplier,

@@ -53,7 +53,7 @@ pub fn collect_all_orbs(
         for (orb_transform, orb_entity) in &orb_query {
             event_writer.send(FullTimerFireRequest {
                 affecting_timer_set_policy: AffectingTimerSetPolicy::IgnoreNewIfAssigned,
-                timer_to_fire: MoveTimerFireRequest::new(
+                timer_firing_request: MoveTimerFireRequest::new(
                     MovementType::InDirectLine,
                     ValueByInterpolation::new(
                         orb_transform.translation,

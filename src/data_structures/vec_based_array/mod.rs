@@ -27,6 +27,10 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
         self.array.iter().flatten().copied()
     }
 
+    pub fn len(&self) -> usize {
+        self.next_uninitialized_index
+    }
+
     pub fn remove_by_item(&mut self, item_to_remove: T) -> Result<T, VecBasedArrayError<T, N>> {
         let mut maybe_item_index = None;
         for (index, item) in self.iter().enumerate() {

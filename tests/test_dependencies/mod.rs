@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use playground::prelude::*;
 
 pub fn get_app_with_resources_and_events() -> App {
@@ -17,9 +19,9 @@ pub fn get_app_with_resources_and_events() -> App {
     app
 }
 
-pub fn request_max_orb_spawns(app: &mut App) {
-    let mut orb_event_channel_writer = app.world_mut().resource_mut::<Events<OrbEvent>>();
-    for _ in 0..ORB_MAX_COUNT {
-        orb_event_channel_writer.send(OrbEvent::SpawnOrb(Vec2::default()));
-    }
+pub fn fast_forward(app: &mut App, time_to_advance_in_seconds: f32) {
+    app.world_mut()
+        .resource_mut::<Time>()
+        .as_mut()
+        .advance_by(Duration::from_secs_f32(time_to_advance_in_seconds));
 }
