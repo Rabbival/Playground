@@ -74,8 +74,8 @@ pub mod prelude {
         time_related_error::*,
         timer::{full_timer::*, once_done_timer::*},
         timer_management::{
-            timer_affected_entities_change::*, timer_firing::*, timer_ticking_and_clearing::*,
-            TimerManagementPlugin,
+            going_event_emitting::*, timer_affected_entities_change::*, timer_firing::*,
+            timer_ticking_and_clearing::*, TimerManagementPlugin,
         },
         TimePlugin,
     };
