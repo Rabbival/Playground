@@ -3,7 +3,7 @@ use crate::{plugin_for_implementors_of_trait, prelude::*};
 #[derive(Debug, Clone, Copy, PartialEq, Event)]
 pub struct TimerGoingEvent<T: Numeric> {
     pub event_type: TimerGoingEventType,
-    pub entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    pub entity: Entity,
     pub value: T,
 }
 

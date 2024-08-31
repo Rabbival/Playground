@@ -7,7 +7,10 @@ pub enum TimeRelatedError {
     TimeMultiplierNotFound(TimeMultiplierId),
     AttemptedToChangeFixedTimeMultiplier(TimeMultiplierId),
     TimerToRemoveFromNotFound(RemoveFromTimerAffectedEntities),
-    TimerAffectedEntitiesError(VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>),
+    FullTimerAffectedEntitiesError(
+        VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    ),
+    OnceDoneTimerAffectedEntitiesError(VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>),
 }
 
 impl Display for TimeRelatedError {
@@ -28,10 +31,17 @@ impl Display for TimeRelatedError {
                     event
                 )
             }
-            Self::TimerAffectedEntitiesError(vec_based_array_error) => {
+            Self::FullTimerAffectedEntitiesError(vec_based_array_error) => {
                 write!(
                     f,
-                    "Error when accessing timer affected entities: {:?}",
+                    "Error when accessing full timer affected entities: {:?}",
+                    vec_based_array_error
+                )
+            }
+            Self::OnceDoneTimerAffectedEntitiesError(vec_based_array_error) => {
+                write!(
+                    f,
+                    "Error when accessing once done timer affected entities: {:?}",
                     vec_based_array_error
                 )
             }
@@ -39,8 +49,18 @@ impl Display for TimeRelatedError {
     }
 }
 
+impl From<VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>>
+    for TimeRelatedError
+{
+    fn from(
+        value: VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    ) -> Self {
+        TimeRelatedError::FullTimerAffectedEntitiesError(value)
+    }
+}
+
 impl From<VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>> for TimeRelatedError {
     fn from(value: VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>) -> Self {
-        TimeRelatedError::TimerAffectedEntitiesError(value)
+        TimeRelatedError::OnceDoneTimerAffectedEntitiesError(value)
     }
 }

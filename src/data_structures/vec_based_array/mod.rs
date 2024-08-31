@@ -58,6 +58,28 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
     }
 }
 
+impl<const N: usize> VecBasedArray<FullTimerAffectedEntity, N> {
+    pub fn remove_by_affected_entity(
+        &mut self,
+        affected_entity_to_remove: Entity,
+    ) -> Result<FullTimerAffectedEntity, VecBasedArrayError<FullTimerAffectedEntity, N>> {
+        let mut maybe_item_index = None;
+        for (index, item) in self.iter().enumerate() {
+            if item.affected_entity == affected_entity_to_remove {
+                maybe_item_index = Some(index);
+                break;
+            }
+        }
+        match maybe_item_index {
+            Some(index) => self.remove_by_index(index),
+            None => Err(VecBasedArrayError::ItemWithAffectedEntityNotFound(
+                affected_entity_to_remove,
+                *self,
+            )),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

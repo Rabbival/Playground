@@ -37,7 +37,7 @@ macro_rules! single_mut_else_return {
             Ok(item) => item,
             Err(error) => {
                 print_error(
-                    EntityError::EntityNotInQuery(error),
+                    format!("error getting single mut {:?}: {}", $query, error),
                     vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
@@ -48,32 +48,42 @@ macro_rules! single_mut_else_return {
 
 #[macro_export]
 macro_rules! get_entity_else_return {
-    ($query:expr, $entity:expr) => {
+    ($query:expr, $entity:expr, $item_type:ty) => {{
+        use std::any::type_name;
+        let type_name = type_name::<$item_type>();
         match $query.get($entity) {
             Ok(item) => item,
-            Err(error) => {
+            Err(_) => {
                 print_error(
-                    EntityError::EntityNotInQuery(error),
+                    EntityError::EntityNotInQuery(format!(
+                        "couldn't fetch entity of type {} from query",
+                        type_name
+                    )),
                     vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }
         }
-    };
+    }};
 }
 
 #[macro_export]
 macro_rules! get_mut_entity_else_return {
-    ($query:expr, $entity:expr) => {
+    ($query:expr, $entity:expr, $item_type:ty) => {{
+        use std::any::type_name;
+        let type_name = type_name::<$item_type>();
         match $query.get_mut($entity) {
             Ok(item) => item,
-            Err(error) => {
+            Err(_) => {
                 print_error(
-                    format!("error getting mut entity {:?}: {}", $entity, error),
+                    EntityError::EntityNotInQuery(format!(
+                        "couldn't fetch entity of type {} from query (mut)",
+                        type_name
+                    )),
                     vec![LogCategory::Crucial, LogCategory::RequestNotFulfilled],
                 );
                 return;
             }
         }
-    };
+    }};
 }

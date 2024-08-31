@@ -1,24 +1,17 @@
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Copy)]
-pub struct TimeMultiplierChangeTimerFireRequest(CalculatingTimer<f32>);
+pub struct TimeMultiplierChangeTimerFireRequest(FullTimer);
 
 impl TimeMultiplierChangeTimerFireRequest {
-    pub fn new(
-        calculator: ValueByInterpolation<f32>,
-        multiplier_entity: Entity,
-        duration: f32,
-    ) -> Self {
-        Self(CalculatingTimer {
-            timer: FullTimer::new(
-                vec![multiplier_entity],
-                vec![],
-                duration,
-                TimerGoingEventType::ChangeTimeMultiplierSpeed,
-                TimerDoneEventType::default(),
-            ),
-            calculator,
-        })
+    pub fn new(affected_entities: Vec<FullTimerAffectedEntity>, duration: f32) -> Self {
+        Self(FullTimer::new(
+            affected_entities,
+            vec![],
+            duration,
+            TimerGoingEventType::ChangeTimeMultiplierSpeed,
+            TimerDoneEventType::default(),
+        ))
     }
 }
 
@@ -27,11 +20,11 @@ impl FullTimerFireRequestType for TimeMultiplierChangeTimerFireRequest {
         commands.spawn(self.0).id()
     }
 
-    fn entities(&self) -> VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES> {
-        self.0.timer.affected_entities
+    fn entities(&self) -> VecBasedArray<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES> {
+        self.0.affected_entities
     }
 
     fn timer_going_event_type(&self) -> TimerGoingEventType {
-        self.0.timer.send_as_going
+        self.0.send_as_going
     }
 }

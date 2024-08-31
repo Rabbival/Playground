@@ -1,15 +1,24 @@
 use crate::{plugin_for_implementors_of_trait, prelude::*};
 
-plugin_for_implementors_of_trait!(TimerTickingAndClearingPlugin, Numeric);
+plugin_for_implementors_of_trait!(TimerTickingAndClearingGenericPlugin, Numeric);
+pub struct TimerTickingAndClearingPlugin;
 
-impl<T: Numeric> Plugin for TimerTickingAndClearingPlugin<T> {
+impl<T: Numeric> Plugin for TimerTickingAndClearingGenericPlugin<T> {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            calculate_value_and_send_going_event::<T>.in_set(TimerSystemSet::PostTickingImmidiate),
+        );
+    }
+}
+
+impl Plugin for TimerTickingAndClearingPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
             (
-                (tick_once_done_timers, tick_full_timers::<T>).in_set(TimerSystemSet::TimerTicking),
-                (clear_once_done_timers, clear_full_timers::<T>)
-                    .in_set(EndOfFrameSystemSet::TimerClearing),
+                (tick_once_done_timers, tick_full_timers).in_set(TimerSystemSet::TimerTicking),
+                clear_timers.in_set(EndOfFrameSystemSet::TimerClearing),
             ),
         );
     }
@@ -47,46 +56,68 @@ fn tick_once_done_timer_and_send_event(
     }
 }
 
-pub fn tick_full_timers<T: Numeric>(
-    mut timer_going_event_writer: EventWriter<TimerGoingEvent<T>>,
+pub fn tick_full_timers(
+    mut calculation_requests_writer: EventWriter<CalculateAndSendGoingEvent>,
     mut timer_done_event_writer: EventWriter<TimerDoneEvent>,
-    mut timers: Query<(&mut FullTimer, &ValueByInterpolation<T>, Entity)>,
+    mut timers: Query<(&mut FullTimer, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
 ) {
     let time_delta = time.delta_seconds();
-    for (mut timer, value_calculator, timer_entity) in &mut timers {
+    for (mut timer, timer_entity) in &mut timers {
+        let modified_time_delta =
+            time_delta * calculate_time_multiplier(&time_multipliers, timer.time_multipliers);
         tick_full_timer_and_send_events(
-            &mut timer_going_event_writer,
+            &mut calculation_requests_writer,
             &mut timer_done_event_writer,
-            time_delta * calculate_time_multiplier(&time_multipliers, timer.time_multipliers),
+            modified_time_delta,
             &mut timer,
-            value_calculator,
             timer_entity,
         );
     }
 }
 
-fn tick_full_timer_and_send_events<T: Numeric>(
-    timer_going_event_writer: &mut EventWriter<TimerGoingEvent<T>>,
+fn tick_full_timer_and_send_events(
+    calculation_requests_writer: &mut EventWriter<CalculateAndSendGoingEvent>,
     timer_done_event_writer: &mut EventWriter<TimerDoneEvent>,
     time_to_tick: f32,
     timer: &mut FullTimer,
-    value_calculator: &ValueByInterpolation<T>,
     timer_entity: Entity,
 ) {
     if let Some(normalized_progress) = timer.tick_and_get_normalized_progress(time_to_tick) {
-        timer_going_event_writer.send(TimerGoingEvent::<T> {
-            event_type: timer.send_as_going,
-            entities: timer.affected_entities,
-            value: value_calculator.calculate_current_value(normalized_progress),
+        calculation_requests_writer.send(CalculateAndSendGoingEvent {
+            affected_entities: timer.affected_entities,
+            normalized_progress,
+            event_type_to_send: timer.send_as_going,
         });
         if timer.finished() {
             timer_done_event_writer.send(TimerDoneEvent {
                 event_type: timer.send_once_done,
-                affected_entities: timer.affected_entities,
+                affected_entities: timer.affected_entities_without_interpolators(),
                 timer_entity,
             });
+        }
+    }
+}
+
+pub fn calculate_value_and_send_going_event<T: Numeric>(
+    mut calculation_requests_reader: EventReader<CalculateAndSendGoingEvent>,
+    mut timer_going_event_writer: EventWriter<TimerGoingEvent<T>>,
+    value_calculators: Query<&ValueByInterpolation<T>>,
+) {
+    for calculation_request in calculation_requests_reader.read() {
+        for affected_entity in calculation_request.affected_entities.iter() {
+            if let Ok(value_calculator) =
+                value_calculators.get(affected_entity.value_calculator_entity)
+            {
+                let calculated_value = value_calculator
+                    .calculate_current_value(calculation_request.normalized_progress);
+                timer_going_event_writer.send(TimerGoingEvent::<T> {
+                    event_type: calculation_request.event_type_to_send,
+                    entity: affected_entity.affected_entity,
+                    value: calculated_value,
+                });
+            }
         }
     }
 }
@@ -106,45 +137,25 @@ fn calculate_time_multiplier<const N: usize>(
     calculated_multiplier
 }
 
-fn clear_once_done_timers(
+fn clear_timers(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     once_done_timers: Query<Entity, With<OnceDoneTimer>>,
+    full_timers: Query<(Entity, &FullTimer)>,
     mut commands: Commands,
 ) {
     for timer_done_event in timer_done_event_reader.read() {
         if let Ok(entity) = once_done_timers.get(timer_done_event.timer_entity) {
-            match commands.get_entity(entity) {
-                Some(mut entity_commands) => {
-                    entity_commands.remove::<OnceDoneTimer>();
-                }
-                None => {
-                    print_error(
-                        EntityError::CommandsCouldntGetEntity("OnceDoneTimer"),
-                        vec![LogCategory::RequestNotFulfilled],
-                    );
-                }
-            }
+            despawn_entity_notify_on_fail(entity, "OnceDoneTimer", &mut commands);
         }
-    }
-}
-
-fn clear_full_timers<T: Numeric>(
-    mut timer_done_event_reader: EventReader<TimerDoneEvent>,
-    full_timers: Query<Entity, (With<FullTimer>, With<ValueByInterpolation<T>>)>,
-    mut commands: Commands,
-) {
-    for timer_done_event in timer_done_event_reader.read() {
-        if let Ok(entity) = full_timers.get(timer_done_event.timer_entity) {
-            match commands.get_entity(entity) {
-                Some(mut entity_commands) => {
-                    entity_commands.remove::<CalculatingTimer<T>>();
-                }
-                None => {
-                    print_error(
-                        EntityError::CommandsCouldntGetEntity("CalculatingTimer"),
-                        vec![LogCategory::RequestNotFulfilled],
-                    );
-                }
+        if let Ok((entity, full_timer)) = full_timers.get(timer_done_event.timer_entity) {
+            despawn_entity_notify_on_fail(entity, "FullTimer", &mut commands);
+            for value_calculator_entity in full_timer.affected_entities_interpolators_only().iter()
+            {
+                despawn_entity_notify_on_fail(
+                    value_calculator_entity,
+                    "Interpolator from FullTimer",
+                    &mut commands,
+                );
             }
         }
     }
@@ -161,10 +172,7 @@ mod tests {
         let mut app = App::new();
         app.init_resource::<Time>()
             .add_event::<TimerDoneEvent>()
-            .add_systems(
-                Update,
-                (tick_once_done_timers, clear_once_done_timers).chain(),
-            );
+            .add_systems(Update, (tick_once_done_timers, clear_timers).chain());
 
         add_timer_and_advance_time(&mut app);
         app.update();

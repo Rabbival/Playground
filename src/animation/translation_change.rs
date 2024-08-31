@@ -17,18 +17,9 @@ fn listen_for_translation_update_requests(
 ) {
     for event_from_timer in event_reader.read() {
         if let TimerGoingEventType::Move(MovementType::InDirectLine) = event_from_timer.event_type {
-            for entity in event_from_timer.entities.iter() {
-                update_entity_translation(entity, &mut transforms, event_from_timer.value);
-            }
+            let mut transform =
+                get_mut_entity_else_return!(transforms, event_from_timer.entity, Transform);
+            transform.translation = event_from_timer.value;
         }
     }
-}
-
-fn update_entity_translation(
-    entity: Entity,
-    transforms: &mut Query<&mut Transform>,
-    new_translation: Vec3,
-) {
-    let mut transform = get_mut_entity_else_return!(transforms, entity);
-    transform.translation = new_translation;
 }

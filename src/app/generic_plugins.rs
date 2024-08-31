@@ -33,7 +33,7 @@ impl<T: Numeric> Plugin for NumericPlugins<T> {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             TimerGoingEventPlugin::<T>::default(),
-            TimerTickingAndClearingPlugin::<T>::default(),
+            TimerTickingAndClearingGenericPlugin::<T>::default(),
         ));
     }
 }

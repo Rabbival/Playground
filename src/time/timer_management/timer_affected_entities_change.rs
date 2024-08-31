@@ -48,7 +48,7 @@ fn remove_affected_entity(
     } else if let Ok(mut full_timer) = full_timers.get_mut(timer_entity) {
         full_timer
             .affected_entities
-            .remove_by_item(entity_to_remove)?;
+            .remove_by_affected_entity(entity_to_remove)?;
         Ok(())
     } else {
         Err(TimeRelatedError::TimerToRemoveFromNotFound(

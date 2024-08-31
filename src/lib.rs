@@ -36,7 +36,9 @@ pub mod prelude {
         game_session_log::*,
         print_log::*,
     };
-    pub use crate::ecs::{entity_error::*, late_despawner::*, system_sets::*};
+    pub use crate::ecs::{
+        component_utilities::*, entity_error::*, late_despawner::*, system_sets::*,
+    };
     pub use crate::game::{consts::*, event_channels::*, orb::*, tags::*, GamePlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
@@ -47,9 +49,13 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        bundles::calculating_timer::*,
+        affecting_timers::{
+            affecting_timer_set_policy::*, affecting_timers_plugin::*,
+            full_timer_affected_entity::*, AffectingTimers,
+        },
         consts::*,
         events::{
+            calculate_and_send_going_event::*,
             full_timer_fire_request::{
                 full_timer_fire_request_type::*, move_timer_fire_request::*,
                 time_multiplier_change_timer_fire_request::*, FullTimerFireRequest,
@@ -60,9 +66,6 @@ pub mod prelude {
             timer_done_event::*,
             timer_going_event::*,
             TimeEventChannelPlugin,
-        },
-        full_timer_affected::{
-            affecting_timer_set_policy::*, full_timer_affected_plugin::*, FullTimerAffected,
         },
         time_multiplication::{
             time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,

@@ -15,7 +15,8 @@ pub fn get_app_with_resources_and_events() -> App {
         .add_event::<TimerGoingEvent<Vec3>>()
         .add_event::<TimerGoingEvent<Quat>>()
         .add_event::<FullTimerFireRequest<MoveTimerFireRequest>>()
-        .add_event::<RemoveFromTimerAffectedEntities>();
+        .add_event::<RemoveFromTimerAffectedEntities>()
+        .add_event::<CalculateAndSendGoingEvent>();
     app
 }
 

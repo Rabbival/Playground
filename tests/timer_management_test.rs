@@ -20,8 +20,17 @@ fn timer_policy_test(policy: AffectingTimerSetPolicy, expected_entity_count_afte
     let empty_entity = app
         .world_mut()
         .commands()
-        .spawn(FullTimerAffected::default())
+        .spawn(AffectingTimers::default())
         .id();
+    let redundant_calculator = app
+        .world_mut()
+        .commands()
+        .spawn(ValueByInterpolation::new(0.0, 0.0, Interpolator::default()))
+        .id();
+    let redundant_full_timer_affected_entity = FullTimerAffectedEntity {
+        affected_entity: empty_entity,
+        value_calculator_entity: redundant_calculator,
+    };
     app.add_systems(
         Update,
         (
@@ -34,7 +43,7 @@ fn timer_policy_test(policy: AffectingTimerSetPolicy, expected_entity_count_afte
     request_full_timer_firing(
         &mut app,
         AffectingTimerSetPolicy::default(),
-        vec![empty_entity],
+        vec![redundant_full_timer_affected_entity],
         TIMER_DURATION_IN_SECONDS,
     );
     app.update();
@@ -42,7 +51,7 @@ fn timer_policy_test(policy: AffectingTimerSetPolicy, expected_entity_count_afte
     request_full_timer_firing(
         &mut app,
         policy,
-        vec![empty_entity],
+        vec![redundant_full_timer_affected_entity],
         TIMER_DURATION_IN_SECONDS,
     );
     app.update();
@@ -58,7 +67,7 @@ fn timer_policy_test(policy: AffectingTimerSetPolicy, expected_entity_count_afte
 fn request_full_timer_firing(
     app: &mut App,
     policy: AffectingTimerSetPolicy,
-    affected_entities: Vec<Entity>,
+    affected_entities: Vec<FullTimerAffectedEntity>,
     duration: f32,
 ) {
     app.world_mut()
@@ -67,7 +76,6 @@ fn request_full_timer_firing(
             affecting_timer_set_policy: policy,
             timer_firing_request: MoveTimerFireRequest::new(
                 MovementType::default(),
-                ValueByInterpolation::default(),
                 affected_entities,
                 vec![],
                 duration,

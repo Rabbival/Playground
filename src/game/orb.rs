@@ -37,7 +37,7 @@ pub fn spawn_orb(
                 ),
                 ..default()
             },
-            FullTimerAffected::default(),
+            AffectingTimers::default(),
             Orb,
         ));
     }
@@ -47,26 +47,34 @@ pub fn collect_all_orbs(
     mut event_reader: EventReader<OrbEvent>,
     mut event_writer: EventWriter<FullTimerFireRequest<MoveTimerFireRequest>>,
     orb_query: Query<(&Transform, Entity), With<Orb>>,
+    mut commands: Commands,
 ) {
     for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs)
     {
+        let mut orbs_and_interpolators = vec![];
         for (orb_transform, orb_entity) in &orb_query {
-            event_writer.send(FullTimerFireRequest {
-                affecting_timer_set_policy: AffectingTimerSetPolicy::IgnoreNewIfAssigned,
-                timer_firing_request: MoveTimerFireRequest::new(
-                    MovementType::InDirectLine,
-                    ValueByInterpolation::new(
-                        orb_transform.translation,
-                        Vec3::from((*orb_collection_target, 0.0)),
-                        Interpolator::new(ORB_COLLECTION_POWER),
-                    ),
-                    vec![orb_entity],
-                    vec![TimeMultiplierId::GameTimeMultiplier],
-                    ORB_COLLECTION_TIME,
-                    TimerDoneEventType::DespawnAffectedEntities,
-                ),
+            let interpolator_id = commands
+                .spawn(ValueByInterpolation::new(
+                    orb_transform.translation,
+                    Vec3::from((*orb_collection_target, 0.0)),
+                    Interpolator::new(ORB_COLLECTION_POWER),
+                ))
+                .id();
+            orbs_and_interpolators.push(FullTimerAffectedEntity {
+                affected_entity: orb_entity,
+                value_calculator_entity: interpolator_id,
             });
         }
+        event_writer.send(FullTimerFireRequest {
+            affecting_timer_set_policy: AffectingTimerSetPolicy::IgnoreNewIfAssigned,
+            timer_firing_request: MoveTimerFireRequest::new(
+                MovementType::InDirectLine,
+                orbs_and_interpolators,
+                vec![TimeMultiplierId::GameTimeMultiplier],
+                ORB_COLLECTION_TIME,
+                TimerDoneEventType::DespawnAffectedEntities,
+            ),
+        });
     }
 }
 

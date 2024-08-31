@@ -1,7 +1,6 @@
-pub mod bundles;
+pub mod affecting_timers;
 pub mod consts;
 pub mod events;
-pub mod full_timer_affected;
 pub mod time_multiplication;
 pub mod time_related_error;
 pub mod timer;
@@ -17,7 +16,7 @@ impl Plugin for TimePlugin {
             TimerManagementPlugin,
             TimeMutiplicationPlugin,
             TimeEventChannelPlugin,
-            FullTimerAffectedPlugin,
+            AffectingTimersPlugin,
         ));
     }
 }

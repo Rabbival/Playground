@@ -1,16 +1,15 @@
 use crate::prelude::*;
 
 pub mod affecting_timer_set_policy;
-pub mod full_timer_affected_plugin;
+pub mod affecting_timers_plugin;
+pub mod full_timer_affected_entity;
 
 #[derive(Debug, Component, Clone, Default)]
-pub struct FullTimerAffected {
-    affecting_timers: HashMap<TimerGoingEventType, Entity>,
-}
+pub struct AffectingTimers(HashMap<TimerGoingEventType, Entity>);
 
-impl FullTimerAffected {
+impl AffectingTimers {
     pub fn get(&self, going_event_type: &TimerGoingEventType) -> Option<&Entity> {
-        self.affecting_timers.get(going_event_type)
+        self.0.get(going_event_type)
     }
 
     pub fn insert(
@@ -20,11 +19,11 @@ impl FullTimerAffected {
         policy: AffectingTimerSetPolicy,
     ) -> Option<Entity> {
         match policy {
-            AffectingTimerSetPolicy::AlwaysTakeNew => self.affecting_timers.insert(key, value),
+            AffectingTimerSetPolicy::AlwaysTakeNew => self.0.insert(key, value),
             AffectingTimerSetPolicy::IgnoreNewIfAssigned => {
                 let maybe_existing_entity = self.get(&key).copied();
                 if maybe_existing_entity.is_none() {
-                    self.affecting_timers.insert(key, value);
+                    self.0.insert(key, value);
                 }
                 maybe_existing_entity
             }
@@ -32,6 +31,6 @@ impl FullTimerAffected {
     }
 
     pub fn remove(&mut self, key: &TimerGoingEventType) -> Option<Entity> {
-        self.affecting_timers.remove(key)
+        self.0.remove(key)
     }
 }

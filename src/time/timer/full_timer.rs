@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct FullTimer {
-    pub affected_entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    pub affected_entities: VecBasedArray<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
     pub time_multipliers: VecBasedArray<TimeMultiplierId, TIMER_MAX_ASSIGNED_MULTIPLIERS>,
     pub send_as_going: TimerGoingEventType,
     pub send_once_done: TimerDoneEventType,
@@ -13,7 +13,7 @@ pub struct FullTimer {
 
 impl FullTimer {
     pub fn new(
-        affected_entities_vec: Vec<Entity>,
+        affected_entities_vec: Vec<FullTimerAffectedEntity>,
         time_multipliers_vec: Vec<TimeMultiplierId>,
         duration: f32,
         send_as_going: TimerGoingEventType,
@@ -36,6 +36,28 @@ impl FullTimer {
 
     pub fn finished(&self) -> bool {
         self.normalized_progress >= 1.0
+    }
+
+    pub fn affected_entities_without_interpolators(
+        &self,
+    ) -> VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES> {
+        let affected_entities_vec = self
+            .affected_entities
+            .iter()
+            .map(|affected_entity| affected_entity.affected_entity)
+            .collect();
+        VecBasedArray::new(affected_entities_vec)
+    }
+
+    pub fn affected_entities_interpolators_only(
+        &self,
+    ) -> VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES> {
+        let value_calculator_entities_vec = self
+            .affected_entities
+            .iter()
+            .map(|affected_entity| affected_entity.value_calculator_entity)
+            .collect();
+        VecBasedArray::new(value_calculator_entities_vec)
     }
 
     pub fn tick_and_get_normalized_progress(&mut self, processed_time: f32) -> Option<f32> {

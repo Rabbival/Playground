@@ -1,19 +1,19 @@
 use crate::prelude::*;
 
-pub struct FullTimerAffectedPlugin;
+pub struct AffectingTimersPlugin;
 
-impl Plugin for FullTimerAffectedPlugin {
+impl Plugin for AffectingTimersPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            clear_done_timers_from_affecting_timers.in_set(TimerSystemSet::PostTickingImmidiate),
+            clear_done_timers_from_affecting_timers.in_set(TimerSystemSet::PostTicking),
         );
     }
 }
 
 fn clear_done_timers_from_affecting_timers(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
-    mut timer_affected_entities: Query<&mut FullTimerAffected>,
+    mut timer_affected_entities: Query<&mut AffectingTimers>,
     full_timers: Query<&FullTimer>,
 ) {
     for done_event in timer_done_event_reader.read() {

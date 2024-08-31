@@ -6,6 +6,7 @@ use crate::prelude::*;
 pub enum VecBasedArrayError<T: Debug + Copy + PartialEq, const N: usize> {
     ItemNotFound(T, VecBasedArray<T, N>),
     IndexOutOfRange(usize, VecBasedArray<T, N>),
+    ItemWithAffectedEntityNotFound(Entity, VecBasedArray<FullTimerAffectedEntity, N>),
 }
 
 impl<T: Debug + Copy + PartialEq, const N: usize> Display for VecBasedArrayError<T, N> {
@@ -23,6 +24,13 @@ impl<T: Debug + Copy + PartialEq, const N: usize> Display for VecBasedArrayError
                     f,
                     "Index: {:?} out of range for vec-based array: {:?} ",
                     index, vec_based_array
+                )
+            }
+            Self::ItemWithAffectedEntityNotFound(entity, vec_based_array) => {
+                write!(
+                    f,
+                    "Couldn't find item with affected entity: {:?} in vec-based array: {:?} ",
+                    entity, vec_based_array
                 )
             }
         }
