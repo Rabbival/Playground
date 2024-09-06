@@ -1,9 +1,11 @@
-pub mod affecting_timers;
 pub mod consts;
+pub mod emitting_timer;
 pub mod events;
+pub mod going_event_management;
 pub mod time_multiplication;
 pub mod time_related_error;
-pub mod timer;
+pub mod timer_affected_entity;
+pub mod timer_calculators;
 pub mod timer_management;
 
 use crate::prelude::*;
@@ -16,7 +18,6 @@ impl Plugin for TimePlugin {
             TimerManagementPlugin,
             TimeMutiplicationPlugin,
             TimeEventChannelPlugin,
-            AffectingTimersPlugin,
         ));
     }
 }

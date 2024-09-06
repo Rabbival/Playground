@@ -1,7 +1,4 @@
-use crate::{
-    prelude::*, read_single_field_variant, return_if_at_limit,
-    time::events::full_timer_fire_request::move_timer_fire_request::MoveTimerFireRequest,
-};
+use crate::{prelude::*, read_single_field_variant, return_if_at_limit};
 use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 
 pub struct OrbPlugin;
@@ -37,7 +34,7 @@ pub fn spawn_orb(
                 ),
                 ..default()
             },
-            AffectingTimers::default(),
+            AffectingTimerCalculators::default(),
             Orb,
         ));
     }
@@ -45,37 +42,47 @@ pub fn spawn_orb(
 
 pub fn collect_all_orbs(
     mut event_reader: EventReader<OrbEvent>,
-    mut event_writer: EventWriter<FullTimerFireRequest<MoveTimerFireRequest>>,
+    mut event_writer: EventWriter<TimerFireRequest>,
     orb_query: Query<(&Transform, Entity), With<Orb>>,
     mut commands: Commands,
 ) {
     for orb_collection_target in read_single_field_variant!(event_reader, OrbEvent::CollectAllOrbs)
     {
-        let mut orbs_and_interpolators = vec![];
-        for (orb_transform, orb_entity) in &orb_query {
-            let interpolator_id = commands
-                .spawn(ValueByInterpolation::new(
+        let timer_affected_entities =
+            get_orbs_and_calculators_for_timer(&orb_query, orb_collection_target, &mut commands);
+        event_writer.send(TimerFireRequest(EmittingTimer::new(
+            timer_affected_entities,
+            vec![TimeMultiplierId::GameTimeMultiplier],
+            ORB_COLLECTION_TIME,
+            TimerDoneEventType::DespawnAffectedEntities,
+        )));
+    }
+}
+
+fn get_orbs_and_calculators_for_timer(
+    orb_query: &Query<(&Transform, Entity), With<Orb>>,
+    orb_collection_target: &Vec2,
+    commands: &mut Commands,
+) -> Vec<TimerAffectedEntity> {
+    let mut timer_affected_entities = vec![];
+    for (orb_transform, orb_entity) in orb_query {
+        let value_calculator_entity = commands
+            .spawn(GoingEventValueCalculator::new(
+                TimerCalculatorSetPolicy::IgnoreNewIfAssigned,
+                ValueByInterpolation::new(
                     orb_transform.translation,
                     Vec3::from((*orb_collection_target, 0.0)),
                     Interpolator::new(ORB_COLLECTION_POWER),
-                ))
-                .id();
-            orbs_and_interpolators.push(FullTimerAffectedEntity {
-                affected_entity: orb_entity,
-                value_calculator_entity: interpolator_id,
-            });
-        }
-        event_writer.send(FullTimerFireRequest {
-            affecting_timer_set_policy: AffectingTimerSetPolicy::IgnoreNewIfAssigned,
-            timer_firing_request: MoveTimerFireRequest::new(
-                MovementType::InDirectLine,
-                orbs_and_interpolators,
-                vec![TimeMultiplierId::GameTimeMultiplier],
-                ORB_COLLECTION_TIME,
-                TimerDoneEventType::DespawnAffectedEntities,
-            ),
+                ),
+                TimerGoingEventType::Move(MovementType::InDirectLine),
+            ))
+            .id();
+        timer_affected_entities.push(TimerAffectedEntity {
+            affected_entity: orb_entity,
+            value_calculator_entity: Some(value_calculator_entity),
         });
     }
+    timer_affected_entities
 }
 
 #[cfg(test)]

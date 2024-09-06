@@ -17,12 +17,19 @@ pub fn listen_for_despawn_requests_from_timers(
 ) {
     for event in event_reader.read() {
         if let TimerDoneEventType::DespawnAffectedEntities = event.event_type {
-            for entity in event.affected_entities.iter() {
+            for affected_entity in event.affected_entities.iter() {
                 despawn_entity_notify_on_fail(
-                    entity,
-                    "(from timer despawn affected entities request)",
+                    affected_entity.affected_entity,
+                    "(affected entity from timer despawn affected entities request)",
                     &mut commands,
                 );
+                if let Some(calculator_entity) = affected_entity.value_calculator_entity {
+                    despawn_entity_notify_on_fail(
+                        calculator_entity,
+                        "(calculator entity from timer despawn affected entities request)",
+                        &mut commands,
+                    );
+                }
             }
         }
     }

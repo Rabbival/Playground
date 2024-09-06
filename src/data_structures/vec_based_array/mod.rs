@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use std::fmt::Debug;
 
+pub mod timer_affected_entities_vec_based_array;
 pub mod vec_based_array_error;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -31,21 +32,47 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
         self.next_uninitialized_index
     }
 
-    pub fn remove_by_item(&mut self, item_to_remove: T) -> Result<T, VecBasedArrayError<T, N>> {
-        let mut maybe_item_index = None;
-        for (index, item) in self.iter().enumerate() {
-            if item == item_to_remove {
-                maybe_item_index = Some(index);
-                break;
-            }
-        }
-        match maybe_item_index {
-            Some(index) => self.remove_by_index(index),
-            None => Err(VecBasedArrayError::ItemNotFound(item_to_remove, *self)),
+    pub fn remove_by_item(&mut self, item_to_remove: T) -> Result<T, VecBasedArrayError<T, T, N>> {
+        self.remove_first_matching_item(item_to_remove, |a, b| a == b)
+    }
+
+    fn remove_first_matching_item<F, S>(
+        &mut self,
+        item_to_match: S,
+        matcher: F,
+    ) -> Result<T, VecBasedArrayError<T, S, N>>
+    where
+        S: Debug + Clone + Copy + PartialEq,
+        F: Fn(S, T) -> bool,
+    {
+        match self.get_first_matching_item(item_to_match, matcher) {
+            Some((index, _)) => self.remove_by_index(index),
+            None => Err(VecBasedArrayError::FoundNoItemToMatchWith(
+                item_to_match,
+                *self,
+            )),
         }
     }
 
-    pub fn remove_by_index(&mut self, index: usize) -> Result<T, VecBasedArrayError<T, N>> {
+    fn get_first_matching_item<F, S>(&self, item_to_match: S, matcher: F) -> Option<(usize, T)>
+    where
+        S: Debug + Clone + Copy + PartialEq,
+        F: Fn(S, T) -> bool,
+    {
+        let mut maybe_matching_item = None;
+        for (index, item) in self.iter().enumerate() {
+            if matcher(item_to_match, item) {
+                maybe_matching_item = Some((index, item));
+                break;
+            }
+        }
+        maybe_matching_item
+    }
+
+    pub fn remove_by_index<S: Debug + Copy + PartialEq>(
+        &mut self,
+        index: usize,
+    ) -> Result<T, VecBasedArrayError<T, S, N>> {
         if index < self.next_uninitialized_index {
             let removed_item = self.array[index];
             self.array[index] = None;
@@ -54,28 +81,6 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
             Ok(removed_item.unwrap())
         } else {
             Err(VecBasedArrayError::IndexOutOfRange(index, *self))
-        }
-    }
-}
-
-impl<const N: usize> VecBasedArray<FullTimerAffectedEntity, N> {
-    pub fn remove_by_affected_entity(
-        &mut self,
-        affected_entity_to_remove: Entity,
-    ) -> Result<FullTimerAffectedEntity, VecBasedArrayError<FullTimerAffectedEntity, N>> {
-        let mut maybe_item_index = None;
-        for (index, item) in self.iter().enumerate() {
-            if item.affected_entity == affected_entity_to_remove {
-                maybe_item_index = Some(index);
-                break;
-            }
-        }
-        match maybe_item_index {
-            Some(index) => self.remove_by_index(index),
-            None => Err(VecBasedArrayError::ItemWithAffectedEntityNotFound(
-                affected_entity_to_remove,
-                *self,
-            )),
         }
     }
 }
@@ -124,7 +129,10 @@ mod tests {
         assert_eq!(1, vec_based_array.next_uninitialized_index);
         assert_eq!(Ok(1), valid_removal_result);
         assert_eq!(
-            Err(VecBasedArrayError::ItemNotFound(1, vec_based_array)),
+            Err(VecBasedArrayError::FoundNoItemToMatchWith(
+                1,
+                vec_based_array
+            )),
             item_not_found_removal_result
         );
     }

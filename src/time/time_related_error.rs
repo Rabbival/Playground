@@ -7,10 +7,9 @@ pub enum TimeRelatedError {
     TimeMultiplierNotFound(TimeMultiplierId),
     AttemptedToChangeFixedTimeMultiplier(TimeMultiplierId),
     TimerToRemoveFromNotFound(RemoveFromTimerAffectedEntities),
-    FullTimerAffectedEntitiesError(
-        VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    TimerAffectedEntitiesError(
+        VecBasedArrayError<TimerAffectedEntity, TimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
     ),
-    OnceDoneTimerAffectedEntitiesError(VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>),
 }
 
 impl Display for TimeRelatedError {
@@ -31,14 +30,7 @@ impl Display for TimeRelatedError {
                     event
                 )
             }
-            Self::FullTimerAffectedEntitiesError(vec_based_array_error) => {
-                write!(
-                    f,
-                    "Error when accessing full timer affected entities: {:?}",
-                    vec_based_array_error
-                )
-            }
-            Self::OnceDoneTimerAffectedEntitiesError(vec_based_array_error) => {
+            Self::TimerAffectedEntitiesError(vec_based_array_error) => {
                 write!(
                     f,
                     "Error when accessing once done timer affected entities: {:?}",
@@ -49,18 +41,16 @@ impl Display for TimeRelatedError {
     }
 }
 
-impl From<VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>>
+impl From<VecBasedArrayError<TimerAffectedEntity, TimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>>
     for TimeRelatedError
 {
     fn from(
-        value: VecBasedArrayError<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
+        value: VecBasedArrayError<
+            TimerAffectedEntity,
+            TimerAffectedEntity,
+            TIMER_MAX_ASSIGNED_ENTITIES,
+        >,
     ) -> Self {
-        TimeRelatedError::FullTimerAffectedEntitiesError(value)
-    }
-}
-
-impl From<VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>> for TimeRelatedError {
-    fn from(value: VecBasedArrayError<Entity, TIMER_MAX_ASSIGNED_ENTITIES>) -> Self {
-        TimeRelatedError::OnceDoneTimerAffectedEntitiesError(value)
+        TimeRelatedError::TimerAffectedEntitiesError(value)
     }
 }

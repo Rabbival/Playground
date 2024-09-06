@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Default, Debug, Clone, Copy, Component)]
+#[derive(Default, Debug, Clone, Copy)]
 pub struct ValueByInterpolation<T: Numeric> {
     original_value: T,
     goal_value: T,

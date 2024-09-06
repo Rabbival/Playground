@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[derive(Debug, Event, Clone, Copy)]
 pub struct RemoveFromTimerAffectedEntities {
     pub timer_entity: Entity,
-    pub entity_to_remove: Entity,
+    pub entity_to_remove: TimerAffectedEntity,
 }
 
 pub struct RemoveFromTimerAffectedEntitiesPlugin;

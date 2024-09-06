@@ -1,9 +1,9 @@
 use crate::prelude::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Event)]
+#[derive(Debug, Event, Clone, Copy)]
 pub struct TimerDoneEvent {
     pub event_type: TimerDoneEventType,
-    pub affected_entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    pub affected_entities: VecBasedArray<TimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
     pub timer_entity: Entity,
 }
 

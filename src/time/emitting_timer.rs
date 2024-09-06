@@ -1,17 +1,18 @@
 use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Copy)]
-pub struct OnceDoneTimer {
-    pub affected_entities: VecBasedArray<Entity, TIMER_MAX_ASSIGNED_ENTITIES>,
+pub struct EmittingTimer {
+    pub affected_entities: VecBasedArray<TimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
     pub time_multipliers: VecBasedArray<TimeMultiplierId, TIMER_MAX_ASSIGNED_MULTIPLIERS>,
     pub send_once_done: TimerDoneEventType,
     duration: f32,
     elapsed_time: f32,
+    normalized_progress: f32,
 }
 
-impl OnceDoneTimer {
+impl EmittingTimer {
     pub fn new(
-        affected_entities_vec: Vec<Entity>,
+        affected_entities_vec: Vec<TimerAffectedEntity>,
         time_multipliers_vec: Vec<TimeMultiplierId>,
         duration: f32,
         send_once_done: TimerDoneEventType,
@@ -26,23 +27,33 @@ impl OnceDoneTimer {
             send_once_done,
             duration: clamped_duration,
             elapsed_time: 0.0,
+            normalized_progress: 0.0,
         }
+    }
+
+    pub fn affected_entities_iter(&self) -> impl Iterator<Item = Entity> + '_ {
+        self.affected_entities.affected_entities_iter()
+    }
+
+    pub fn calculator_entities_iter(&self) -> impl Iterator<Item = Entity> + '_ {
+        self.affected_entities.calculator_entities_iter()
     }
 
     pub fn finished(&self) -> bool {
-        self.elapsed_time >= self.duration
+        self.normalized_progress >= 1.0
     }
 
-    pub fn tick_and_get_event_if_finished(
-        &mut self,
-        processed_time: f32,
-    ) -> Option<TimerDoneEventType> {
+    pub fn tick_and_get_normalized_progress(&mut self, processed_time: f32) -> Option<f32> {
         if processed_time > 0.0 && !self.finished() {
             self.elapsed_time += processed_time;
-            if self.finished() {
-                return Some(self.send_once_done);
-            }
+            self.update_normalized_progress();
+            Some(self.normalized_progress)
+        } else {
+            None
         }
-        None
+    }
+
+    fn update_normalized_progress(&mut self) {
+        self.normalized_progress = (self.elapsed_time / self.duration).min(1.0);
     }
 }

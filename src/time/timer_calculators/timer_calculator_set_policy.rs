@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy, Default)]
-pub enum AffectingTimerSetPolicy {
+pub enum TimerCalculatorSetPolicy {
     #[default]
     AlwaysTakeNew,
     IgnoreNewIfAssigned,

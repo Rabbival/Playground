@@ -2,9 +2,9 @@ use crate::prelude::*;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub struct CalculateAndSendGoingEvent {
-    pub affected_entities: VecBasedArray<FullTimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
+    pub going_event_value_calculator: Entity,
+    pub affected_entity: Entity,
     pub normalized_progress: f32,
-    pub event_type_to_send: TimerGoingEventType,
 }
 
 pub struct CalculateAndSendGoingEventPlugin;

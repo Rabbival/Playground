@@ -49,33 +49,27 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        affecting_timers::{
-            affecting_timer_set_policy::*, affecting_timers_plugin::*,
-            full_timer_affected_entity::*, AffectingTimers,
-        },
         consts::*,
+        emitting_timer::*,
         events::{
-            calculate_and_send_going_event::*,
-            full_timer_fire_request::{
-                full_timer_fire_request_type::*, move_timer_fire_request::*,
-                time_multiplier_change_timer_fire_request::*, FullTimerFireRequest,
-                FullTimerFireRequestPlugin,
-            },
-            remove_from_timer_affected_entities::*,
-            set_time_multiplier::*,
-            timer_done_event::*,
-            timer_going_event::*,
-            TimeEventChannelPlugin,
+            calculate_and_send_going_event::*, extract_affected_entities_and_send_done_event::*,
+            remove_from_timer_affected_entities::*, set_time_multiplier::*, timer_done_event::*,
+            timer_fire_request::*, timer_going_event::*, TimeEventChannelPlugin,
         },
+        going_event_management::{going_event_emitting::*, going_event_value_calculator::*},
         time_multiplication::{
             time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,
             TimeMutiplicationPlugin,
         },
         time_related_error::*,
-        timer::{full_timer::*, once_done_timer::*},
+        timer_affected_entity::*,
+        timer_calculators::{
+            affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,
+            timer_calculator_set_policy::*,
+        },
         timer_management::{
-            going_event_emitting::*, timer_affected_entities_change::*, timer_firing::*,
-            timer_ticking_and_clearing::*, TimerManagementPlugin,
+            timer_affected_entities_change::*, timer_clearing::*, timer_firing::*,
+            timer_ticking::*, TimerManagementPlugin,
         },
         TimePlugin,
     };

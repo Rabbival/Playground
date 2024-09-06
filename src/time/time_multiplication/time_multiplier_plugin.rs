@@ -22,7 +22,7 @@ fn initialize_time_multipliers(mut commands: Commands) {
     for time_multiplier_id in TimeMultiplierId::iter() {
         commands.spawn((
             time_multiplier_id.to_initial_properties(),
-            AffectingTimers::default(),
+            AffectingTimerCalculators::default(),
         ));
     }
 }
@@ -42,9 +42,7 @@ fn listen_for_time_multiplier_update_requests(
 
 fn listen_for_time_multiplier_set_requests(
     mut time_multiplier_set_request_reader: EventReader<SetTimeMultiplier>,
-    mut timer_fire_event_writer: EventWriter<
-        FullTimerFireRequest<TimeMultiplierChangeTimerFireRequest>,
-    >,
+    mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
     time_multipliers: Query<(&TimeMultiplier, Entity)>,
     mut commands: Commands,
 ) {
@@ -64,9 +62,7 @@ fn listen_for_time_multiplier_set_requests(
 }
 
 fn fire_time_multiplier_changers(
-    timer_fire_event_writer: &mut EventWriter<
-        FullTimerFireRequest<TimeMultiplierChangeTimerFireRequest>,
-    >,
+    timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
     time_multipliers: &Query<(&TimeMultiplier, Entity)>,
     multiplier_set_request: &SetTimeMultiplier,
     commands: &mut Commands,
@@ -74,23 +70,13 @@ fn fire_time_multiplier_changers(
     for (multiplier, multiplier_entity) in time_multipliers {
         if multiplier.id() == multiplier_set_request.multiplier_id {
             if multiplier.changeable() {
-                let interpolator_id = commands
-                    .spawn(ValueByInterpolation::<f32>::new(
-                        multiplier.value(),
-                        multiplier_set_request.new_multiplier,
-                        Interpolator::default(),
-                    ))
-                    .id();
-                timer_fire_event_writer.send(FullTimerFireRequest {
-                    affecting_timer_set_policy: AffectingTimerSetPolicy::AlwaysTakeNew,
-                    timer_firing_request: TimeMultiplierChangeTimerFireRequest::new(
-                        vec![FullTimerAffectedEntity {
-                            affected_entity: multiplier_entity,
-                            value_calculator_entity: interpolator_id,
-                        }],
-                        multiplier_set_request.duration,
-                    ),
-                });
+                spawn_calculator_and_fire_multiplier_changer(
+                    timer_fire_event_writer,
+                    multiplier_set_request,
+                    multiplier_entity,
+                    multiplier,
+                    commands,
+                );
                 return Ok(());
             } else {
                 return Err(TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(
@@ -102,4 +88,33 @@ fn fire_time_multiplier_changers(
     Err(TimeRelatedError::TimeMultiplierNotFound(
         multiplier_set_request.multiplier_id,
     ))
+}
+
+fn spawn_calculator_and_fire_multiplier_changer(
+    timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
+    multiplier_set_request: &SetTimeMultiplier,
+    multiplier_entity: Entity,
+    multiplier: &TimeMultiplier,
+    commands: &mut Commands,
+) {
+    let value_calculator_id = commands
+        .spawn(GoingEventValueCalculator::new(
+            TimerCalculatorSetPolicy::AlwaysTakeNew,
+            ValueByInterpolation::<f32>::new(
+                multiplier.value(),
+                multiplier_set_request.new_multiplier,
+                Interpolator::default(),
+            ),
+            TimerGoingEventType::ChangeTimeMultiplierSpeed,
+        ))
+        .id();
+    timer_fire_event_writer.send(TimerFireRequest(EmittingTimer::new(
+        vec![TimerAffectedEntity {
+            affected_entity: multiplier_entity,
+            value_calculator_entity: Some(value_calculator_id),
+        }],
+        vec![],
+        multiplier_set_request.duration,
+        TimerDoneEventType::default(),
+    )));
 }
