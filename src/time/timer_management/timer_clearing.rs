@@ -9,7 +9,7 @@ impl<T: Numeric> Plugin for TimerClearingGenericPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_for_timer_done_events::<T>.in_set(EndOfFrameSystemSet::TimerClearing),
+            clear_done_timers_and_calculators::<T>.in_set(EndOfFrameSystemSet::TimerClearing),
         );
     }
 }
@@ -22,7 +22,7 @@ impl Plugin for TimerClearingPlugin {
     }
 }
 
-fn listen_for_timer_done_events<T: Numeric>(
+fn clear_done_timers_and_calculators<T: Numeric>(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     emitting_timers: Query<(Entity, &EmittingTimer)>,
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,

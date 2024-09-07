@@ -1,12 +1,12 @@
 use crate::prelude::*;
 
 pub mod calculate_and_send_going_event;
-pub mod extract_affected_entities_and_send_done_event;
 pub mod remove_from_timer_affected_entities;
 pub mod set_time_multiplier;
 pub mod timer_done_event;
 pub mod timer_fire_request;
 pub mod timer_going_event;
+pub mod update_affected_entity_after_timer_birth;
 
 pub struct TimeEventChannelPlugin;
 
@@ -17,8 +17,8 @@ impl Plugin for TimeEventChannelPlugin {
             RemoveFromTimerAffectedEntitiesPlugin,
             CalculateAndSendGoingEventPlugin,
             TimerDoneEventPlugin,
-            ExtractAffectedEntitiesAndSendDoneEventPlugin,
             TimerFireRequestPlugin,
+            UpdateAffectedEntitiesAfterTimerBirthPlugin,
         ));
     }
 }

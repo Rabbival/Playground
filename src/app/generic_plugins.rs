@@ -22,7 +22,7 @@ impl<T: Numeric> Plugin for NumericPlugins<T> {
             GoingEventEmittingPlugin::<T>::default(),
             TimerClearingGenericPlugin::<T>::default(),
             AffectingTimerCalculatorsPlugin::<T>::default(),
-            TimerFiringPlugin::<T>::default(),
+            TimerFiringGenericPlugin::<T>::default(),
         ));
     }
 }

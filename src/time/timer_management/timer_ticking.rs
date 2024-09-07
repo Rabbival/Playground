@@ -13,9 +13,7 @@ impl Plugin for TimerTickingPlugin {
 
 pub fn tick_emitting_timers(
     mut calculation_requests_writer: EventWriter<CalculateAndSendGoingEvent>,
-    mut extract_affected_and_send_done_event_writer: EventWriter<
-        ExtractAffectedEntitiesAndSendDoneEvent,
-    >,
+    mut extract_affected_and_send_done_event_writer: EventWriter<TimerDoneEvent>,
     mut timers: Query<(&mut EmittingTimer, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
@@ -36,9 +34,7 @@ pub fn tick_emitting_timers(
 
 fn tick_emitting_timer_and_send_events(
     calculation_requests_writer: &mut EventWriter<CalculateAndSendGoingEvent>,
-    extract_affected_and_send_done_event_writer: &mut EventWriter<
-        ExtractAffectedEntitiesAndSendDoneEvent,
-    >,
+    extract_affected_and_send_done_event_writer: &mut EventWriter<TimerDoneEvent>,
     time_to_tick: f32,
     timer: &mut EmittingTimer,
     timer_entity: Entity,
@@ -54,8 +50,11 @@ fn tick_emitting_timer_and_send_events(
             }
         }
         if timer.finished() {
-            extract_affected_and_send_done_event_writer
-                .send(ExtractAffectedEntitiesAndSendDoneEvent { timer_entity });
+            extract_affected_and_send_done_event_writer.send(TimerDoneEvent {
+                event_type: timer.send_once_done,
+                affected_entities: timer.affected_entities,
+                timer_entity,
+            });
         }
     }
 }

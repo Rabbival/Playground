@@ -15,7 +15,8 @@ pub fn get_app_with_resources_and_events() -> App {
         .add_event::<TimerGoingEvent<Quat>>()
         .add_event::<TimerFireRequest>()
         .add_event::<RemoveFromTimerAffectedEntities>()
-        .add_event::<CalculateAndSendGoingEvent>();
+        .add_event::<CalculateAndSendGoingEvent>()
+        .add_event::<UpdateAffectedEntitiesAfterTimerBirth>();
     app
 }
 

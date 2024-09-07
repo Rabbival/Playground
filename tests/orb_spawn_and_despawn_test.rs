@@ -11,8 +11,10 @@ fn orb_spawn_and_despawn_single_request_test() {
         (
             spawn_orb,
             collect_all_orbs,
-            listen_for_emitting_timer_firing_requests::<Vec3>,
+            listen_for_emitting_timer_firing_requests,
+            listen_for_update_affected_entities_after_timer_birth_requests::<Vec3>,
             tick_emitting_timers,
+            calculate_value_and_send_going_event::<Vec3>,
             listen_for_despawn_requests_from_timers,
         )
             .chain(),
@@ -40,7 +42,8 @@ fn orb_spawn_and_despawn_multiple_requests_test() {
         (
             spawn_orb,
             collect_all_orbs,
-            listen_for_emitting_timer_firing_requests::<Vec3>,
+            listen_for_emitting_timer_firing_requests,
+            listen_for_update_affected_entities_after_timer_birth_requests::<Vec3>,
             tick_emitting_timers,
             calculate_value_and_send_going_event::<Vec3>,
             listen_for_despawn_requests_from_timers,

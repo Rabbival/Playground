@@ -17,42 +17,13 @@ fn timer_policy_test(policy: TimerCalculatorSetPolicy, expected_entity_count_aft
     let affected_entities_when_single_timer;
     let affected_entities_after_new_timer_spawned;
     let mut app = test_dependencies::get_app_with_resources_and_events();
-
-    app.add_systems(
-        Update,
-        (
-            listen_for_emitting_timer_firing_requests::<Vec3>,
-            listen_for_affected_entity_removal_request,
-        )
-            .chain(),
-    );
-
-    request_emitting_timer_firing(
-        &mut app,
-        TimerCalculatorSetPolicy::default(),
-        TIMER_DURATION_IN_SECONDS,
-    );
-    app.update();
-    affected_entities_when_single_timer = count_affected_entities(&mut app);
-    request_emitting_timer_firing(&mut app, policy, TIMER_DURATION_IN_SECONDS);
-    app.update();
-    affected_entities_after_new_timer_spawned = count_affected_entities(&mut app);
-
-    assert_eq!(affected_entities_when_single_timer, 1);
-    assert_eq!(
-        affected_entities_after_new_timer_spawned,
-        expected_entity_count_after_fire
-    );
-}
-
-fn request_emitting_timer_firing(app: &mut App, policy: TimerCalculatorSetPolicy, duration: f32) {
     let redundant_calculator = app
         .world_mut()
         .commands()
         .spawn(GoingEventValueCalculator::new(
             policy,
             ValueByInterpolation::new(0.0, 0.0, Interpolator::default()),
-            TimerGoingEventType::Move(MovementType::InDirectLine),
+            TimerGoingEventType::ChangeTimeMultiplierSpeed,
         ))
         .id();
     let empty_entity = app
@@ -64,10 +35,48 @@ fn request_emitting_timer_firing(app: &mut App, policy: TimerCalculatorSetPolicy
         affected_entity: empty_entity,
         value_calculator_entity: Some(redundant_calculator),
     };
+
+    app.add_systems(
+        Update,
+        (
+            listen_for_emitting_timer_firing_requests,
+            listen_for_update_affected_entities_after_timer_birth_requests::<f32>,
+            listen_for_affected_entity_removal_request,
+        )
+            .chain(),
+    );
+
+    request_emitting_timer_firing(
+        &mut app,
+        redundant_affected_entity,
+        TIMER_DURATION_IN_SECONDS,
+    );
+    app.update();
+    affected_entities_when_single_timer = count_affected_entities(&mut app);
+    request_emitting_timer_firing(
+        &mut app,
+        redundant_affected_entity,
+        TIMER_DURATION_IN_SECONDS,
+    );
+    app.update();
+    affected_entities_after_new_timer_spawned = count_affected_entities(&mut app);
+
+    assert_eq!(affected_entities_when_single_timer, 1);
+    assert_eq!(
+        affected_entities_after_new_timer_spawned,
+        expected_entity_count_after_fire
+    );
+}
+
+fn request_emitting_timer_firing(
+    app: &mut App,
+    affected_entity: TimerAffectedEntity,
+    duration: f32,
+) {
     app.world_mut()
         .resource_mut::<Events<TimerFireRequest>>()
         .send(TimerFireRequest(EmittingTimer::new(
-            vec![redundant_affected_entity],
+            vec![affected_entity],
             vec![],
             duration,
             TimerDoneEventType::default(),

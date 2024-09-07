@@ -52,9 +52,10 @@ pub mod prelude {
         consts::*,
         emitting_timer::*,
         events::{
-            calculate_and_send_going_event::*, extract_affected_entities_and_send_done_event::*,
-            remove_from_timer_affected_entities::*, set_time_multiplier::*, timer_done_event::*,
-            timer_fire_request::*, timer_going_event::*, TimeEventChannelPlugin,
+            calculate_and_send_going_event::*, remove_from_timer_affected_entities::*,
+            set_time_multiplier::*, timer_done_event::*, timer_fire_request::*,
+            timer_going_event::*, update_affected_entity_after_timer_birth::*,
+            TimeEventChannelPlugin,
         },
         going_event_management::{going_event_emitting::*, going_event_value_calculator::*},
         time_multiplication::{
