@@ -4,7 +4,11 @@ pub struct TimerFiringPlugin;
 
 impl Plugin for TimerFiringPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_for_emitting_timer_firing_requests);
+        app.add_systems(
+            Update,
+            listen_for_emitting_timer_firing_requests
+                .in_set(TimerSystemSet::PreTickingEarlyPreperations),
+        );
     }
 }
 

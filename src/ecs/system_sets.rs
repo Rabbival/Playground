@@ -9,6 +9,7 @@ pub enum InputSystemSet {
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum TimerSystemSet {
+    PreTickingEarlyPreperations,
     PreTickingPreperations,
     PreTicking,
     TimerTicking,
@@ -36,6 +37,7 @@ impl Plugin for SystemSetsPlugin {
                 )
                     .chain(),
                 (
+                    TimerSystemSet::PreTickingEarlyPreperations,
                     TimerSystemSet::PreTickingPreperations,
                     TimerSystemSet::PreTicking,
                     TimerSystemSet::TimerTicking,
