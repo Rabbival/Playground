@@ -3,17 +3,6 @@ use crate::{plugin_for_implementors_of_trait, prelude::*};
 #[derive(Resource, Default)]
 struct EmittingTimersDespawnedThisFrame(pub Vec<Entity>);
 
-plugin_for_implementors_of_trait!(TimerClearingGenericPlugin, Numeric);
-
-impl<T: Numeric> Plugin for TimerClearingGenericPlugin<T> {
-    fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            clear_done_timers_and_calculators::<T>.in_set(EndOfFrameSystemSet::TimerClearing),
-        );
-    }
-}
-
 pub struct TimerClearingPlugin;
 
 impl Plugin for TimerClearingPlugin {
@@ -23,6 +12,17 @@ impl Plugin for TimerClearingPlugin {
             clear_emitting_timer_despawned_this_frame.in_set(EndOfFrameSystemSet::PreTimerClearing),
         )
         .init_resource::<EmittingTimersDespawnedThisFrame>();
+    }
+}
+
+plugin_for_implementors_of_trait!(TimerClearingGenericPlugin, Numeric);
+
+impl<T: Numeric> Plugin for TimerClearingGenericPlugin<T> {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            clear_done_timers_and_calculators::<T>.in_set(EndOfFrameSystemSet::TimerClearing),
+        );
     }
 }
 
@@ -47,6 +47,13 @@ fn clear_done_timers_and_calculators<T: Numeric>(
             {
                 despawn_entity_notify_on_fail(timer_entity, "EmittingTimer", &mut commands);
                 emitting_timers_despawned_this_frame.0.push(timer_entity);
+
+                //DEBUG
+                print_info_vec(
+                    "Emitting timers to despawn: ",
+                    &emitting_timers_despawned_this_frame.0,
+                    vec![LogCategory::Crucial],
+                );
             }
             for value_calculator_entity in timer.calculator_entities_iter() {
                 if timer_value_calculators.contains(value_calculator_entity) {
