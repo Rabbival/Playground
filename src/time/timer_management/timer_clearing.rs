@@ -18,14 +18,25 @@ pub struct TimerClearingPlugin;
 
 impl Plugin for TimerClearingPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<EmittingTimersDespawnedThisFrame>();
+        app.add_systems(
+            Update,
+            clear_emitting_timer_despawned_this_frame.in_set(EndOfFrameSystemSet::PreTimerClearing),
+        )
+        .init_resource::<EmittingTimersDespawnedThisFrame>();
     }
+}
+
+fn clear_emitting_timer_despawned_this_frame(
+    mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
+) {
+    emitting_timers_despawned_this_frame.0 = vec![];
 }
 
 fn clear_done_timers_and_calculators<T: Numeric>(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     emitting_timers: Query<(Entity, &EmittingTimer)>,
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
+    timer_value_calculators: Query<&GoingEventValueCalculator<T>>,
     mut commands: Commands,
 ) {
     for timer_done_event in timer_done_event_reader.read() {
@@ -38,13 +49,14 @@ fn clear_done_timers_and_calculators<T: Numeric>(
                 emitting_timers_despawned_this_frame.0.push(timer_entity);
             }
             for value_calculator_entity in timer.calculator_entities_iter() {
-                despawn_entity_notify_on_fail(
-                    value_calculator_entity,
-                    "a EmittingTimer's ValueCalculator",
-                    &mut commands,
-                );
+                if timer_value_calculators.contains(value_calculator_entity) {
+                    despawn_entity_notify_on_fail(
+                        value_calculator_entity,
+                        "an EmittingTimer's ValueCalculator",
+                        &mut commands,
+                    );
+                }
             }
         }
     }
-    emitting_timers_despawned_this_frame.0 = vec![];
 }

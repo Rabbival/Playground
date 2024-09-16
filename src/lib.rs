@@ -34,7 +34,9 @@ pub mod prelude {
         consts::*,
         enums::{bevy_log_level::*, log_category::*, os_access_log::*},
         game_session_log::*,
+        print_config::*,
         print_log::*,
+        print_vec::*,
     };
     pub use crate::ecs::{
         component_utilities::*, entity_error::*, late_despawner::*, system_sets::*,

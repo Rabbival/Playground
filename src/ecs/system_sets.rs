@@ -19,6 +19,7 @@ pub enum TimerSystemSet {
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum EndOfFrameSystemSet {
+    PreTimerClearing,
     TimerClearing,
     LateDespawn,
 }
@@ -47,6 +48,7 @@ impl Plugin for SystemSetsPlugin {
                     .chain()
                     .after(InputSystemSet::Handling),
                 (
+                    EndOfFrameSystemSet::PreTimerClearing,
                     EndOfFrameSystemSet::TimerClearing,
                     EndOfFrameSystemSet::LateDespawn,
                 )

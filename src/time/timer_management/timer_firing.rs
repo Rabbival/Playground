@@ -51,37 +51,28 @@ pub fn listen_for_update_affected_entities_after_timer_birth_requests<T: Numeric
         let newborn_timer = affected_entities_update_request.newborn_timer;
         for timer_affected_entity in newborn_timer.affected_entities.iter() {
             if let Some(value_calculator_entity) = timer_affected_entity.value_calculator_entity {
-                match timer_calculators.get(value_calculator_entity) {
-                    Ok(value_calculator) => {
-                        match affected_by_timer_query.get_mut(timer_affected_entity.affected_entity)
-                        {
-                            Ok(mut affecting_timer_calculators) => {
-                                set_active_calculator_and_destroy_inactive(
-                                    &mut remove_from_timer_entities_writer,
-                                    &mut affecting_timer_calculators,
-                                    TimerAndCalculator {
-                                        timer: newborn_timer_entity,
-                                        value_calculator: value_calculator_entity,
-                                    },
-                                    value_calculator,
-                                    &emitting_timers,
-                                    &mut commands,
-                                );
-                            }
-                            Err(_) => print_warning(
-                                EntityError::EntityNotInQuery(String::from(
-                                    "couldn't find entity in affecting timers component query upon timer firing",
-                                )),
-                                vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
-                            ),
+                if let Ok(value_calculator) = timer_calculators.get(value_calculator_entity) {
+                    match affected_by_timer_query.get_mut(timer_affected_entity.affected_entity) {
+                        Ok(mut affecting_timer_calculators) => {
+                            set_active_calculator_and_destroy_inactive(
+                                &mut remove_from_timer_entities_writer,
+                                &mut affecting_timer_calculators,
+                                TimerAndCalculator {
+                                    timer: newborn_timer_entity,
+                                    value_calculator: value_calculator_entity,
+                                },
+                                value_calculator,
+                                &emitting_timers,
+                                &mut commands,
+                            );
                         }
+                        Err(_) => print_warning(
+                            EntityError::EntityNotInQuery(String::from(
+                                "couldn't find entity in affecting timers component query upon timer firing",
+                            )),
+                            vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
+                        ),
                     }
-                    Err(_) => print_warning(
-                        EntityError::EntityNotInQuery(String::from(
-                            "couldn't find entity in timer_calculators query upon timer firing",
-                        )),
-                        vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
-                    ),
                 }
             }
         }
