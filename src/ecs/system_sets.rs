@@ -48,8 +48,11 @@ impl Plugin for SystemSetsPlugin {
                     .chain()
                     .after(InputSystemSet::Handling),
                 (
-                    EndOfFrameSystemSet::PreTimerClearing,
-                    EndOfFrameSystemSet::TimerClearing,
+                    (
+                        EndOfFrameSystemSet::PreTimerClearing,
+                        EndOfFrameSystemSet::TimerClearing,
+                    )
+                        .chain(),
                     EndOfFrameSystemSet::LateDespawn,
                 )
                     .after(TimerSystemSet::PostTicking),

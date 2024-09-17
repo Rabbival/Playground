@@ -7,11 +7,16 @@ pub struct TimerClearingPlugin;
 
 impl Plugin for TimerClearingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            clear_emitting_timer_despawned_this_frame.in_set(EndOfFrameSystemSet::PreTimerClearing),
-        )
-        .init_resource::<EmittingTimersDespawnedThisFrame>();
+        app.init_resource::<EmittingTimersDespawnedThisFrame>()
+            .add_systems(
+                Update,
+                clear_emitting_timer_despawned_this_frame
+                    .in_set(EndOfFrameSystemSet::PreTimerClearing)
+                    .run_if(
+                        resource_exists_and_changed::<EmittingTimersDespawnedThisFrame>
+                            .and_then(not(resource_added::<EmittingTimersDespawnedThisFrame>)),
+                    ),
+            );
     }
 }
 
@@ -29,7 +34,10 @@ impl<T: Numeric> Plugin for TimerClearingGenericPlugin<T> {
 fn clear_emitting_timer_despawned_this_frame(
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
 ) {
-    emitting_timers_despawned_this_frame.0 = vec![];
+    let despawned_timers_vector = &emitting_timers_despawned_this_frame.0;
+    if !despawned_timers_vector.is_empty() {
+        emitting_timers_despawned_this_frame.0 = vec![];
+    }
 }
 
 fn clear_done_timers_and_calculators<T: Numeric>(
@@ -47,13 +55,6 @@ fn clear_done_timers_and_calculators<T: Numeric>(
             {
                 despawn_entity_notify_on_fail(timer_entity, "EmittingTimer", &mut commands);
                 emitting_timers_despawned_this_frame.0.push(timer_entity);
-
-                //DEBUG
-                print_info_vec(
-                    "Emitting timers to despawn: ",
-                    &emitting_timers_despawned_this_frame.0,
-                    vec![LogCategory::Crucial],
-                );
             }
             for value_calculator_entity in timer.calculator_entities_iter() {
                 if timer_value_calculators.contains(value_calculator_entity) {

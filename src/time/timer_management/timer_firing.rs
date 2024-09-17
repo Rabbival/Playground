@@ -31,10 +31,6 @@ pub fn listen_for_emitting_timer_firing_requests(
 ) {
     for timer_fire_request in event_reader.read() {
         let newborn_timer_entity = commands.spawn(timer_fire_request.0).id();
-
-        //DEBUG
-        info!("\n spawned timer with id: {:?}", newborn_timer_entity);
-
         event_writer.send(UpdateAffectedEntitiesAfterTimerBirth {
             newborn_timer_entity,
             newborn_timer: timer_fire_request.0,
@@ -102,12 +98,6 @@ fn set_active_calculator_and_destroy_inactive<T: Numeric>(
             TimerCalculatorSetPolicy::IgnoreNewIfAssigned => Some(newborn_timer_and_calculator),
         };
         if let Some(timer_to_remove_from) = maybe_timer_to_remove_from {
-            //DEBUG
-            info!(
-                "\n decided to remove from timer: {:?}",
-                timer_to_remove_from.timer
-            );
-
             destory_inactive_and_send_removal_request(
                 remove_from_timer_entities_writer,
                 timer_to_remove_from,
