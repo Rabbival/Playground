@@ -11,8 +11,8 @@ pub struct SystemFileName {
 }
 
 impl SystemFileName {
-    pub fn from_name(name: String, requested_postfix_type: SystemFileType) -> SystemFileName {
-        let name_with_postfix = name + &requested_postfix_type.to_postfix();
+    pub fn from_name(name: &String, requested_postfix_type: SystemFileType) -> SystemFileName {
+        let name_with_postfix = String::from(name) + &requested_postfix_type.to_postfix();
         SystemFileName {
             name_with_postfix,
             file_type: requested_postfix_type,

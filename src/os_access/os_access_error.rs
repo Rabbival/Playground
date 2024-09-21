@@ -3,14 +3,14 @@ use std::fmt::Display;
 use crate::prelude::*;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum OsAccessError {
+pub enum OsAccessError<'a> {
     CouldntFindFile(SystemFileName),
     BadFolderPath(FolderToAccess),
     CouldntParseFile(SystemFileName),
-    MismatchingPostfix(MismatchError),
+    MismatchingPostfix(MismatchError<'a>),
 }
 
-impl Display for OsAccessError {
+impl<'a> Display for OsAccessError<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             OsAccessError::CouldntFindFile(system_file_name) => {
@@ -31,8 +31,8 @@ impl Display for OsAccessError {
     }
 }
 
-impl From<MismatchError> for OsAccessError {
-    fn from(mismatch_error: MismatchError) -> Self {
+impl<'a> From<MismatchError<'a>> for OsAccessError<'a> {
+    fn from(mismatch_error: MismatchError<'a>) -> Self {
         OsAccessError::MismatchingPostfix(mismatch_error)
     }
 }

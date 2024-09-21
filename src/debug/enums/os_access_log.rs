@@ -1,16 +1,16 @@
 use std::fmt::*;
 
 #[derive(Debug)]
-pub enum OsAccessLog {
-    FolderCreated(String),
-    FolderExists(String),
-    WroteToFile(String),
-    FileDeleted(String),
-    FileCreated(String),
-    AppendedToFile(String),
+pub enum OsAccessLog<'a> {
+    FolderCreated(&'a String),
+    FolderExists(&'a String),
+    WroteToFile(&'a String),
+    FileDeleted(&'a String),
+    FileCreated(&'a String),
+    AppendedToFile(&'a String),
 }
 
-impl Display for OsAccessLog {
+impl<'a> Display for OsAccessLog<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             OsAccessLog::FolderCreated(folder) => write!(f, "Folder created: {}", folder),

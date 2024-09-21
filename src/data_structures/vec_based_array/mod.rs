@@ -28,10 +28,6 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
         self.array.iter().flatten().copied()
     }
 
-    pub fn vec_clone(&self) -> Vec<T> {
-        self.iter().collect()
-    }
-
     pub fn len(&self) -> usize {
         self.next_uninitialized_index
     }
