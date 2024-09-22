@@ -29,9 +29,9 @@ impl TimeMultiplier {
         self.changeable
     }
 
-    pub fn set_value(&mut self, value: f32) {
+    pub fn update_value(&mut self, value_delta: f32) {
         if self.changeable {
-            self.value = value;
+            self.value += value_delta;
         } else {
             print_warning(
                 TimeRelatedError::AttemptedToChangeFixedTimeMultiplier(self.id),

@@ -53,6 +53,7 @@ pub mod prelude {
     pub use crate::time::{
         consts::*,
         emitting_timer::*,
+        errors::{time_related_error::*, timer_affected_entities_error::*},
         events::{
             calculate_and_send_going_event::*, remove_from_timer_affected_entities::*,
             set_time_multiplier::*, timer_done_event::*, timer_fire_request::*,
@@ -61,10 +62,9 @@ pub mod prelude {
         },
         going_event_management::{going_event_emitting::*, going_event_value_calculator::*},
         time_multiplication::{
-            time_multiplier::*, time_multiplier_id::*, time_multiplier_plugin::*,
+            time_multiplier::*, time_multiplier_id::*, time_multiplier_management::*,
             TimeMutiplicationPlugin,
         },
-        time_related_error::*,
         timer_affected_entity::*,
         timer_calculators::{
             affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,

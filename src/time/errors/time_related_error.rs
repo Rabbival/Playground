@@ -7,9 +7,7 @@ pub enum TimeRelatedError {
     TimeMultiplierNotFound(TimeMultiplierId),
     AttemptedToChangeFixedTimeMultiplier(TimeMultiplierId),
     TimerToRemoveFromNotFound(RemoveFromTimerAffectedEntities),
-    TimerAffectedEntitiesError(
-        VecBasedArrayError<TimerAffectedEntity, TimerAffectedEntity, TIMER_MAX_ASSIGNED_ENTITIES>,
-    ),
+    TimerAffectedEntitiesError(TimerAffectedEntitiesError),
 }
 
 impl Display for TimeRelatedError {
@@ -30,11 +28,11 @@ impl Display for TimeRelatedError {
                     event
                 )
             }
-            Self::TimerAffectedEntitiesError(vec_based_array_error) => {
+            Self::TimerAffectedEntitiesError(timer_affected_entity_error) => {
                 write!(
                     f,
-                    "Error when accessing once done timer affected entities: {:?}",
-                    vec_based_array_error
+                    "Error when accessing affected entities: {}",
+                    timer_affected_entity_error
                 )
             }
         }
@@ -51,6 +49,6 @@ impl From<VecBasedArrayError<TimerAffectedEntity, TimerAffectedEntity, TIMER_MAX
             TIMER_MAX_ASSIGNED_ENTITIES,
         >,
     ) -> Self {
-        TimeRelatedError::TimerAffectedEntitiesError(value)
+        Self::TimerAffectedEntitiesError(TimerAffectedEntitiesError::from(value))
     }
 }

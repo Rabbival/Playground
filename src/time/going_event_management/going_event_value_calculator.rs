@@ -21,15 +21,15 @@ impl<T: Numeric> GoingEventValueCalculator<T> {
     }
 
     pub fn get_timer_going_event(
-        &self,
+        &mut self,
         normalized_progress: f32,
         affect_entity: Entity,
     ) -> TimerGoingEvent<T> {
-        let current_value = self.calculator.calculate_current_value(normalized_progress);
+        let value_delta = self.calculator.calculate_delta(normalized_progress);
         TimerGoingEvent {
             event_type: self.going_event_type,
             entity: affect_entity,
-            value: current_value,
+            value_delta,
         }
     }
 

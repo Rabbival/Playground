@@ -32,6 +32,10 @@ impl<T: Debug + Copy + PartialEq, const N: usize> VecBasedArray<T, N> {
         self.next_uninitialized_index
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn remove_by_item(&mut self, item_to_remove: T) -> Result<T, VecBasedArrayError<T, T, N>> {
         self.remove_first_matching_item(item_to_remove, |a, b| a == b)
     }

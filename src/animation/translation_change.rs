@@ -19,7 +19,7 @@ fn listen_for_translation_update_requests(
         if let TimerGoingEventType::Move(MovementType::InDirectLine) = event_from_timer.event_type {
             let mut transform =
                 get_mut_entity_else_return!(transforms, event_from_timer.entity, Transform);
-            transform.translation = event_from_timer.value;
+            transform.translation += event_from_timer.value_delta;
         }
     }
 }

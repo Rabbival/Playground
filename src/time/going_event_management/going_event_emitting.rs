@@ -14,11 +14,11 @@ impl<T: Numeric> Plugin for GoingEventEmittingPlugin<T> {
 pub fn calculate_value_and_send_going_event<T: Numeric>(
     mut calculation_requests_reader: EventReader<CalculateAndSendGoingEvent>,
     mut timer_going_event_writer: EventWriter<TimerGoingEvent<T>>,
-    value_calculators: Query<&GoingEventValueCalculator<T>>,
+    mut value_calculators: Query<&mut GoingEventValueCalculator<T>>,
 ) {
     for calculation_request in calculation_requests_reader.read() {
-        if let Ok(value_calculator) =
-            value_calculators.get(calculation_request.going_event_value_calculator)
+        if let Ok(mut value_calculator) =
+            value_calculators.get_mut(calculation_request.going_event_value_calculator)
         {
             let timer_going_event = value_calculator.get_timer_going_event(
                 calculation_request.normalized_progress,

@@ -34,7 +34,7 @@ fn listen_for_time_multiplier_update_requests(
     for event_from_timer in event_from_timer_reader.read() {
         if let TimerGoingEventType::ChangeTimeMultiplierSpeed = event_from_timer.event_type {
             if let Ok((mut multiplier, _)) = time_multipliers.get_mut(event_from_timer.entity) {
-                multiplier.set_value(event_from_timer.value);
+                multiplier.update_value(event_from_timer.value_delta);
             }
         }
     }
@@ -100,7 +100,7 @@ fn spawn_calculator_and_fire_multiplier_changer(
     let value_calculator_id = commands
         .spawn(GoingEventValueCalculator::new(
             TimerCalculatorSetPolicy::AlwaysTakeNew,
-            ValueByInterpolation::<f32>::new(
+            ValueByInterpolation::<f32>::from_goal_and_current(
                 multiplier.value(),
                 multiplier_set_request.new_multiplier,
                 Interpolator::default(),

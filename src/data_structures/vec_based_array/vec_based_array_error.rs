@@ -10,7 +10,7 @@ pub enum VecBasedArrayError<
 > {
     FoundNoItemToMatchWith(S, VecBasedArray<T, N>),
     IndexOutOfRange(usize, VecBasedArray<T, N>),
-    ItemWithAffectedEntityNotFound(Entity, VecBasedArray<Entity, N>),
+    ItemWithAffectedEntityNotFound(Entity),
 }
 
 impl<T: Debug + Copy + PartialEq, S: Debug + Copy + PartialEq, const N: usize> Display
@@ -32,12 +32,8 @@ impl<T: Debug + Copy + PartialEq, S: Debug + Copy + PartialEq, const N: usize> D
                     index, vec_based_array
                 )
             }
-            Self::ItemWithAffectedEntityNotFound(entity, vec_based_array) => {
-                write!(
-                    f,
-                    "Couldn't find item with affected entity: {:?} in vec-based array: {:?} ",
-                    entity, vec_based_array
-                )
+            Self::ItemWithAffectedEntityNotFound(entity) => {
+                write!(f, "Couldn't find item with affected entity: {:?}", entity,)
             }
         }
     }
