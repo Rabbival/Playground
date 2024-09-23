@@ -1,7 +1,5 @@
 use crate::prelude::{clamp_and_notify, Numeric};
 
-pub mod value_by_interpolation;
-
 #[derive(Debug, Clone, Copy)]
 pub struct Interpolator {
     pub power: f32,

@@ -1,3 +1,5 @@
+use crate::prelude::*;
+
 pub mod consts;
 pub mod emitting_timer;
 pub mod errors;
@@ -8,8 +10,6 @@ pub mod timer_affected_entity;
 pub mod timer_and_calculator;
 pub mod timer_calculators;
 pub mod timer_management;
-
-use crate::prelude::*;
 
 pub struct TimePlugin;
 

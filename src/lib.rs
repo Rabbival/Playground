@@ -25,11 +25,11 @@ pub mod prelude {
     pub use crate::common_logic::{
         argument_validation::*,
         enums::basic_direction::*,
-        interpolator::{value_by_interpolation::*, Interpolator},
+        interpolation::{interpolator::*, value_by_interpolation::*},
         mismatch_error::*,
         movement_type::*,
     };
-    pub use crate::data_structures::vec_based_array::{vec_based_array_error::*, VecBasedArray};
+    pub use crate::data_structures::vec_based::{vec_based_array::*, vec_based_array_error::*};
     pub use crate::debug::{
         consts::*,
         enums::{bevy_log_level::*, log_category::*, os_access_log::*},
