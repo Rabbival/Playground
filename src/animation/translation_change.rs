@@ -6,7 +6,7 @@ impl Plugin for TranslationChangePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_for_translation_update_requests.in_set(TimerSystemSet::PostTicking),
+            listen_for_translation_update_requests.in_set(TickingSystemSet::PostTicking),
         );
     }
 }

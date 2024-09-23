@@ -13,7 +13,7 @@ impl Plugin for TimeMultiplierPlugin {
                     listen_for_time_multiplier_update_requests,
                     listen_for_time_multiplier_set_requests,
                 )
-                    .in_set(TimerSystemSet::PostTicking),
+                    .in_set(TickingSystemSet::PostTicking),
             );
     }
 }
@@ -99,7 +99,7 @@ fn spawn_calculator_and_fire_multiplier_changer(
 ) {
     let value_calculator_id = commands
         .spawn(GoingEventValueCalculator::new(
-            TimerCalculatorSetPolicy::AlwaysTakeNew,
+            TimerCalculatorSetPolicy::KeepNewTimer,
             ValueByInterpolation::<f32>::from_goal_and_current(
                 multiplier.value(),
                 multiplier_set_request.new_multiplier,

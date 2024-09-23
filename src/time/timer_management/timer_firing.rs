@@ -7,7 +7,7 @@ impl Plugin for TimerFiringPlugin {
         app.add_systems(
             Update,
             listen_for_emitting_timer_firing_requests
-                .in_set(TimerSystemSet::PreTickingEarlyPreperations),
+                .in_set(TickingSystemSet::PreTickingEarlyPreperations),
         );
     }
 }
@@ -19,7 +19,7 @@ impl<T: Numeric> Plugin for TimerFiringGenericPlugin<T> {
         app.add_systems(
             Update,
             listen_for_update_affected_entities_after_timer_birth_requests::<T>
-                .in_set(TimerSystemSet::PreTickingPreperations),
+                .in_set(TickingSystemSet::PreTickingPreperations),
         );
     }
 }
@@ -87,17 +87,13 @@ fn set_active_calculator_and_destroy_inactive<T: Numeric>(
     emitting_timers: &Query<&EmittingTimer>,
     commands: &mut Commands,
 ) {
-    let maybe_existing_affecting_calculator = affecting_timer_calculators.insert(
+    let maybe_timers_to_remove_from = affecting_timer_calculators.insert_get_rejected_value(
         value_calculator.going_event_type(),
         newborn_timer_and_calculator,
         value_calculator.set_policy,
     );
-    if let Some(existing_calculator_entity) = maybe_existing_affecting_calculator {
-        let maybe_timer_to_remove_from = match value_calculator.set_policy {
-            TimerCalculatorSetPolicy::AlwaysTakeNew => Some(existing_calculator_entity),
-            TimerCalculatorSetPolicy::IgnoreNewIfAssigned => Some(newborn_timer_and_calculator),
-        };
-        if let Some(timer_to_remove_from) = maybe_timer_to_remove_from {
+    if let Some(timers_to_remove_from) = maybe_timers_to_remove_from {
+        for timer_to_remove_from in timers_to_remove_from {
             destory_inactive_and_send_removal_request(
                 remove_from_timer_entities_writer,
                 timer_to_remove_from,

@@ -6,7 +6,7 @@ impl<T: Numeric> Plugin for AffectingTimerCalculatorsPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            clear_done_timers_from_affecting_timers::<T>.in_set(TimerSystemSet::PostTicking),
+            clear_done_timers_from_affecting_timers::<T>.in_set(TickingSystemSet::PostTicking),
         );
     }
 }

@@ -39,7 +39,8 @@ pub mod prelude {
         print_vec::*,
     };
     pub use crate::ecs::{
-        component_utilities::*, entity_error::*, late_despawner::*, system_sets::*,
+        component_utilities::*, despawn_policy::*, entity_error::*, late_despawner::*,
+        system_sets::*,
     };
     pub use crate::game::{consts::*, event_channels::*, orb::*, tags::*, GamePlugin};
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
@@ -66,6 +67,7 @@ pub mod prelude {
             TimeMutiplicationPlugin,
         },
         timer_affected_entity::*,
+        timer_and_calculator::*,
         timer_calculators::{
             affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,
             timer_calculator_set_policy::*,

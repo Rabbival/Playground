@@ -11,7 +11,7 @@ pub struct TimerDoneEvent {
 pub enum TimerDoneEventType {
     #[default]
     Nothing,
-    DespawnAffectedEntities,
+    DespawnAffectedEntities(DespawnPolicy),
 }
 
 pub struct TimerDoneEventPlugin;

@@ -8,7 +8,7 @@ pub enum InputSystemSet {
 }
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
-pub enum TimerSystemSet {
+pub enum TickingSystemSet {
     PreTickingEarlyPreperations,
     PreTickingPreperations,
     PreTicking,
@@ -22,6 +22,7 @@ pub enum EndOfFrameSystemSet {
     PreTimerClearing,
     TimerClearing,
     LateDespawn,
+    PostLateDespawn,
 }
 
 pub struct SystemSetsPlugin;
@@ -38,12 +39,12 @@ impl Plugin for SystemSetsPlugin {
                 )
                     .chain(),
                 (
-                    TimerSystemSet::PreTickingEarlyPreperations,
-                    TimerSystemSet::PreTickingPreperations,
-                    TimerSystemSet::PreTicking,
-                    TimerSystemSet::TimerTicking,
-                    TimerSystemSet::PostTickingImmidiate,
-                    TimerSystemSet::PostTicking,
+                    TickingSystemSet::PreTickingEarlyPreperations,
+                    TickingSystemSet::PreTickingPreperations,
+                    TickingSystemSet::PreTicking,
+                    TickingSystemSet::TimerTicking,
+                    TickingSystemSet::PostTickingImmidiate,
+                    TickingSystemSet::PostTicking,
                 )
                     .chain()
                     .after(InputSystemSet::Handling),
@@ -53,9 +54,13 @@ impl Plugin for SystemSetsPlugin {
                         EndOfFrameSystemSet::TimerClearing,
                     )
                         .chain(),
-                    EndOfFrameSystemSet::LateDespawn,
+                    (
+                        EndOfFrameSystemSet::LateDespawn,
+                        EndOfFrameSystemSet::PostLateDespawn,
+                    )
+                        .chain(),
                 )
-                    .after(TimerSystemSet::PostTicking),
+                    .after(TickingSystemSet::PostTicking),
             ),
         );
     }

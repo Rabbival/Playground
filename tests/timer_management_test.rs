@@ -3,13 +3,18 @@ use playground::prelude::*;
 mod test_dependencies;
 
 #[test]
-fn timer_always_take_new_policy_test() {
-    timer_policy_test(TimerCalculatorSetPolicy::AlwaysTakeNew, 1);
+fn timer_keep_new_timer_policy_test() {
+    timer_policy_test(TimerCalculatorSetPolicy::KeepNewTimer, 1);
 }
 
 #[test]
 fn timer_ignore_new_if_assigned_policy_test() {
     timer_policy_test(TimerCalculatorSetPolicy::IgnoreNewIfAssigned, 1);
+}
+
+#[test]
+fn timer_keep_both_timers_policy_test() {
+    timer_policy_test(TimerCalculatorSetPolicy::KeepBothTimers, 2);
 }
 
 fn timer_policy_test(policy: TimerCalculatorSetPolicy, expected_entity_count_after_fire: usize) {

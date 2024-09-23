@@ -1,6 +1,6 @@
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy)]
 pub enum TimerCalculatorSetPolicy {
-    #[default]
-    AlwaysTakeNew,
+    KeepNewTimer,
     IgnoreNewIfAssigned,
+    KeepBothTimers,
 }

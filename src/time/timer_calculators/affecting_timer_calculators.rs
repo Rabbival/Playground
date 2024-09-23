@@ -1,38 +1,70 @@
 use crate::prelude::*;
 
 #[derive(Debug, Component, Clone, Default)]
-pub struct AffectingTimerCalculators(HashMap<TimerGoingEventType, TimerAndCalculator>);
-
-#[derive(Debug, Copy, Clone)]
-pub struct TimerAndCalculator {
-    pub timer: Entity,
-    pub value_calculator: Entity,
-}
+pub struct AffectingTimerCalculators(HashMap<TimerGoingEventType, Vec<TimerAndCalculator>>);
 
 impl AffectingTimerCalculators {
-    pub fn get(&self, going_event_type: &TimerGoingEventType) -> Option<&TimerAndCalculator> {
+    pub fn get(&self, going_event_type: &TimerGoingEventType) -> Option<&Vec<TimerAndCalculator>> {
         self.0.get(going_event_type)
     }
 
-    pub fn insert(
+    pub fn insert_get_rejected_value(
         &mut self,
         key: TimerGoingEventType,
         value: TimerAndCalculator,
         policy: TimerCalculatorSetPolicy,
-    ) -> Option<TimerAndCalculator> {
+    ) -> Option<Vec<TimerAndCalculator>> {
         match policy {
-            TimerCalculatorSetPolicy::AlwaysTakeNew => self.0.insert(key, value),
+            TimerCalculatorSetPolicy::KeepNewTimer => self.0.insert(key, vec![value]),
             TimerCalculatorSetPolicy::IgnoreNewIfAssigned => {
-                let maybe_existing_entity = self.get(&key).copied();
-                if maybe_existing_entity.is_none() {
-                    self.0.insert(key, value);
+                self.insert_only_if_theres_no_timer_of_that_type(key, value)
+            }
+            TimerCalculatorSetPolicy::KeepBothTimers => self.push_to_timers_vec(key, value),
+        }
+    }
+
+    fn insert_only_if_theres_no_timer_of_that_type(
+        &mut self,
+        key: TimerGoingEventType,
+        value: TimerAndCalculator,
+    ) -> Option<Vec<TimerAndCalculator>> {
+        let maybe_timers_of_that_type = self.get(&key);
+        match maybe_timers_of_that_type {
+            Some(timers_of_that_type) => {
+                let owned_timers_of_that_type = timers_of_that_type.clone();
+                if owned_timers_of_that_type.is_empty() {
+                    self.0.insert(key, vec![value]);
+                    None
+                } else {
+                    Some(vec![value])
                 }
-                maybe_existing_entity
+            }
+            None => {
+                self.0.insert(key, vec![value]);
+                None
             }
         }
     }
 
-    pub fn remove(&mut self, key: &TimerGoingEventType) -> Option<TimerAndCalculator> {
+    fn push_to_timers_vec(
+        &mut self,
+        key: TimerGoingEventType,
+        value: TimerAndCalculator,
+    ) -> Option<Vec<TimerAndCalculator>> {
+        let maybe_timers_of_that_type = self.0.get_mut(&key);
+        if let Some(timers_of_that_type) = maybe_timers_of_that_type {
+            timers_of_that_type.push(value);
+        } else {
+            self.0.insert(key, vec![value]);
+        }
+        None
+    }
+
+    pub fn remove(&mut self, key: &TimerGoingEventType) -> Option<Vec<TimerAndCalculator>> {
         self.0.remove(key)
+    }
+
+    pub fn values(&self) -> impl Iterator<Item = &Vec<TimerAndCalculator>> + '_ {
+        self.0.values()
     }
 }

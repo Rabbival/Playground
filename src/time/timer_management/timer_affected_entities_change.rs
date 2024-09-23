@@ -6,7 +6,7 @@ impl Plugin for TimerAffectedEntitiesChangePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_for_affected_entity_removal_request.in_set(TimerSystemSet::PreTicking),
+            listen_for_affected_entity_removal_request.in_set(EndOfFrameSystemSet::PostLateDespawn),
         );
     }
 }

@@ -6,7 +6,8 @@ impl<T: Numeric> Plugin for GoingEventEmittingPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            calculate_value_and_send_going_event::<T>.in_set(TimerSystemSet::PostTickingImmidiate),
+            calculate_value_and_send_going_event::<T>
+                .in_set(TickingSystemSet::PostTickingImmidiate),
         );
     }
 }

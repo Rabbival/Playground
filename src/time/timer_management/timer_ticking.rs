@@ -6,7 +6,7 @@ impl Plugin for TimerTickingPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            tick_emitting_timers.in_set(TimerSystemSet::TimerTicking),
+            tick_emitting_timers.in_set(TickingSystemSet::TimerTicking),
         );
     }
 }
