@@ -14,7 +14,7 @@ fn timer_ignore_new_if_assigned_policy_test() {
 
 #[test]
 fn timer_keep_both_timers_policy_test() {
-    timer_policy_test(TimerCalculatorSetPolicy::KeepBothTimers, 2);
+    timer_policy_test(TimerCalculatorSetPolicy::AppendToTimersOfType, 2);
 }
 
 fn timer_policy_test(policy: TimerCalculatorSetPolicy, expected_entity_count_after_fire: usize) {

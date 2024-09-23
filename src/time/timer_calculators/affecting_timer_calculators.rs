@@ -19,7 +19,7 @@ impl AffectingTimerCalculators {
             TimerCalculatorSetPolicy::IgnoreNewIfAssigned => {
                 self.insert_only_if_theres_no_timer_of_that_type(key, value)
             }
-            TimerCalculatorSetPolicy::KeepBothTimers => self.push_to_timers_vec(key, value),
+            TimerCalculatorSetPolicy::AppendToTimersOfType => self.push_to_timers_vec(key, value),
         }
     }
 
@@ -60,8 +60,21 @@ impl AffectingTimerCalculators {
         None
     }
 
-    pub fn remove(&mut self, key: &TimerGoingEventType) -> Option<Vec<TimerAndCalculator>> {
-        self.0.remove(key)
+    pub fn remove(
+        &mut self,
+        timer_type: &TimerGoingEventType,
+        timer_entity: Entity,
+    ) -> Option<TimerAndCalculator> {
+        let maybe_timers_of_type = self.0.get_mut(timer_type);
+        if let Some(timers_of_type) = maybe_timers_of_type {
+            for (index, timer_and_calculator) in timers_of_type.iter().copied().enumerate() {
+                if timer_and_calculator.timer == timer_entity {
+                    timers_of_type.remove(index);
+                    return Some(timer_and_calculator);
+                }
+            }
+        }
+        None
     }
 
     pub fn values(&self) -> impl Iterator<Item = &Vec<TimerAndCalculator>> + '_ {

@@ -70,8 +70,7 @@ fn get_orbs_and_calculators_for_timer(
     for (orb_transform, orb_entity) in orb_query {
         let value_calculator_entity = commands
             .spawn(GoingEventValueCalculator::new(
-                // TimerCalculatorSetPolicy::IgnoreNewIfAssigned,
-                TimerCalculatorSetPolicy::KeepBothTimers,
+                TimerCalculatorSetPolicy::IgnoreNewIfAssigned,
                 ValueByInterpolation::from_goal_and_current(
                     orb_transform.translation,
                     Vec3::from((*orb_collection_target, 0.0)),

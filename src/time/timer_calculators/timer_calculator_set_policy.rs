@@ -2,5 +2,5 @@
 pub enum TimerCalculatorSetPolicy {
     KeepNewTimer,
     IgnoreNewIfAssigned,
-    KeepBothTimers,
+    AppendToTimersOfType,
 }

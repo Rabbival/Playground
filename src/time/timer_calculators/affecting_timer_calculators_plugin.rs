@@ -20,7 +20,10 @@ fn clear_done_timers_from_affecting_timers<T: Numeric>(
         for calculator_entity in done_event.affected_entities.calculator_entities_iter() {
             if let Ok(value_calculator) = calculator_entities.get(calculator_entity) {
                 for mut affecting_timers in &mut timer_affected_entities {
-                    affecting_timers.remove(&value_calculator.going_event_type());
+                    affecting_timers.remove(
+                        &value_calculator.going_event_type(),
+                        done_event.timer_entity,
+                    );
                 }
             }
         }
