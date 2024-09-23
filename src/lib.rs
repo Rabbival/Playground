@@ -76,6 +76,9 @@ pub mod prelude {
             timer_affected_entities_change::*, timer_clearing::*, timer_firing::*,
             timer_ticking::*, TimerManagementPlugin,
         },
+        timer_sequencing::{
+            timer_parent_sequence::*, timer_sequence::*, timer_sequence_manager::*,
+        },
         TimePlugin,
     };
     pub use crate::trait_unions::*;

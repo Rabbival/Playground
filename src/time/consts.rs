@@ -7,3 +7,4 @@ pub const MAX_TIME_MULTIPLIER: f32 = 100.0;
 pub const DEFAULT_TIME_MULTIPLIER: f32 = 1.0;
 pub const TIMER_MAX_ASSIGNED_MULTIPLIERS: usize = 5;
 pub const TIMER_MAX_ASSIGNED_ENTITIES: usize = 12;
+pub const MAX_TIMERS_IN_SEQUENCE: usize = 8;

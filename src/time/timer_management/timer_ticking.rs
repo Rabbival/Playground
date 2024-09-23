@@ -54,6 +54,7 @@ fn tick_emitting_timer_and_send_events(
                 event_type: timer.send_once_done,
                 affected_entities: timer.affected_entities,
                 timer_entity,
+                timer_parent_sequence: timer.parent_sequence,
             });
         }
     }

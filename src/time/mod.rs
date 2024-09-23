@@ -10,6 +10,7 @@ pub mod timer_affected_entity;
 pub mod timer_and_calculator;
 pub mod timer_calculators;
 pub mod timer_management;
+pub mod timer_sequencing;
 
 pub struct TimePlugin;
 
