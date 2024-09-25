@@ -13,20 +13,22 @@ fn listen_for_done_sequence_timers(
     mut event_writer: EventWriter<TimerFireRequest>,
     timer_sequence_query: Query<&TimerSequence>,
 ) {
-    for timer_done_event in event_reader.read() {
-        if let Some(parent_sequence) = timer_done_event.timer_parent_sequence {
-            if let Ok(timer_sequence) = timer_sequence_query.get(parent_sequence.parent_sequence) {
-                if let Some(timer_to_fire) =
-                    determine_timer_to_fire(parent_sequence.index_in_sequence + 1, timer_sequence)
-                {
-                    event_writer.send(TimerFireRequest(timer_to_fire));
-                }
-            } else {
-                print_error(
-                    EntityError::EntityNotInQuery("timer sequence of a done timer"),
-                    vec![LogCategory::RequestNotFulfilled],
-                );
+    for timer_parent_sequence in event_reader
+        .read()
+        .filter_map(|done_event| done_event.timer_parent_sequence)
+    {
+        if let Ok(timer_sequence) = timer_sequence_query.get(timer_parent_sequence.parent_sequence)
+        {
+            if let Some(timer_to_fire) =
+                determine_timer_to_fire(timer_parent_sequence.index_in_sequence + 1, timer_sequence)
+            {
+                event_writer.send(TimerFireRequest(timer_to_fire));
             }
+        } else {
+            print_error(
+                EntityError::EntityNotInQuery("timer sequence of a done timer"),
+                vec![LogCategory::RequestNotFulfilled],
+            );
         }
     }
 }
