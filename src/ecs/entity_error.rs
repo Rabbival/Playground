@@ -1,12 +1,12 @@
 use std::fmt::Display;
 
 #[derive(Debug, Clone)]
-pub enum EntityError {
-    EntityNotInQuery(String),
-    CommandsCouldntGetEntity(String),
+pub enum EntityError<'a> {
+    EntityNotInQuery(&'a str),
+    CommandsCouldntGetEntity(&'a str),
 }
 
-impl Display for EntityError {
+impl<'a> Display for EntityError<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Self::EntityNotInQuery(error_message) => {

@@ -76,7 +76,7 @@ macro_rules! get_mut_entity_else_return {
             Ok(item) => item,
             Err(_) => {
                 print_error(
-                    EntityError::EntityNotInQuery(format!(
+                    EntityError::EntityNotInQuery(&format!(
                         "couldn't fetch entity of type {} from query (mut)",
                         type_name
                     )),

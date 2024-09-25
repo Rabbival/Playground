@@ -67,9 +67,9 @@ pub fn listen_for_update_affected_entities_after_timer_birth_requests<T: Numeric
                             );
                         }
                         Err(_) => print_warning(
-                            EntityError::EntityNotInQuery(String::from(
+                            EntityError::EntityNotInQuery(
                                 "couldn't find entity in affecting timers component query upon timer firing",
-                            )),
+                            ),
                             vec![LogCategory::RequestNotFulfilled, LogCategory::Time],
                         ),
                     }

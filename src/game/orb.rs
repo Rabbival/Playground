@@ -57,7 +57,6 @@ pub fn collect_all_orbs(
             TimerDoneEventType::DespawnAffectedEntities(
                 DespawnPolicy::DespawnSelfAndRemoveFromAffectingTimers,
             ),
-            None,
         )));
     }
 }

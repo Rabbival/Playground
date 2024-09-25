@@ -116,6 +116,5 @@ fn spawn_calculator_and_fire_multiplier_changer(
         vec![],
         multiplier_set_request.duration,
         TimerDoneEventType::default(),
-        None,
     )));
 }

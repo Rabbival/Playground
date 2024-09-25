@@ -10,7 +10,7 @@ pub fn remove_component_notify_on_fail<T: Component>(
         }
         None => {
             print_error(
-                EntityError::CommandsCouldntGetEntity(format!(
+                EntityError::CommandsCouldntGetEntity(&format!(
                     "with component: {:?} (component removal attempt)",
                     stringify!(T.type_name).to_string()
                 )),
@@ -32,7 +32,7 @@ pub fn despawn_entity_notify_on_fail(
         None => {
             print_error(
                 EntityError::CommandsCouldntGetEntity(
-                    String::from(entity_name) + " (despawn attempt)",
+                    &(String::from(entity_name) + " (despawn attempt)"),
                 ),
                 vec![LogCategory::RequestNotFulfilled],
             );

@@ -14,12 +14,12 @@ impl Plugin for TimerTickingPlugin {
 pub fn tick_emitting_timers(
     mut calculation_requests_writer: EventWriter<CalculateAndSendGoingEvent>,
     mut extract_affected_and_send_done_event_writer: EventWriter<TimerDoneEvent>,
-    mut timers: Query<(&mut EmittingTimer, Entity)>,
+    mut timers: Query<(&mut EmittingTimer, Option<&TimerParentSequence>, Entity)>,
     time_multipliers: Query<&TimeMultiplier>,
     time: Res<Time>,
 ) {
     let time_delta = time.delta_seconds();
-    for (mut timer, timer_entity) in &mut timers {
+    for (mut timer, maybe_parent_sequence, timer_entity) in &mut timers {
         let modified_time_delta =
             time_delta * calculate_time_multiplier(&time_multipliers, timer.time_multipliers);
         tick_emitting_timer_and_send_events(
@@ -28,6 +28,7 @@ pub fn tick_emitting_timers(
             modified_time_delta,
             &mut timer,
             timer_entity,
+            maybe_parent_sequence.copied(),
         );
     }
 }
@@ -38,6 +39,7 @@ fn tick_emitting_timer_and_send_events(
     time_to_tick: f32,
     timer: &mut EmittingTimer,
     timer_entity: Entity,
+    maybe_parent_sequence: Option<TimerParentSequence>,
 ) {
     if let Some(normalized_progress) = timer.tick_and_get_normalized_progress(time_to_tick) {
         for affected_entity in timer.affected_entities.iter() {
@@ -54,7 +56,7 @@ fn tick_emitting_timer_and_send_events(
                 event_type: timer.send_once_done,
                 affected_entities: timer.affected_entities,
                 timer_entity,
-                timer_parent_sequence: timer.parent_sequence,
+                timer_parent_sequence: maybe_parent_sequence,
             });
         }
     }

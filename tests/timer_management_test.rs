@@ -85,7 +85,6 @@ fn request_emitting_timer_firing(
             vec![],
             duration,
             TimerDoneEventType::default(),
-            None,
         )));
 }
 
