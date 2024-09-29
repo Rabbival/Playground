@@ -42,7 +42,9 @@ pub mod prelude {
         component_utilities::*, despawn_policy::*, entity_error::*, late_despawner::*,
         system_sets::*,
     };
-    pub use crate::game::{consts::*, event_channels::*, orb::*, tags::*, GamePlugin};
+    pub use crate::game::{
+        consts::*, event_channels::*, orb::*, patroller::*, tags::*, GamePlugin,
+    };
     pub use crate::input::{keyboard_input_handler::*, mouse_input_handler::*, InputPlugin};
     pub use crate::os_access::{
         enums::{folder_to_access::*, system_file_type::*},
@@ -54,7 +56,9 @@ pub mod prelude {
     pub use crate::time::{
         consts::*,
         emitting_timer::*,
-        errors::{time_related_error::*, timer_affected_entities_error::*},
+        errors::{
+            time_related_error::*, timer_affected_entities_error::*, timer_sequence_error::*,
+        },
         events::{
             calculate_and_send_going_event::*, remove_from_timer_affected_entities::*,
             set_time_multiplier::*, timer_done_event::*, timer_fire_request::*,

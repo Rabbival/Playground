@@ -10,7 +10,7 @@ impl Plugin for TimerSequenceManagerPlugin {
 
 fn listen_for_done_sequence_timers(
     mut event_reader: EventReader<TimerDoneEvent>,
-    mut event_writer: EventWriter<TimerFireRequest>,
+    mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
     timer_sequence_query: Query<&TimerSequence>,
 ) {
     for timer_parent_sequence in event_reader
@@ -19,10 +19,14 @@ fn listen_for_done_sequence_timers(
     {
         if let Ok(timer_sequence) = timer_sequence_query.get(timer_parent_sequence.parent_sequence)
         {
-            if let Some(timer_to_fire) =
-                determine_timer_to_fire(timer_parent_sequence.index_in_sequence + 1, timer_sequence)
-            {
-                event_writer.send(TimerFireRequest(timer_to_fire));
+            if let Err(timer_sequence_error) = timer_sequence.fire_next_timer_in_sequence(
+                &mut timer_fire_event_writer,
+                timer_parent_sequence.index_in_sequence,
+            ) {
+                print_error(
+                    timer_sequence_error,
+                    vec![LogCategory::Time, LogCategory::RequestNotFulfilled],
+                )
             }
         } else {
             print_error(
@@ -30,24 +34,5 @@ fn listen_for_done_sequence_timers(
                 vec![LogCategory::RequestNotFulfilled],
             );
         }
-    }
-}
-
-fn determine_timer_to_fire(
-    next_index: usize,
-    timer_sequence: &TimerSequence,
-) -> Option<EmittingTimer> {
-    let sequence_timer_count = timer_sequence.timers_in_order.len();
-    let timers_array = timer_sequence.timers_in_order.array;
-    if next_index == sequence_timer_count {
-        if timer_sequence.loop_back_to_start {
-            Some(timers_array[0].unwrap())
-        } else {
-            None
-        }
-    } else if next_index <= sequence_timer_count {
-        Some(timers_array[next_index].unwrap())
-    } else {
-        None
     }
 }

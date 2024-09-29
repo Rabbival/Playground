@@ -1,4 +1,7 @@
 use crate::prelude::*;
 
-#[derive(Debug, Component)]
+#[derive(Debug, Clone, Copy, Component)]
 pub struct Orb;
+
+#[derive(Debug, Clone, Copy, Component)]
+pub struct Patroller;
