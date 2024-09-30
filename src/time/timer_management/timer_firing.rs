@@ -30,10 +30,16 @@ pub fn listen_for_emitting_timer_firing_requests(
     mut commands: Commands,
 ) {
     for timer_fire_request in event_reader.read() {
-        let newborn_timer_entity = commands.spawn(timer_fire_request.0).id();
+        let timer_entity = if let Some(parent_sequence) = timer_fire_request.parent_sequence {
+            commands
+                .spawn((timer_fire_request.timer, parent_sequence))
+                .id()
+        } else {
+            commands.spawn(timer_fire_request.timer).id()
+        };
         event_writer.send(UpdateAffectedEntitiesAfterTimerBirth {
-            newborn_timer_entity,
-            newborn_timer: timer_fire_request.0,
+            timer_entity,
+            newborn_timer: timer_fire_request.timer,
         });
     }
 }
@@ -47,7 +53,7 @@ pub fn listen_for_update_affected_entities_after_timer_birth_requests<T: Numeric
     mut commands: Commands,
 ) {
     for affected_entities_update_request in event_reader.read() {
-        let newborn_timer_entity = affected_entities_update_request.newborn_timer_entity;
+        let newborn_timer_entity = affected_entities_update_request.timer_entity;
         let newborn_timer = affected_entities_update_request.newborn_timer;
         for timer_affected_entity in newborn_timer.affected_entities.iter() {
             if let Some(value_calculator_entity) = timer_affected_entity.value_calculator_entity {

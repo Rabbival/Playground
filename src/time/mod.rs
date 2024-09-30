@@ -20,6 +20,7 @@ impl Plugin for TimePlugin {
             TimerManagementPlugin,
             TimeMutiplicationPlugin,
             TimeEventChannelPlugin,
+            TimerSequenceManagerPlugin,
         ));
     }
 }

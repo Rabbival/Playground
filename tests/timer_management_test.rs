@@ -80,12 +80,15 @@ fn request_emitting_timer_firing(
 ) {
     app.world_mut()
         .resource_mut::<Events<TimerFireRequest>>()
-        .send(TimerFireRequest(EmittingTimer::new(
-            vec![affected_entity],
-            vec![],
-            duration,
-            TimerDoneEventType::default(),
-        )));
+        .send(TimerFireRequest {
+            timer: EmittingTimer::new(
+                vec![affected_entity],
+                vec![],
+                duration,
+                TimerDoneEventType::default(),
+            ),
+            parent_sequence: None,
+        });
 }
 
 fn count_affected_entities(app: &mut App) -> usize {

@@ -11,17 +11,22 @@ impl Plugin for TimerSequenceManagerPlugin {
 fn listen_for_done_sequence_timers(
     mut event_reader: EventReader<TimerDoneEvent>,
     mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
-    timer_sequence_query: Query<&TimerSequence>,
+    timer_sequence_query: Query<(&TimerSequence, Entity)>,
+    mut commands: Commands,
 ) {
     for timer_parent_sequence in event_reader
         .read()
         .filter_map(|done_event| done_event.timer_parent_sequence)
     {
-        if let Ok(timer_sequence) = timer_sequence_query.get(timer_parent_sequence.parent_sequence)
+        if let Ok((timer_sequence, sequence_entity)) =
+            timer_sequence_query.get(timer_parent_sequence.parent_sequence)
         {
-            if let Err(timer_sequence_error) = timer_sequence.fire_next_timer_in_sequence(
+            if let Err(timer_sequence_error) = advance_sequence(
                 &mut timer_fire_event_writer,
                 timer_parent_sequence.index_in_sequence,
+                sequence_entity,
+                timer_sequence,
+                &mut commands,
             ) {
                 print_error(
                     timer_sequence_error,
@@ -35,4 +40,28 @@ fn listen_for_done_sequence_timers(
             );
         }
     }
+}
+
+fn advance_sequence(
+    timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
+    done_timer_index: usize,
+    sequence_entity: Entity,
+    timer_sequence: &TimerSequence,
+    commands: &mut Commands,
+) -> Result<(), TimerSequenceError> {
+    let sequence_status = timer_sequence.get_next_timer_index(done_timer_index);
+    if let Some(next_index) = sequence_status.next_timer_index {
+        let timer = timer_sequence.get_timer_by_index(next_index)?;
+        timer_fire_event_writer.send(TimerFireRequest {
+            timer,
+            parent_sequence: Some(TimerParentSequence {
+                parent_sequence: sequence_entity,
+                index_in_sequence: next_index,
+            }),
+        });
+    }
+    if sequence_status.sequence_done {
+        despawn_entity_notify_on_fail(sequence_entity, "timer sequence", commands);
+    }
+    Ok(())
 }

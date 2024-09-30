@@ -108,13 +108,16 @@ fn spawn_calculator_and_fire_multiplier_changer(
             TimerGoingEventType::ChangeTimeMultiplierSpeed,
         ))
         .id();
-    timer_fire_event_writer.send(TimerFireRequest(EmittingTimer::new(
-        vec![TimerAffectedEntity {
-            affected_entity: multiplier_entity,
-            value_calculator_entity: Some(value_calculator_id),
-        }],
-        vec![],
-        multiplier_set_request.duration,
-        TimerDoneEventType::default(),
-    )));
+    timer_fire_event_writer.send(TimerFireRequest {
+        timer: EmittingTimer::new(
+            vec![TimerAffectedEntity {
+                affected_entity: multiplier_entity,
+                value_calculator_entity: Some(value_calculator_id),
+            }],
+            vec![],
+            multiplier_set_request.duration,
+            TimerDoneEventType::default(),
+        ),
+        parent_sequence: None,
+    });
 }

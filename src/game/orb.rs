@@ -50,14 +50,17 @@ pub fn collect_all_orbs(
     {
         let timer_affected_entities =
             get_orbs_and_calculators_for_timer(&orb_query, orb_collection_target, &mut commands);
-        event_writer.send(TimerFireRequest(EmittingTimer::new(
-            timer_affected_entities,
-            vec![TimeMultiplierId::GameTimeMultiplier],
-            ORB_COLLECTION_TIME,
-            TimerDoneEventType::DespawnAffectedEntities(
-                DespawnPolicy::DespawnSelfAndRemoveFromAffectingTimers,
+        event_writer.send(TimerFireRequest {
+            timer: EmittingTimer::new(
+                timer_affected_entities,
+                vec![TimeMultiplierId::GameTimeMultiplier],
+                ORB_COLLECTION_TIME,
+                TimerDoneEventType::DespawnAffectedEntities(
+                    DespawnPolicy::DespawnSelfAndRemoveFromAffectingTimers,
+                ),
             ),
-        )));
+            parent_sequence: None,
+        });
     }
 }
 

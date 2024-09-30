@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Debug, Event, Clone, Copy)]
 pub struct UpdateAffectedEntitiesAfterTimerBirth {
-    pub newborn_timer_entity: Entity,
+    pub timer_entity: Entity,
     pub newborn_timer: EmittingTimer,
 }
 

@@ -3,6 +3,7 @@ use std::fmt::{Debug, Display};
 #[derive(Debug, Copy, Clone)]
 pub enum TimerSequenceError {
     SequenceHasNoTimerInIndex(usize),
+    TriedToFireATimerSequenceWithNoTimers,
 }
 
 impl Display for TimerSequenceError {
@@ -14,6 +15,9 @@ impl Display for TimerSequenceError {
                     "Tried to fire a sequence timer, but the sequence has no timer of index {:?}",
                     index
                 )
+            }
+            Self::TriedToFireATimerSequenceWithNoTimers => {
+                write!(f, "Tried to fire a timer sequence with an empty timer list")
             }
         }
     }
