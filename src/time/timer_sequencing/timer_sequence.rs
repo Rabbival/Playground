@@ -9,14 +9,14 @@ pub struct TimerSequence {
 impl TimerSequence {
     pub fn spawn_sequence_and_fire_first_timer(
         timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
-        timers_in_order_vec: &[EmittingTimer],
+        timers_in_order: &[EmittingTimer],
         loop_back_to_start: bool,
         commands: &mut Commands,
     ) -> Result<(), TimerSequenceError> {
-        let newborn_sequence = Self::new(timers_in_order_vec, loop_back_to_start);
-        let newborn_sequence_id = commands.spawn(newborn_sequence).id();
-        match timers_in_order_vec.first() {
+        match timers_in_order.first() {
             Some(timer) => {
+                let newborn_sequence = Self::new(timers_in_order, loop_back_to_start);
+                let newborn_sequence_id = commands.spawn(newborn_sequence).id();
                 timer_fire_event_writer.send(TimerFireRequest {
                     timer: *timer,
                     parent_sequence: Some(TimerParentSequence {
@@ -30,8 +30,8 @@ impl TimerSequence {
         }
     }
 
-    fn new(timers_in_order_vec: &[EmittingTimer], loop_back_to_start: bool) -> TimerSequence {
-        let timers_in_order_array = VecBasedArray::new(timers_in_order_vec.to_vec());
+    fn new(timers_in_order: &[EmittingTimer], loop_back_to_start: bool) -> TimerSequence {
+        let timers_in_order_array = VecBasedArray::new(timers_in_order.to_vec());
         TimerSequence {
             timers_in_order: timers_in_order_array,
             loop_back_to_start,
@@ -67,5 +67,144 @@ impl TimerSequence {
                 sequence_done: false,
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bevy::ecs::{query::QuerySingleError, system::SystemState};
+
+    #[derive(Resource)]
+    struct TimerSequenceToSpawn {
+        timers_in_order: Vec<EmittingTimer>,
+        loop_back_to_start: bool,
+    }
+
+    #[test]
+    fn nothing_spawns_if_timer_list_is_empty() {
+        let mut app = App::new();
+        match attempt_timer_sequence_spawning(&mut app, &vec![], false) {
+            Ok(_) => {
+                panic!("should have returned an error since there are no timers");
+            }
+            Err(TimerSequenceError::TriedToFireATimerSequenceWithNoTimers) => {
+                assert_eq!(count_timers_in_world(&mut app), 0);
+                assert_eq!(count_timer_sequences_in_world(&mut app), 0);
+            }
+            Err(err) => panic!("wrong type of error returned: {:?}", err),
+        }
+    }
+
+    #[test]
+    fn one_timer_and_sequence_spawn() {
+        let mut app = App::new();
+        match attempt_timer_sequence_spawning(&mut app, &two_emitting_timers_vec(), false) {
+            Ok(_) => {
+                assert_eq!(count_timers_in_world(&mut app), 1);
+                assert_eq!(count_timer_sequences_in_world(&mut app), 1);
+            }
+            Err(err) => {
+                panic!("got error {:?}", err);
+            }
+        }
+    }
+
+    #[test]
+    fn test_correct_index_advancing_for_looping_sequence() {
+        test_correct_index_advancing(true);
+    }
+
+    #[test]
+    fn test_correct_index_advancing_for_non_looping_sequence() {
+        test_correct_index_advancing(false);
+    }
+
+    fn test_correct_index_advancing(looping: bool) {
+        let mut app = App::new();
+        let _ = attempt_timer_sequence_spawning(&mut app, &two_emitting_timers_vec(), looping);
+        match try_fetch_single_timer_sequence(&mut app) {
+            Ok(timer_sequence) => {
+                assert_correct_index_advancing(timer_sequence, looping);
+            }
+            Err(_) => panic!("failed to fetch single timer sequence"),
+        }
+    }
+
+    fn assert_correct_index_advancing(sequence: &TimerSequence, looping: bool) {
+        let sequence_length = sequence.timers_in_order.len();
+        let index_beyond_the_end = if looping { Some(0) } else { None };
+        assert_eq!(
+            sequence
+                .get_next_timer_index(sequence_length - 1)
+                .next_timer_index,
+            index_beyond_the_end
+        );
+        assert_eq!(sequence.get_next_timer_index(0).next_timer_index, Some(1));
+    }
+
+    fn attempt_timer_sequence_spawning(
+        app: &mut App,
+        timers_list: &[EmittingTimer],
+        loop_back_to_start: bool,
+    ) -> Result<(), TimerSequenceError> {
+        app.insert_resource::<TimerSequenceToSpawn>(TimerSequenceToSpawn {
+            timers_in_order: timers_list.to_vec(),
+            loop_back_to_start,
+        })
+        .add_event::<TimerFireRequest>()
+        .add_event::<UpdateAffectedEntitiesAfterTimerBirth>()
+        .add_systems(
+            Update,
+            (
+                call_spawn_sequence_and_fire_first_timer_with_test_resource,
+                listen_for_emitting_timer_firing_requests,
+            )
+                .chain(),
+        );
+
+        app.update();
+
+        Ok(())
+    }
+
+    fn call_spawn_sequence_and_fire_first_timer_with_test_resource(
+        mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
+        requested_timer_sequence_properties: Res<TimerSequenceToSpawn>,
+        mut commands: Commands,
+    ) {
+        let _ = TimerSequence::spawn_sequence_and_fire_first_timer(
+            &mut timer_fire_event_writer,
+            &requested_timer_sequence_properties.timers_in_order,
+            requested_timer_sequence_properties.loop_back_to_start,
+            &mut commands,
+        );
+    }
+
+    fn two_emitting_timers_vec() -> Vec<EmittingTimer> {
+        vec![
+            EmittingTimer::new(vec![], vec![], 42.0, TimerDoneEventType::Nothing),
+            EmittingTimer::new(vec![], vec![], 42.0, TimerDoneEventType::Nothing),
+        ]
+    }
+
+    fn count_timers_in_world(app: &mut App) -> usize {
+        app.world_mut()
+            .query::<&EmittingTimer>()
+            .iter(app.world())
+            .len()
+    }
+
+    fn count_timer_sequences_in_world(app: &mut App) -> usize {
+        app.world_mut()
+            .query::<&TimerSequence>()
+            .iter(app.world())
+            .len()
+    }
+
+    fn try_fetch_single_timer_sequence(app: &mut App) -> Result<&TimerSequence, QuerySingleError> {
+        app.world_mut()
+            .query::<&TimerSequence>()
+            .get_single(&app.world())
     }
 }

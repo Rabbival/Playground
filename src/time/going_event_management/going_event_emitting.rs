@@ -26,6 +26,14 @@ pub fn calculate_value_and_send_going_event<T: Numeric>(
                 calculation_request.affected_entity,
             );
             timer_going_event_writer.send(timer_going_event);
+        } else {
+            print_error(
+                EntityError::EntityNotInQuery(&format!(
+                    "going event value calculators when asked to calculate going event: {:?}",
+                    calculation_request
+                )),
+                vec![LogCategory::RequestNotFulfilled],
+            );
         }
     }
 }

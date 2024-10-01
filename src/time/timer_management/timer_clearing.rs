@@ -1,4 +1,4 @@
-use crate::{plugin_for_implementors_of_trait, prelude::*};
+use crate::prelude::*;
 
 #[derive(Resource, Default)]
 struct EmittingTimersDespawnedThisFrame(pub Vec<Entity>);
@@ -10,24 +10,16 @@ impl Plugin for TimerClearingPlugin {
         app.init_resource::<EmittingTimersDespawnedThisFrame>()
             .add_systems(
                 Update,
-                clear_emitting_timer_despawned_this_frame
-                    .in_set(EndOfFrameSystemSet::PreTimerClearing)
-                    .run_if(
-                        resource_exists_and_changed::<EmittingTimersDespawnedThisFrame>
-                            .and_then(not(resource_added::<EmittingTimersDespawnedThisFrame>)),
-                    ),
+                (
+                    clear_emitting_timer_despawned_this_frame
+                        .in_set(EndOfFrameSystemSet::PreTimerClearing)
+                        .run_if(
+                            resource_exists_and_changed::<EmittingTimersDespawnedThisFrame>
+                                .and_then(not(resource_added::<EmittingTimersDespawnedThisFrame>)),
+                        ),
+                    clear_done_timers.in_set(EndOfFrameSystemSet::TimerClearing),
+                ),
             );
-    }
-}
-
-plugin_for_implementors_of_trait!(TimerClearingGenericPlugin, Numeric);
-
-impl<T: Numeric> Plugin for TimerClearingGenericPlugin<T> {
-    fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            clear_done_timers_and_calculators::<T>.in_set(EndOfFrameSystemSet::TimerClearing),
-        );
     }
 }
 
@@ -40,11 +32,11 @@ fn clear_emitting_timer_despawned_this_frame(
     }
 }
 
-fn clear_done_timers_and_calculators<T: Numeric>(
+fn clear_done_timers(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
+    mut destroy_calculator_event_writer: EventWriter<DestroyValueCalculator>,
     emitting_timers: Query<(Entity, &EmittingTimer)>,
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
-    timer_value_calculators: Query<&GoingEventValueCalculator<T>>,
     mut commands: Commands,
 ) {
     for timer_done_event in timer_done_event_reader.read() {
@@ -56,13 +48,10 @@ fn clear_done_timers_and_calculators<T: Numeric>(
                 despawn_entity_notify_on_fail(timer_entity, "EmittingTimer", &mut commands);
                 emitting_timers_despawned_this_frame.0.push(timer_entity);
             }
-            for value_calculator_entity in timer.calculator_entities_iter() {
-                if timer_value_calculators.contains(value_calculator_entity) {
-                    despawn_entity_notify_on_fail(
-                        value_calculator_entity,
-                        "an EmittingTimer's ValueCalculator",
-                        &mut commands,
-                    );
+            if timer_done_event.timer_parent_sequence.is_none() {
+                for value_calculator_entity in timer.calculator_entities_iter() {
+                    destroy_calculator_event_writer
+                        .send(DestroyValueCalculator(value_calculator_entity));
                 }
             }
         }

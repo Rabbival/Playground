@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
 pub mod calculate_and_send_going_event;
+pub mod destroy_value_calculator_request;
 pub mod remove_from_timer_affected_entities;
 pub mod set_time_multiplier;
 pub mod timer_done_event;
@@ -19,6 +20,7 @@ impl Plugin for TimeEventChannelPlugin {
             TimerDoneEventPlugin,
             TimerFireRequestPlugin,
             UpdateAffectedEntitiesAfterTimerBirthPlugin,
+            DestroyValueCalculatorPlugin,
         ));
     }
 }

@@ -20,7 +20,7 @@ impl<T: Numeric> Plugin for NumericPlugins<T> {
         app.add_plugins((
             TimerGoingEventPlugin::<T>::default(),
             GoingEventEmittingPlugin::<T>::default(),
-            TimerClearingGenericPlugin::<T>::default(),
+            GoingEventValueCalculatorsPlugin::<T>::default(),
             AffectingTimerCalculatorsPlugin::<T>::default(),
             TimerFiringGenericPlugin::<T>::default(),
         ));

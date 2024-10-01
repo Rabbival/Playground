@@ -42,7 +42,6 @@ pub fn initiate_patroller_movement(
         let all_path_vertices = determine_all_path_vertices(
             patroller_transform.translation,
             &mut vec![Vec3::new(-50.0, 0.0, 0.0)],
-            true,
         );
         let going_event_value_calculators =
             configure_value_calculators_for_patroller(all_path_vertices, 2.0);
@@ -90,13 +89,9 @@ fn spawn_calculator_and_push_timer(
 fn determine_all_path_vertices(
     patroller_translation: Vec3,
     destinations: &mut Vec<Vec3>,
-    go_to_start_position_once_done: bool,
 ) -> Vec<Vec3> {
     let mut all_path_vertices = vec![patroller_translation];
     all_path_vertices.append(destinations);
-    if go_to_start_position_once_done {
-        all_path_vertices.push(patroller_translation);
-    }
     all_path_vertices
 }
 
@@ -118,5 +113,11 @@ fn configure_value_calculators_for_patroller(
             TimerGoingEventType::Move(MovementType::InDirectLine),
         ));
     }
+    print_info_vec("vertices: ", &all_path_vertices, vec![LogCategory::Time]);
+    print_info_vec(
+        "value calculators: ",
+        &value_calculators,
+        vec![LogCategory::Time],
+    );
     value_calculators
 }
