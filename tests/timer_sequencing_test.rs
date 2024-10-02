@@ -31,8 +31,8 @@ fn timer_sequence_test(looping_sequence: bool) {
             Update,
             (
                 spawn_sequence,
-                listen_for_emitting_timer_firing_requests,
                 tick_emitting_timers,
+                listen_for_emitting_timer_firing_requests,
                 clear_emitting_timer_despawned_this_frame,
                 (listen_for_done_sequence_timers, clear_done_timers),
                 clear_done_calculators::<f32>, //shouldn't get here, called to make sure no requests get here
@@ -42,22 +42,22 @@ fn timer_sequence_test(looping_sequence: bool) {
 
     app.update();
     let count_after_creation = count_entities_in_world(&mut app);
-    test_dependencies::time_dependencies::fast_forward(&mut app, TIMER_DURATION_IN_SECONDS / 2.0);
+    test_dependencies::time_dependencies::fast_forward(&mut app, TIMER_DURATION_IN_SECONDS);
     app.update();
     app.update();
     let count_after_first_timer_done = count_entities_in_world(&mut app);
-    println!("--count happened here--");
-    test_dependencies::time_dependencies::fast_forward(&mut app, TIMER_DURATION_IN_SECONDS / 2.0);
+    test_dependencies::time_dependencies::fast_forward(&mut app, TIMER_DURATION_IN_SECONDS);
+    app.update();
     app.update();
     let count_after_last_timer_done = count_entities_in_world(&mut app);
 
     assert_sequence_was_still_going(count_after_creation);
     assert_sequence_was_still_going(count_after_first_timer_done);
-    // if looping_sequence {
-    //     assert_sequence_was_still_going(count_after_last_timer_done);
-    // } else {
-    //     assert_sequence_stopped_cleared_at_that_point(count_after_last_timer_done);
-    // }
+    if looping_sequence {
+        assert_sequence_was_still_going(count_after_last_timer_done);
+    } else {
+        assert_sequence_stopped_cleared_at_that_point(count_after_last_timer_done);
+    }
 }
 
 fn count_entities_in_world(app: &mut App) -> SystemStatusAtThatPoint {

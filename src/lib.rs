@@ -54,8 +54,8 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
-        affecting_timer_calculators::{
-            affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,
+        affecting_timer_calculators_management::{
+            affecting_timer_calculators::*, affecting_timer_calculators_manager::*,
             timer_calculator_set_policy::*,
         },
         consts::*,

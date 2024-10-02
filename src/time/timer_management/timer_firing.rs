@@ -30,9 +30,6 @@ pub fn listen_for_emitting_timer_firing_requests(
     mut commands: Commands,
 ) {
     for timer_fire_request in event_reader.read() {
-        //DEBUG
-        println!("request to fire a new timer recived");
-
         let timer_entity = if let Some(parent_sequence) = timer_fire_request.parent_sequence {
             commands
                 .spawn((timer_fire_request.timer, parent_sequence))

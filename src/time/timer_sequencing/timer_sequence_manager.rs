@@ -88,12 +88,6 @@ fn fire_next_timer(
         vec![LogCategory::Time],
     );
 
-    //DEBUG
-    println!(
-        "previous timer done, requesting firing of timer with index {:?}",
-        next_index
-    );
-
     timer_fire_event_writer.send(TimerFireRequest {
         timer,
         parent_sequence: Some(TimerParentSequence {

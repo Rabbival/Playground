@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-pub mod affecting_timer_calculators;
+pub mod affecting_timer_calculators_management;
 pub mod consts;
 pub mod emitting_timer;
 pub mod errors;
