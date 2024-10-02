@@ -11,7 +11,7 @@ impl Plugin for TimerSequenceManagerPlugin {
     }
 }
 
-fn listen_for_done_sequence_timers(
+pub fn listen_for_done_sequence_timers(
     mut event_reader: EventReader<TimerDoneEvent>,
     mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
     mut destroy_calculator_event_writer: EventWriter<DestroyValueCalculator>,
@@ -87,6 +87,13 @@ fn fire_next_timer(
         format!("Firing timer: {:?}", timer),
         vec![LogCategory::Time],
     );
+
+    //DEBUG
+    println!(
+        "previous timer done, requesting firing of timer with index {:?}",
+        next_index
+    );
+
     timer_fire_event_writer.send(TimerFireRequest {
         timer,
         parent_sequence: Some(TimerParentSequence {

@@ -24,7 +24,7 @@ fn orb_spawn_and_despawn_single_request_test() {
 
     app.update();
     orb_count_before_time_passed = count_orbs_in_world(&mut app);
-    test_dependencies::fast_forward(&mut app, ORB_COLLECTION_TIME);
+    test_dependencies::time_dependencies::fast_forward(&mut app, ORB_COLLECTION_TIME);
     app.update();
 
     assert_eq!(orb_count_before_time_passed, ORB_MAX_COUNT);
@@ -55,7 +55,7 @@ fn orb_spawn_and_despawn_multiple_requests_test() {
     for _ in 0..COLLECTION_REQUEST_COUNT {
         fire_orb_collection_request(&mut app, ORB_COLLECTION_DESTINATION);
         app.update();
-        test_dependencies::fast_forward(
+        test_dependencies::time_dependencies::fast_forward(
             &mut app,
             ORB_COLLECTION_TIME / (COLLECTION_REQUEST_COUNT as f32),
         );

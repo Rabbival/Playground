@@ -1,12 +1,13 @@
-use std::time::Duration;
-
 use playground::prelude::*;
+
+pub mod time_dependencies;
 
 pub fn get_app_with_resources_and_events() -> App {
     let mut app = App::new();
     app.init_resource::<Time>()
         .init_resource::<Assets<Mesh>>()
         .init_resource::<Assets<ColorMaterial>>()
+        .add_event::<DestroyValueCalculator>()
         .add_event::<TimerDoneEvent>()
         .add_event::<OrbEvent>()
         .add_event::<TimerGoingEvent<f32>>()
@@ -20,9 +21,12 @@ pub fn get_app_with_resources_and_events() -> App {
     app
 }
 
-pub fn fast_forward(app: &mut App, time_to_advance_in_seconds: f32) {
-    app.world_mut()
-        .resource_mut::<Time>()
-        .as_mut()
-        .advance_by(Duration::from_secs_f32(time_to_advance_in_seconds));
+#[allow(dead_code)]
+pub fn spawn_empty_entity(app: &mut App) -> Entity {
+    direct_spawn_empty_entity(&mut app.world_mut().commands())
+}
+
+#[allow(dead_code)]
+pub fn direct_spawn_empty_entity(commands: &mut Commands) -> Entity {
+    commands.spawn(AffectingTimerCalculators::default()).id()
 }

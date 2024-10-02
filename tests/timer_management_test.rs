@@ -22,20 +22,9 @@ fn timer_policy_test(policy: TimerCalculatorSetPolicy, expected_entity_count_aft
     let affected_entities_when_single_timer;
     let affected_entities_after_new_timer_spawned;
     let mut app = test_dependencies::get_app_with_resources_and_events();
-    let redundant_calculator = app
-        .world_mut()
-        .commands()
-        .spawn(GoingEventValueCalculator::new(
-            policy,
-            ValueByInterpolation::new(0.0, 0.0, Interpolator::default()),
-            TimerGoingEventType::ChangeTimeMultiplierSpeed,
-        ))
-        .id();
-    let empty_entity = app
-        .world_mut()
-        .commands()
-        .spawn(AffectingTimerCalculators::default())
-        .id();
+    let redundant_calculator =
+        test_dependencies::time_dependencies::spawn_redundant_calculator(&mut app, policy);
+    let empty_entity = test_dependencies::spawn_empty_entity(&mut app);
     let redundant_affected_entity = TimerAffectedEntity {
         affected_entity: empty_entity,
         value_calculator_entity: Some(redundant_calculator),

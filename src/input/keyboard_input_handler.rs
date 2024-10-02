@@ -19,7 +19,7 @@ fn slow_time_when_pressing_space(
     if keyboard_input.just_pressed(KeyCode::Space) {
         event_writer.send(SetTimeMultiplier {
             multiplier_id: TimeMultiplierId::GameTimeMultiplier,
-            new_multiplier: MULTIPLIER_WHEN_PICKING_CARDS,
+            new_multiplier: MULTIPLIER_WHEN_SLOW_MOTION,
             duration: 0.1,
         });
     }

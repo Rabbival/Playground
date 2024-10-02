@@ -11,7 +11,7 @@ impl<T: Numeric> Plugin for GoingEventValueCalculatorsPlugin<T> {
     }
 }
 
-fn clear_done_calculators<T: Numeric>(
+pub fn clear_done_calculators<T: Numeric>(
     mut event_reader: EventReader<DestroyValueCalculator>,
     timer_value_calculators: Query<&GoingEventValueCalculator<T>>,
     mut commands: Commands,

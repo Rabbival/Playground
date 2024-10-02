@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 #[derive(Resource, Default)]
-struct EmittingTimersDespawnedThisFrame(pub Vec<Entity>);
+pub struct EmittingTimersDespawnedThisFrame(pub Vec<Entity>);
 
 pub struct TimerClearingPlugin;
 
@@ -23,7 +23,7 @@ impl Plugin for TimerClearingPlugin {
     }
 }
 
-fn clear_emitting_timer_despawned_this_frame(
+pub fn clear_emitting_timer_despawned_this_frame(
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
 ) {
     let despawned_timers_vector = &emitting_timers_despawned_this_frame.0;
@@ -32,7 +32,7 @@ fn clear_emitting_timer_despawned_this_frame(
     }
 }
 
-fn clear_done_timers(
+pub fn clear_done_timers(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
     mut destroy_calculator_event_writer: EventWriter<DestroyValueCalculator>,
     emitting_timers: Query<(Entity, &EmittingTimer)>,
