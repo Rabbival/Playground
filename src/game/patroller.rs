@@ -39,10 +39,11 @@ pub fn initiate_patroller_movement(
     mut commands: Commands,
 ) {
     for (patroller_entity, patroller_transform) in &patroller_query {
-        let all_path_vertices = determine_all_path_vertices(
+        let all_path_vertices = PathTravelType::OneWay.apply_to_path(vec![
             patroller_transform.translation,
-            &mut vec![Vec3::new(-50.0, 0.0, 0.0)],
-        );
+            Vec3::new(-50.0, 0.0, 0.0),
+            Vec3::new(-100.0, 0.0, 0.0),
+        ]);
         let going_event_value_calculators =
             configure_value_calculators_for_patroller(all_path_vertices, 2.0);
         let mut emitting_timers = vec![];
@@ -57,7 +58,7 @@ pub fn initiate_patroller_movement(
         if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
             &mut event_writer,
             &emitting_timers,
-            true,
+            false, //true,
             &mut commands,
         ) {
             print_error(
@@ -68,39 +69,16 @@ pub fn initiate_patroller_movement(
     }
 }
 
-fn spawn_calculator_and_push_timer(
-    patroller_entity: Entity,
-    value_calculator: GoingEventValueCalculator<Vec3>,
-    emitting_timers: &mut Vec<EmittingTimer>,
-    commands: &mut Commands,
-) {
-    let value_calculator_id = commands.spawn(value_calculator).id();
-    emitting_timers.push(EmittingTimer::new(
-        vec![TimerAffectedEntity {
-            affected_entity: patroller_entity,
-            value_calculator_entity: Some(value_calculator_id),
-        }],
-        vec![TimeMultiplierId::GameTimeMultiplier],
-        EXAMPLE_PATROLLER_DURATION,
-        TimerDoneEventType::Nothing,
-    ));
-}
-
-fn determine_all_path_vertices(
-    patroller_translation: Vec3,
-    destinations: &mut Vec<Vec3>,
-) -> Vec<Vec3> {
-    let mut all_path_vertices = vec![patroller_translation];
-    all_path_vertices.append(destinations);
-    all_path_vertices
-}
-
 fn configure_value_calculators_for_patroller(
     all_path_vertices: Vec<Vec3>,
     interpolator_power: f32,
 ) -> Vec<GoingEventValueCalculator<Vec3>> {
     let mut value_calculators = vec![];
+    let vertice_count = all_path_vertices.iter().len();
     for (index, vertice) in all_path_vertices.iter().enumerate() {
+        if index == vertice_count - 1 {
+            break;
+        }
         value_calculators.push(GoingEventValueCalculator::new(
             TimerCalculatorSetPolicy::IgnoreNewIfAssigned,
             ValueByInterpolation::from_goal_and_current(
@@ -120,4 +98,22 @@ fn configure_value_calculators_for_patroller(
         vec![LogCategory::Time],
     );
     value_calculators
+}
+
+fn spawn_calculator_and_push_timer(
+    patroller_entity: Entity,
+    value_calculator: GoingEventValueCalculator<Vec3>,
+    emitting_timers: &mut Vec<EmittingTimer>,
+    commands: &mut Commands,
+) {
+    let value_calculator_id = commands.spawn(value_calculator).id();
+    emitting_timers.push(EmittingTimer::new(
+        vec![TimerAffectedEntity {
+            affected_entity: patroller_entity,
+            value_calculator_entity: Some(value_calculator_id),
+        }],
+        vec![TimeMultiplierId::GameTimeMultiplier],
+        EXAMPLE_PATROLLER_DURATION,
+        TimerDoneEventType::Nothing,
+    ));
 }

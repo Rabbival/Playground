@@ -29,7 +29,10 @@ pub mod prelude {
         mismatch_error::*,
         movement_type::*,
     };
-    pub use crate::data_structures::vec_based::{vec_based_array::*, vec_based_array_error::*};
+    pub use crate::data_structures::{
+        path_travel_type::*,
+        vec_based::{vec_based_array::*, vec_based_array_error::*},
+    };
     pub use crate::debug::{
         consts::*,
         enums::{bevy_log_level::*, log_category::*, os_access_log::*},
