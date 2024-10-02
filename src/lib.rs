@@ -54,6 +54,10 @@ pub mod prelude {
         text_file_access::*,
     };
     pub use crate::time::{
+        affecting_timer_calculators::{
+            affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,
+            timer_calculator_set_policy::*,
+        },
         consts::*,
         emitting_timer::*,
         errors::{
@@ -75,10 +79,6 @@ pub mod prelude {
         },
         timer_affected_entity::*,
         timer_and_calculator::*,
-        timer_calculators::{
-            affecting_timer_calculators::*, affecting_timer_calculators_plugin::*,
-            timer_calculator_set_policy::*,
-        },
         timer_management::{
             timer_affected_entities_change::*, timer_clearing::*, timer_firing::*,
             timer_ticking::*, TimerManagementPlugin,

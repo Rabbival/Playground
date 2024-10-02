@@ -73,7 +73,7 @@ impl TimerSequence {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bevy::ecs::{query::QuerySingleError, system::SystemState};
+    use bevy::ecs::query::QuerySingleError;
 
     #[derive(Resource)]
     struct TimerSequenceToSpawn {
@@ -82,32 +82,18 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "spawn attempt return an error")]
     fn nothing_spawns_if_timer_list_is_empty() {
         let mut app = App::new();
-        match attempt_timer_sequence_spawning(&mut app, &vec![], false) {
-            Ok(_) => {
-                panic!("should have returned an error since there are no timers");
-            }
-            Err(TimerSequenceError::TriedToFireATimerSequenceWithNoTimers) => {
-                assert_eq!(count_timers_in_world(&mut app), 0);
-                assert_eq!(count_timer_sequences_in_world(&mut app), 0);
-            }
-            Err(err) => panic!("wrong type of error returned: {:?}", err),
-        }
+        attempt_timer_sequence_spawning(&mut app, &vec![], false);
     }
 
     #[test]
     fn one_timer_and_sequence_spawn() {
         let mut app = App::new();
-        match attempt_timer_sequence_spawning(&mut app, &two_emitting_timers_vec(), false) {
-            Ok(_) => {
-                assert_eq!(count_timers_in_world(&mut app), 1);
-                assert_eq!(count_timer_sequences_in_world(&mut app), 1);
-            }
-            Err(err) => {
-                panic!("got error {:?}", err);
-            }
-        }
+        attempt_timer_sequence_spawning(&mut app, &two_emitting_timers_vec(), false);
+        assert_eq!(count_timer_firing_requests(&mut app), 1);
+        assert_eq!(count_timer_sequences_in_world(&mut app), 1);
     }
 
     #[test]
@@ -147,7 +133,7 @@ mod tests {
         app: &mut App,
         timers_list: &[EmittingTimer],
         loop_back_to_start: bool,
-    ) -> Result<(), TimerSequenceError> {
+    ) {
         app.insert_resource::<TimerSequenceToSpawn>(TimerSequenceToSpawn {
             timers_in_order: timers_list.to_vec(),
             loop_back_to_start,
@@ -156,16 +142,10 @@ mod tests {
         .add_event::<UpdateAffectedEntitiesAfterTimerBirth>()
         .add_systems(
             Update,
-            (
-                call_spawn_sequence_and_fire_first_timer_with_test_resource,
-                listen_for_emitting_timer_firing_requests,
-            )
-                .chain(),
+            call_spawn_sequence_and_fire_first_timer_with_test_resource,
         );
 
         app.update();
-
-        Ok(())
     }
 
     fn call_spawn_sequence_and_fire_first_timer_with_test_resource(
@@ -173,12 +153,14 @@ mod tests {
         requested_timer_sequence_properties: Res<TimerSequenceToSpawn>,
         mut commands: Commands,
     ) {
-        let _ = TimerSequence::spawn_sequence_and_fire_first_timer(
+        if let Err(error) = TimerSequence::spawn_sequence_and_fire_first_timer(
             &mut timer_fire_event_writer,
             &requested_timer_sequence_properties.timers_in_order,
             requested_timer_sequence_properties.loop_back_to_start,
             &mut commands,
-        );
+        ) {
+            panic!("spawn attempt return an error: {:?}", error);
+        }
     }
 
     fn two_emitting_timers_vec() -> Vec<EmittingTimer> {
@@ -188,10 +170,9 @@ mod tests {
         ]
     }
 
-    fn count_timers_in_world(app: &mut App) -> usize {
+    fn count_timer_firing_requests(app: &mut App) -> usize {
         app.world_mut()
-            .query::<&EmittingTimer>()
-            .iter(app.world())
+            .resource_mut::<Events<TimerFireRequest>>()
             .len()
     }
 
