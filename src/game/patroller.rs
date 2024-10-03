@@ -7,7 +7,11 @@ impl Plugin for PatrollerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Startup,
-            (spawn_patroller, initiate_patroller_movement).chain(),
+            (
+                spawn_patroller,
+                (initiate_square_movement, initiate_diagonal_movement),
+            )
+                .chain(),
         );
     }
 }
@@ -21,7 +25,7 @@ pub fn spawn_patroller(
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(ORB_MAX_RADIUS))),
             material: materials.add(Color::srgb(0.5, 0.0, 0.5)),
-            transform: Transform::from_xyz(100.0, 100.0, 0.0),
+            transform: Transform::from_xyz(250.0, 250.0, 0.0),
             ..default()
         },
         AffectingTimerCalculators::default(),
@@ -29,40 +33,77 @@ pub fn spawn_patroller(
     ));
 }
 
-pub fn initiate_patroller_movement(
+pub fn initiate_square_movement(
     mut event_writer: EventWriter<TimerFireRequest>,
-    patroller_query: Query<(Entity, &Transform), With<Patroller>>,
+    patroller_query: Query<Entity, With<Patroller>>,
     mut commands: Commands,
 ) {
-    for (patroller_entity, patroller_transform) in &patroller_query {
+    for patroller_entity in &patroller_query {
         let all_path_vertices = PathTravelType::Cycle.apply_to_path(vec![
-            patroller_transform.translation,
+            Vec3::new(100.0, 100.0, 0.0),
             Vec3::new(100.0, -100.0, 0.0),
             Vec3::new(-100.0, -100.0, 0.0),
             Vec3::new(-100.0, 100.0, 0.0),
         ]);
-        let going_event_value_calculators =
-            configure_value_calculators_for_patroller(all_path_vertices, 2.0);
-        let mut emitting_timers = vec![];
-        for value_calculator in going_event_value_calculators {
-            spawn_calculator_and_push_timer(
-                patroller_entity,
-                value_calculator,
-                &mut emitting_timers,
-                &mut commands,
-            );
-        }
-        if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
+        initiate_movement_along_path(
             &mut event_writer,
-            &emitting_timers,
-            true,
+            patroller_entity,
+            EXAMPLE_PATROLLER_SQUARE_DURATION,
+            all_path_vertices,
             &mut commands,
-        ) {
-            print_error(
-                timer_sequence_error,
-                vec![LogCategory::Time, LogCategory::RequestNotFulfilled],
-            );
-        }
+        );
+    }
+}
+
+pub fn initiate_diagonal_movement(
+    mut event_writer: EventWriter<TimerFireRequest>,
+    patroller_query: Query<Entity, With<Patroller>>,
+    mut commands: Commands,
+) {
+    for patroller_entity in &patroller_query {
+        let all_path_vertices = PathTravelType::Cycle.apply_to_path(vec![
+            Vec3::new(150.0, 150.0, 0.0),
+            Vec3::new(-150.0, -150.0, 0.0),
+        ]);
+        initiate_movement_along_path(
+            &mut event_writer,
+            patroller_entity,
+            EXAMPLE_PATROLLER_DIAGON_DURATION,
+            all_path_vertices,
+            &mut commands,
+        );
+    }
+}
+
+fn initiate_movement_along_path(
+    event_writer: &mut EventWriter<TimerFireRequest>,
+    patroller_entity: Entity,
+    timers_duration: f32,
+    all_path_vertices: Vec<Vec3>,
+    commands: &mut Commands,
+) {
+    let going_event_value_calculators =
+        configure_value_calculators_for_patroller(all_path_vertices, 2.0);
+    let mut emitting_timers = vec![];
+    for value_calculator in going_event_value_calculators {
+        spawn_calculator_and_push_timer(
+            patroller_entity,
+            value_calculator,
+            timers_duration,
+            &mut emitting_timers,
+            commands,
+        );
+    }
+    if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
+        event_writer,
+        &emitting_timers,
+        true,
+        commands,
+    ) {
+        print_error(
+            timer_sequence_error,
+            vec![LogCategory::Time, LogCategory::RequestNotFulfilled],
+        );
     }
 }
 
@@ -77,7 +118,7 @@ fn configure_value_calculators_for_patroller(
             break;
         }
         value_calculators.push(GoingEventValueCalculator::new(
-            TimerCalculatorSetPolicy::IgnoreNewIfAssigned,
+            TimerCalculatorSetPolicy::AppendToTimersOfType,
             ValueByInterpolation::from_goal_and_current(
                 *vertice,
                 *all_path_vertices
@@ -94,6 +135,7 @@ fn configure_value_calculators_for_patroller(
 fn spawn_calculator_and_push_timer(
     patroller_entity: Entity,
     value_calculator: GoingEventValueCalculator<Vec3>,
+    timer_duration: f32,
     emitting_timers: &mut Vec<EmittingTimer>,
     commands: &mut Commands,
 ) {
@@ -104,7 +146,7 @@ fn spawn_calculator_and_push_timer(
             value_calculator_entity: Some(value_calculator_id),
         }],
         vec![TimeMultiplierId::GameTimeMultiplier],
-        EXAMPLE_PATROLLER_DURATION,
+        timer_duration,
         TimerDoneEventType::Nothing,
     ));
 }

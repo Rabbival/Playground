@@ -37,7 +37,7 @@ pub mod prelude {
         consts::*,
         enums::{bevy_log_level::*, log_category::*, os_access_log::*},
         game_session_log::*,
-        print_config::*,
+        print_config_struct::*,
         print_log::*,
         print_vec::*,
     };
