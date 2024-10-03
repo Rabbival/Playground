@@ -14,7 +14,6 @@ impl Plugin for TimerSequenceManagerPlugin {
 pub fn listen_for_done_sequence_timers(
     mut event_reader: EventReader<TimerDoneEvent>,
     mut timer_fire_event_writer: EventWriter<TimerFireRequest>,
-    mut calculator_event_channel_writer: EventWriter<ValueCalculatorRequest>,
     timer_sequence_query: Query<(&TimerSequence, Entity)>,
     mut commands: Commands,
 ) {
@@ -27,7 +26,6 @@ pub fn listen_for_done_sequence_timers(
         {
             if let Err(timer_sequence_error) = advance_sequence(
                 &mut timer_fire_event_writer,
-                &mut calculator_event_channel_writer,
                 timer_parent_sequence.index_in_sequence,
                 sequence_entity,
                 timer_sequence,
@@ -49,7 +47,6 @@ pub fn listen_for_done_sequence_timers(
 
 fn advance_sequence(
     timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
-    calculator_event_channel_writer: &mut EventWriter<ValueCalculatorRequest>,
     done_timer_index: usize,
     sequence_entity: Entity,
     timer_sequence: &TimerSequence,
@@ -67,8 +64,11 @@ fn advance_sequence(
     if sequence_status.sequence_done {
         for timer in timer_sequence.timers_in_order.iter() {
             for value_calculator_entity in timer.calculator_entities_iter() {
-                calculator_event_channel_writer
-                    .send(ValueCalculatorRequest::Destroy(value_calculator_entity));
+                despawn_entity_notify_on_fail(
+                    value_calculator_entity,
+                    "an EmittingTimer's ValueCalculator",
+                    commands,
+                );
             }
         }
         despawn_entity_notify_on_fail(sequence_entity, "timer sequence", commands);

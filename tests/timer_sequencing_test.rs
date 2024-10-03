@@ -26,16 +26,13 @@ fn non_looping_sequence_test() {
 fn timer_sequence_test(looping_sequence: bool) {
     let mut app = test_dependencies::get_app_with_resources_and_events();
     app.insert_resource::<ShouldSequenceLoop>(ShouldSequenceLoop(Some(looping_sequence)))
-        .init_resource::<EmittingTimersDespawnedThisFrame>()
         .add_systems(
             Update,
             (
                 spawn_sequence,
                 tick_emitting_timers,
                 listen_for_emitting_timer_firing_requests,
-                clear_emitting_timer_despawned_this_frame,
                 (listen_for_done_sequence_timers, clear_done_timers),
-                destory_calculators::<f32>, //shouldn't get here, called to make sure no requests get here
             )
                 .chain(),
         );

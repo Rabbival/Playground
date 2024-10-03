@@ -6,10 +6,7 @@ impl<T: Numeric> Plugin for GoingEventValueCalculatorsPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (
-                initialize_calculators::<T>.in_set(TickingSystemSet::PreTicking),
-                destory_calculators::<T>.in_set(EndOfFrameSystemSet::PostTimerClearing),
-            ),
+            initialize_calculators::<T>.in_set(TickingSystemSet::PreTicking),
         );
     }
 }
@@ -26,21 +23,5 @@ pub fn initialize_calculators<T: Numeric>(
         {
             value_calculator.initialize_calculator();
         }
-    }
-}
-
-pub fn destory_calculators<T: Numeric>(
-    mut calculator_event_channel_reader: EventReader<ValueCalculatorRequest>,
-    mut commands: Commands,
-) {
-    for calculator_to_destroy in read_single_field_variant!(
-        calculator_event_channel_reader,
-        ValueCalculatorRequest::Destroy
-    ) {
-        despawn_entity_notify_on_fail(
-            *calculator_to_destroy,
-            "an EmittingTimer's ValueCalculator",
-            &mut commands,
-        );
     }
 }
