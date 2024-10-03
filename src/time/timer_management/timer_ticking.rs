@@ -33,6 +33,21 @@ pub fn tick_emitting_timers(
     }
 }
 
+fn calculate_time_multiplier<const N: usize>(
+    time_multipliers: &Query<&TimeMultiplier>,
+    multipliers_timer_subscribes_to: VecBasedArray<TimeMultiplierId, N>,
+) -> f32 {
+    let mut calculated_multiplier = DEFAULT_TIME_MULTIPLIER;
+    for multiplier_id_from_timer in multipliers_timer_subscribes_to.iter() {
+        for time_multiplier in time_multipliers {
+            if time_multiplier.id() == multiplier_id_from_timer {
+                calculated_multiplier *= time_multiplier.value();
+            }
+        }
+    }
+    calculated_multiplier
+}
+
 fn tick_emitting_timer_and_send_events(
     calculation_requests_writer: &mut EventWriter<CalculateAndSendGoingEvent>,
     extract_affected_and_send_done_event_writer: &mut EventWriter<TimerDoneEvent>,
@@ -60,19 +75,4 @@ fn tick_emitting_timer_and_send_events(
             });
         }
     }
-}
-
-fn calculate_time_multiplier<const N: usize>(
-    time_multipliers: &Query<&TimeMultiplier>,
-    multipliers_timer_subscribes_to: VecBasedArray<TimeMultiplierId, N>,
-) -> f32 {
-    let mut calculated_multiplier = DEFAULT_TIME_MULTIPLIER;
-    for multiplier_id_from_timer in multipliers_timer_subscribes_to.iter() {
-        for time_multiplier in time_multipliers {
-            if time_multiplier.id() == multiplier_id_from_timer {
-                calculated_multiplier *= time_multiplier.value();
-            }
-        }
-    }
-    calculated_multiplier
 }

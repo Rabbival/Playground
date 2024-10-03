@@ -35,7 +35,7 @@ fn timer_sequence_test(looping_sequence: bool) {
                 listen_for_emitting_timer_firing_requests,
                 clear_emitting_timer_despawned_this_frame,
                 (listen_for_done_sequence_timers, clear_done_timers),
-                clear_done_calculators::<f32>, //shouldn't get here, called to make sure no requests get here
+                destory_calculators::<f32>, //shouldn't get here, called to make sure no requests get here
             )
                 .chain(),
         );

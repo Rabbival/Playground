@@ -67,10 +67,10 @@ pub mod prelude {
             time_related_error::*, timer_affected_entities_error::*, timer_sequence_error::*,
         },
         events::{
-            calculate_and_send_going_event::*, destroy_value_calculator_request::*,
-            remove_from_timer_affected_entities::*, set_time_multiplier::*, timer_done_event::*,
-            timer_fire_request::*, timer_going_event::*,
-            update_affected_entity_after_timer_birth::*, TimeEventChannelPlugin,
+            calculate_and_send_going_event::*, remove_from_timer_affected_entities::*,
+            set_time_multiplier::*, timer_done_event::*, timer_fire_request::*,
+            timer_going_event::*, update_affected_entity_after_timer_birth::*,
+            value_calculator_event_channel::*, TimeEventChannelPlugin,
         },
         going_event_management::{
             going_event_emitting::*, going_event_value_calculator::*,

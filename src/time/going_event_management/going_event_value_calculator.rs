@@ -36,4 +36,8 @@ impl<T: Numeric> GoingEventValueCalculator<T> {
     pub fn going_event_type(&self) -> TimerGoingEventType {
         self.going_event_type
     }
+
+    pub fn initialize_calculator(&mut self) {
+        self.calculator.initialize_previous_value();
+    }
 }

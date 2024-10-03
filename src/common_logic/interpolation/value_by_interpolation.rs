@@ -34,4 +34,8 @@ impl<T: Numeric> ValueByInterpolation<T> {
         self.previous_value = current_value;
         delta
     }
+
+    pub fn initialize_previous_value(&mut self) {
+        self.previous_value = self.original_value;
+    }
 }

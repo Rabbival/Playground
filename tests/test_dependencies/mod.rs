@@ -7,7 +7,7 @@ pub fn get_app_with_resources_and_events() -> App {
     app.init_resource::<Time>()
         .init_resource::<Assets<Mesh>>()
         .init_resource::<Assets<ColorMaterial>>()
-        .add_event::<DestroyValueCalculator>()
+        .add_event::<ValueCalculatorRequest>()
         .add_event::<TimerDoneEvent>()
         .add_event::<OrbEvent>()
         .add_event::<TimerGoingEvent<f32>>()

@@ -55,7 +55,6 @@ impl TimerSequence {
                     sequence_done: false,
                 }
             } else {
-                print_info("Timer sequence done", vec![LogCategory::Time]);
                 TimerSequenceStatus {
                     next_timer_index: None,
                     sequence_done: true,

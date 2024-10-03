@@ -34,7 +34,7 @@ pub fn clear_emitting_timer_despawned_this_frame(
 
 pub fn clear_done_timers(
     mut timer_done_event_reader: EventReader<TimerDoneEvent>,
-    mut destroy_calculator_event_writer: EventWriter<DestroyValueCalculator>,
+    mut destroy_calculator_event_writer: EventWriter<ValueCalculatorRequest>,
     emitting_timers: Query<(Entity, &EmittingTimer)>,
     mut emitting_timers_despawned_this_frame: ResMut<EmittingTimersDespawnedThisFrame>,
     mut commands: Commands,
@@ -51,7 +51,7 @@ pub fn clear_done_timers(
             if timer_done_event.timer_parent_sequence.is_none() {
                 for value_calculator_entity in timer.calculator_entities_iter() {
                     destroy_calculator_event_writer
-                        .send(DestroyValueCalculator(value_calculator_entity));
+                        .send(ValueCalculatorRequest::Destroy(value_calculator_entity));
                 }
             }
         }

@@ -6,7 +6,10 @@ impl Plugin for TimerFiringPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_for_emitting_timer_firing_requests
+            (
+                listen_for_emitting_timer_firing_requests,
+                clear_calculators_if_part_of_looping_sequence,
+            )
                 .in_set(TickingSystemSet::PreTickingEarlyPreperations),
         );
     }
@@ -41,6 +44,26 @@ pub fn listen_for_emitting_timer_firing_requests(
             timer_entity,
             newborn_timer: timer_fire_request.timer,
         });
+    }
+}
+
+pub fn clear_calculators_if_part_of_looping_sequence(
+    mut event_reader: EventReader<TimerFireRequest>,
+    mut calculator_event_channel_writer: EventWriter<ValueCalculatorRequest>,
+    timer_sequence_query: Query<&TimerSequence>,
+) {
+    for timer_fire_request in event_reader.read() {
+        if let Some(parent_sequence) = timer_fire_request.parent_sequence {
+            if let Ok(fetched_sequence) = timer_sequence_query.get(parent_sequence.parent_sequence)
+            {
+                if fetched_sequence.loop_back_to_start {
+                    for calculator_entity in timer_fire_request.timer.calculator_entities_iter() {
+                        calculator_event_channel_writer
+                            .send(ValueCalculatorRequest::Initialize(calculator_entity));
+                    }
+                }
+            }
+        }
     }
 }
 

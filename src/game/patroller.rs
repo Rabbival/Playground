@@ -21,11 +21,7 @@ pub fn spawn_patroller(
         MaterialMesh2dBundle {
             mesh: Mesh2dHandle(meshes.add(Circle::new(ORB_MAX_RADIUS))),
             material: materials.add(Color::srgb(0.5, 0.0, 0.5)),
-            transform: Transform::from_xyz(
-                WINDOW_SIZE_IN_PIXELS / 8.0,
-                WINDOW_SIZE_IN_PIXELS / 8.0,
-                0.0,
-            ),
+            transform: Transform::from_xyz(100.0, 100.0, 0.0),
             ..default()
         },
         AffectingTimerCalculators::default(),
@@ -39,10 +35,11 @@ pub fn initiate_patroller_movement(
     mut commands: Commands,
 ) {
     for (patroller_entity, patroller_transform) in &patroller_query {
-        let all_path_vertices = PathTravelType::OneWay.apply_to_path(vec![
+        let all_path_vertices = PathTravelType::Cycle.apply_to_path(vec![
             patroller_transform.translation,
-            Vec3::new(-50.0, 0.0, 0.0),
-            Vec3::new(-100.0, 0.0, 0.0),
+            Vec3::new(100.0, -100.0, 0.0),
+            Vec3::new(-100.0, -100.0, 0.0),
+            Vec3::new(-100.0, 100.0, 0.0),
         ]);
         let going_event_value_calculators =
             configure_value_calculators_for_patroller(all_path_vertices, 2.0);
@@ -58,7 +55,7 @@ pub fn initiate_patroller_movement(
         if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
             &mut event_writer,
             &emitting_timers,
-            false, //true,
+            true,
             &mut commands,
         ) {
             print_error(
@@ -91,12 +88,6 @@ fn configure_value_calculators_for_patroller(
             TimerGoingEventType::Move(MovementType::InDirectLine),
         ));
     }
-    print_info_vec("vertices: ", &all_path_vertices, vec![LogCategory::Time]);
-    print_info_vec(
-        "value calculators: ",
-        &value_calculators,
-        vec![LogCategory::Time],
-    );
     value_calculators
 }
 
