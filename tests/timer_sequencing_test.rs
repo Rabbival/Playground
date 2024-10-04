@@ -85,12 +85,20 @@ fn spawn_sequence(
     if should_loop.0.is_none() {
         return;
     }
-    if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
-        &mut event_writer,
-        &create_emitting_timers_vec(&mut commands),
-        should_loop.0.take().unwrap(),
-        &mut commands,
-    ) {
+    let spawn_result = if should_loop.0.take().unwrap() {
+        TimerSequence::spawn_looping_sequence_and_fire_first_timer(
+            &mut event_writer,
+            &create_emitting_timers_vec(&mut commands),
+            &mut commands,
+        )
+    } else {
+        TimerSequence::spawn_non_looping_sequence_and_fire_first_timer(
+            &mut event_writer,
+            &create_emitting_timers_vec(&mut commands),
+            &mut commands,
+        )
+    };
+    if let Err(timer_sequence_error) = spawn_result {
         panic!("error spawning sequence: {:?}", timer_sequence_error)
     }
 }

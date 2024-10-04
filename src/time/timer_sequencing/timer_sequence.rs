@@ -7,7 +7,33 @@ pub struct TimerSequence {
 }
 
 impl TimerSequence {
-    pub fn spawn_sequence_and_fire_first_timer(
+    pub fn spawn_looping_sequence_and_fire_first_timer(
+        timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
+        timers_in_order: &[EmittingTimer],
+        commands: &mut Commands,
+    ) -> Result<(), TimerSequenceError> {
+        TimerSequence::spawn_sequence_and_fire_first_timer(
+            timer_fire_event_writer,
+            timers_in_order,
+            true,
+            commands,
+        )
+    }
+
+    pub fn spawn_non_looping_sequence_and_fire_first_timer(
+        timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
+        timers_in_order: &[EmittingTimer],
+        commands: &mut Commands,
+    ) -> Result<(), TimerSequenceError> {
+        TimerSequence::spawn_sequence_and_fire_first_timer(
+            timer_fire_event_writer,
+            timers_in_order,
+            false,
+            commands,
+        )
+    }
+
+    fn spawn_sequence_and_fire_first_timer(
         timer_fire_event_writer: &mut EventWriter<TimerFireRequest>,
         timers_in_order: &[EmittingTimer],
         loop_back_to_start: bool,

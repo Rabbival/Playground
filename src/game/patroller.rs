@@ -94,10 +94,9 @@ fn initiate_movement_along_path(
             commands,
         );
     }
-    if let Err(timer_sequence_error) = TimerSequence::spawn_sequence_and_fire_first_timer(
+    if let Err(timer_sequence_error) = TimerSequence::spawn_looping_sequence_and_fire_first_timer(
         event_writer,
         &emitting_timers,
-        true,
         commands,
     ) {
         print_error(
