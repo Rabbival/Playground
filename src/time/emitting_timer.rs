@@ -39,6 +39,11 @@ impl EmittingTimer {
         self.affected_entities.calculator_entities_iter()
     }
 
+    pub fn reset(&mut self) {
+        self.elapsed_time = 0.0;
+        self.normalized_progress = 0.0;
+    }
+
     pub fn finished(&self) -> bool {
         self.normalized_progress >= 1.0
     }
